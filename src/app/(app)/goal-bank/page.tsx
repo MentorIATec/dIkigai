@@ -1,4 +1,8 @@
+import { Suspense } from 'react';
+
 import GeneradorMetas from '@/app/(app)/goal-bank/ui/GeneradorMetas';
+
+export const dynamic = 'force-dynamic';
 
 export default function GoalBankPage(): JSX.Element {
   const flag = process.env.NEXT_PUBLIC_GOAL_GEN_V2;
@@ -17,5 +21,9 @@ export default function GoalBankPage(): JSX.Element {
     );
   }
 
-  return <GeneradorMetas />;
+  return (
+    <Suspense fallback={<div className="p-4 text-sm">Cargando generador…</div>}>
+      <GeneradorMetas />
+    </Suspense>
+  );
 }
