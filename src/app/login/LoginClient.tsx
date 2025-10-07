@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -17,15 +17,14 @@ type RoleOption = 'user' | 'admin';
 
 type LoginClientProps = {
   authProvider: 'dev' | 'firebase' | string;
+  next?: string;
 };
 
-export function LoginClient({ authProvider }: LoginClientProps) {
+export function LoginClient({ authProvider, next = '/dashboard' }: LoginClientProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<RoleOption>('user');
   const [submitting, setSubmitting] = useState(false);
-  const next = searchParams?.get('next') ?? '/dashboard';
   const isDevProvider = authProvider === 'dev';
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
