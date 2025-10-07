@@ -33,6 +33,7 @@ import {
   Settings,
   LogOut,
   FilePlus2,
+  BookMarked,
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -123,7 +124,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-                <SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/goal-bank')}
+                  tooltip="Banco de Metas"
+                >
+                  <Link href="/goal-bank">
+                    <BookMarked />
+                    <span>Banco de Metas</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
                   isActive={isActive('/goals/new')}
