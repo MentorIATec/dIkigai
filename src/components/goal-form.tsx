@@ -1,4 +1,5 @@
 'use client';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -46,7 +47,11 @@ const goalSchema = z.object({
   }),
 });
 
-export function GoalForm() {
+type GoalFormProps = {
+  prefillTemplateId?: string;
+};
+
+export function GoalForm({ prefillTemplateId }: GoalFormProps) {
   const { toast } = useToast();
   const router = useRouter();
 
@@ -74,19 +79,30 @@ export function GoalForm() {
     router.push('/goals');
   }
 
-  const handleTemplateChange = (templateId: string) => {
-    const template = goalTemplates.find((t) => t.id === templateId);
-    if (template) {
-      form.setValue('title', template.title);
-      Object.entries(template.smarterSuggestion).forEach(([key, value]) => {
-        if(key === 'timeBound' && value instanceof Date) {
-             form.setValue(`smarter.timeBound`, value);
-        } else if (typeof value === 'string') {
-             form.setValue(`smarter.${key as keyof typeof template.smarterSuggestion}`, value);
-        }
-      });
+  const handleTemplateChange = useCallback(
+    (templateId: string) => {
+      const template = goalTemplates.find((t) => t.id === templateId);
+      if (template) {
+        form.setValue('title', template.title);
+        Object.entries(template.smarterSuggestion).forEach(([key, value]) => {
+          if(key === 'timeBound' && value instanceof Date) {
+               form.setValue(`smarter.timeBound`, value);
+          } else if (typeof value === 'string') {
+               form.setValue(`smarter.${key as keyof typeof template.smarterSuggestion}`, value);
+          }
+        });
+      }
+    },
+    [form],
+  );
+
+  useEffect(() => {
+    if (!prefillTemplateId) {
+      return;
     }
-  };
+    form.setValue('templateId', prefillTemplateId);
+    handleTemplateChange(prefillTemplateId);
+  }, [prefillTemplateId, form, handleTemplateChange]);
 
   return (
     <Form {...form}>
