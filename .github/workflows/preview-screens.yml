@@ -36,7 +36,16 @@ jobs:
         env:
           PREVIEW_BASE: http://localhost:3000
         run: |
-          npm run preview:all || true
+          npm run preview:serve &
+          SERVER_PID=$!
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:3000 >/dev/null 2>&1; then
+              break
+            fi
+            sleep 1
+          done
+          npm run preview:screens:safe || true
+          kill $SERVER_PID || true
 
       - name: Upload screenshots artifact
         if: always()
