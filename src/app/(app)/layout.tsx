@@ -1,4 +1,6 @@
 'use client';
+import { useEffect, useMemo } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,7 +26,6 @@ import {
   SidebarInset,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Target,
@@ -33,9 +34,12 @@ import {
   Settings,
   LogOut,
   FilePlus2,
+  BookMarked,
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { setupMocksIfNeeded } from '@/mocks/enable-preview';
+import { TelemetryProvider, createMockTelemetry } from '@/hooks/use-telemetry';
 
 function AppHeader() {
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar');
@@ -82,11 +86,22 @@ function AppHeader() {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isPreview = searchParams?.get('preview') === '1';
+
+  useEffect(() => {
+    if (isPreview) {
+      void setupMocksIfNeeded();
+    }
+  }, [isPreview]);
+
+  const telemetry = useMemo(() => (isPreview ? createMockTelemetry() : undefined), [isPreview]);
   const isActive = (path: string) => pathname === path;
 
   return (
-    <SidebarProvider>
-      <Sidebar>
+    <TelemetryProvider value={telemetry}>
+      <SidebarProvider>
+        <Sidebar>
         <SidebarHeader>
           <div className="flex h-14 items-center gap-2 px-2">
             <Logo className="h-7 w-7 text-primary" />
@@ -123,7 +138,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-                <SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/goal-bank')}
+                  tooltip="Generador de metas"
+                >
+                  <Link href="/goal-bank">
+                    <BookMarked />
+                    <span>Generador de metas</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
                   isActive={isActive('/goals/new')}
@@ -192,6 +219,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <AppHeader />
         <main className="flex-1 p-4 sm:p-6">{children}</main>
       </SidebarInset>
-    </SidebarProvider>
+      </SidebarProvider>
+    </TelemetryProvider>
   );
 }

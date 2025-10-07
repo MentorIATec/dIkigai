@@ -1,0 +1,6 @@
+{
+  "name": "msw",
+  "version": "2.6.6",
+  "main": "index.js",
+  "types": "index.d.ts"
+}
