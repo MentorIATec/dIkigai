@@ -29,6 +29,16 @@ const GOAL_BANK_FIXTURES: Record<Stage, { templates: GoalTemplate[]; diagnostic:
 };
 
 export const handlers = [
+  http('GET', '/api/auth/session', () =>
+    HttpResponse.json({
+      session: {
+        sub: previewUser.id,
+        email: previewUser.email,
+        role: previewUser.role ?? 'admin',
+        name: previewUser.name,
+      },
+    }),
+  ),
   http('GET', '/api/preview/session', () => HttpResponse.json(previewUser)),
   http('GET', '/api/preview/goal-templates', ({ request }: { request: Request }) => {
     const url = new URL(request.url);
