@@ -12,9 +12,9 @@ AUTH_SECRET=CHANGE_ME_DEV_SECRET
 
 ### Configuración de Firebase (Opcional)
 ```bash
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_CLIENT_EMAIL=your-client-email
-FIREBASE_PRIVATE_KEY=your-private-key
+FIREBASE_PROJECT_ID=digitalikigai-f8690
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@digitalikigai-f8690.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...\n-----END PRIVATE KEY-----\n"
 ```
 
 ### Configuración de Encriptación
@@ -43,6 +43,34 @@ NEXT_PUBLIC_GOAL_GEN_V2=1
 3. Agrega las variables listadas arriba
 4. Para desarrollo, usa los valores por defecto
 5. Para producción, configura valores seguros
+
+### Variables Mínimas para Vercel (Sin Firebase)
+
+Para que la aplicación funcione básicamente en Vercel, configura estas variables:
+
+```bash
+AUTH_PROVIDER=dev
+AUTH_SECRET=CHANGE_ME_DEV_SECRET
+ENCRYPTION_KEY=default-key-32-chars-long-12345
+HASH_SALT=default-salt
+NEXT_PUBLIC_GOAL_GEN_V2=1
+```
+
+### Variables Completas para Vercel (Con Firebase)
+
+Para funcionalidad completa con Firebase, necesitarás:
+
+1. **Obtener las credenciales de Firebase Admin SDK**:
+   - Ve a Firebase Console > Project Settings > Service Accounts
+   - Genera una nueva clave privada
+   - Descarga el archivo JSON
+
+2. **Configurar las variables en Vercel**:
+   ```bash
+   FIREBASE_PROJECT_ID=digitalikigai-f8690
+   FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@digitalikigai-f8690.iam.gserviceaccount.com
+   FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n[tu-clave-privada-completa]\n-----END PRIVATE KEY-----\n"
+   ```
 
 ## Notas Importantes
 
