@@ -10,3 +10,7 @@ export async function verifyFirebaseSessionCookie(_cookie: string): Promise<{
 }> {
   throw new Error('FIREBASE provider not configured');
 }
+
+export async function revokeFirebaseSessionByUid(_uid: string): Promise<void> {
+  throw new Error('FIREBASE provider not configured');
+}

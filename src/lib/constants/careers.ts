@@ -62,3 +62,6 @@ export const careers: Career[] = [
   { id: 'NEG', name: 'Negocios/Exploración', shortName: 'NEG' },
   { id: 'SLD', name: 'Salud/Exploración', shortName: 'SLD' }
 ];
+
+// Exportar como CAREER_OPTIONS para compatibilidad
+export const CAREER_OPTIONS = careers;

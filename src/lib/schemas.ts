@@ -9,7 +9,7 @@ export const curatedGoalSchema = z.object({
 });
 
 export const curatedGoalStageSchema = z.object({
-  etapa: z.enum(['exploracion', 'enfoque', 'especializacion', 'longitudinal']),
+  etapa: z.enum(['exploracion', 'enfoque', 'especializacion', 'longitudinal', 'graduacion']),
   titulo: z.string(),
   descripcion: z.string(),
   metas: z.array(curatedGoalSchema),
@@ -31,7 +31,7 @@ export const diagnosticQuestionSchema = z.object({
 });
 
 export const stageDiagnosticSchema = z.object({
-  stage: z.enum(['exploracion', 'enfoque', 'especializacion']),
+  stage: z.enum(['exploracion', 'enfoque', 'especializacion', 'graduacion']),
   stageLabel: z.string(),
   title: z.string(),
   description: z.string(),

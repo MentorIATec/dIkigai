@@ -1,4 +1,5 @@
 import type { CuratedGoalBank, CuratedGoalBankExtended, CuratedGoalStage } from './types';
+import { curatedGoalStagesSchema } from './schemas';
 
 const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
   {
