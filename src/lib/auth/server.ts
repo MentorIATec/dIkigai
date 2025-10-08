@@ -2,15 +2,13 @@ import { cookies } from 'next/headers';
 import { COOKIE_NAME } from './config';
 import { verifySessionToken } from './tokens';
 
-export type SessionRole = 'admin' | 'mentor' | 'student';
+export type SessionRole = 'admin' | 'user';
 
 export type Session = {
   sub: string;
   email: string;
   role: SessionRole;
-  emailVerified: boolean;
   name?: string;
-  photoURL?: string;
 };
 
 export async function getSession(): Promise<Session | null> {
@@ -40,13 +38,7 @@ export async function getUserClaims() {
   if (!session) {
     return null;
   }
-  return {
-    role: session.role,
-    email: session.email,
-    emailVerified: session.emailVerified,
-    name: session.name,
-    photoURL: session.photoURL,
-  };
+  return { role: session.role, email: session.email, name: session.name };
 }
 
 export { verifySessionToken } from './tokens';

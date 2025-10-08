@@ -1,23 +1,12 @@
-import {
-  createFirebaseSessionCookie as createSession,
-  verifyFirebaseSessionCookie as verifySession,
-  revokeFirebaseSessions,
-  type FirebaseSessionVerification,
-} from '../firebase-admin';
-
-export { FirebaseSessionVerification };
-
-export async function createFirebaseSessionCookie(idToken: string, expiresInMs?: number): Promise<string> {
-  return createSession(idToken, expiresInMs);
+export async function createFirebaseSessionCookie(_idToken: string): Promise<string> {
+  throw new Error('FIREBASE provider not configured');
 }
 
-export async function verifyFirebaseSessionCookie(
-  cookie: string,
-  checkRevoked = true,
-): Promise<FirebaseSessionVerification> {
-  return verifySession(cookie, checkRevoked);
-}
-
-export async function revokeFirebaseSessionByUid(uid: string): Promise<void> {
-  await revokeFirebaseSessions(uid);
+export async function verifyFirebaseSessionCookie(_cookie: string): Promise<{
+  sub: string;
+  email: string;
+  role: 'admin' | 'user';
+  name?: string;
+}> {
+  throw new Error('FIREBASE provider not configured');
 }
