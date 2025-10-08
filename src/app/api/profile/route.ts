@@ -6,6 +6,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { createCipheriv, randomBytes, createHash } from 'crypto';
 import type { StudentProfile } from '@/lib/types';
 import { normalizeSemester, computeStage } from '@/lib/profile/mapping';
+import { COOKIE_NAME } from '@/lib/auth/config';
 
 const useMockStore = !process.env.FIREBASE_PROJECT_ID;
 
@@ -81,7 +82,7 @@ async function validateSession(): Promise<string | null> {
     }
     
     const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get('session')?.value;
+    const sessionCookie = cookieStore.get(COOKIE_NAME)?.value;
     
     if (!sessionCookie) return null;
     

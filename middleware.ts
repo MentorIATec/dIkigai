@@ -8,6 +8,7 @@ const PRIVATE_ROUTES = [
   /^\/goals(?:\/|$)/,
   /^\/goal-bank(?:\/|$)/,
   /^\/admin(?:\/|$)/,
+  /^\/profile(?:\/|$)/,
 ];
 
 export async function middleware(request: NextRequest) {
@@ -42,5 +43,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/goals/:path*', '/goal-bank/:path*', '/admin/:path*'],
+  matcher: ['/dashboard/:path*', '/goals/:path*', '/goal-bank/:path*', '/admin/:path*', '/profile/:path*'],
 };

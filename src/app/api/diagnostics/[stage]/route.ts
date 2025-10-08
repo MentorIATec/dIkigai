@@ -6,6 +6,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import type { SemesterStage, StudentProfile } from '@/lib/types';
 import type { DiagnosticResult, DiagnosticAnswer } from '@/lib/types.goal-templates';
 import { generateRecommendations } from '@/lib/recommend';
+import { COOKIE_NAME } from '@/lib/auth/config';
 
 // Inicializar Firebase Admin solo si las variables de entorno están disponibles
 if (!getApps().length && process.env.FIREBASE_PROJECT_ID) {
@@ -26,7 +27,7 @@ async function validateSession(): Promise<string | null> {
     if (!process.env.FIREBASE_PROJECT_ID) return null;
     
     const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get('session')?.value;
+    const sessionCookie = cookieStore.get(COOKIE_NAME)?.value;
     
     if (!sessionCookie) return null;
     

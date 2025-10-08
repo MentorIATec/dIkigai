@@ -69,16 +69,39 @@ export default function ProfilePage() {
               matricula: '', // No cargar matrícula por seguridad
             });
           }
+        } else if (response.status === 401) {
+          // Usuario no autenticado - redirigir al login
+          toast({
+            title: 'Sesión expirada',
+            description: 'Por favor, inicia sesión nuevamente para continuar.',
+            variant: 'destructive',
+          });
+          setTimeout(() => {
+            window.location.href = '/login?next=/profile';
+          }, 2000);
+          return;
+        } else {
+          const error = await response.json();
+          toast({
+            title: 'Error',
+            description: error.error || 'No se pudo cargar el perfil',
+            variant: 'destructive',
+          });
         }
       } catch (error) {
         console.error('Error loading profile:', error);
+        toast({
+          title: 'Error',
+          description: 'No se pudo cargar el perfil. Verifica tu conexión.',
+          variant: 'destructive',
+        });
       } finally {
         setLoading(false);
       }
     }
 
     loadProfile();
-  }, [form]);
+  }, [form, toast]);
 
   const onSubmit = async (data: ProfileFormData) => {
     setSaving(true);
@@ -112,6 +135,16 @@ export default function ProfilePage() {
         setTimeout(() => {
           window.location.href = '/dashboard';
         }, 1500);
+      } else if (response.status === 401) {
+        // Usuario no autenticado - redirigir al login
+        toast({
+          title: 'Sesión expirada',
+          description: 'Por favor, inicia sesión nuevamente para continuar.',
+          variant: 'destructive',
+        });
+        setTimeout(() => {
+          window.location.href = '/login?next=/profile';
+        }, 2000);
       } else {
         const error = await response.json();
         toast({
