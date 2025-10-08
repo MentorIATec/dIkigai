@@ -1,9 +1,10 @@
 import type { CuratedGoalBank, CuratedGoalStage } from './types';
+import { curatedGoalStagesSchema } from '@/lib/schemas';
 
-const metasCuradasData: CuratedGoalStage[] = [
+const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
   {
     etapa: 'exploracion',
-    titulo: 'Exploración (1° a 3° Semestre)',
+    titulo: 'Exploración (2° a 3° Semestre)',
     descripcion:
       'Metas enfocadas en la adaptación, el desarrollo de hábitos académicos, la exploración vocacional inicial y el establecimiento de una base de bienestar para **el/la estudiante**.',
     metas: [
@@ -634,7 +635,7 @@ const metasCuradasData: CuratedGoalStage[] = [
       }
     ]
   }
-];
+]);
 
 export const curatedGoalStages = metasCuradasData;
 

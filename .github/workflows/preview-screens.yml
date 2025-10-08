@@ -1,0 +1,56 @@
+name: Preview Screenshots
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    name: Build + Previews (Playwright)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Generate preview screenshots
+        env:
+          PREVIEW_BASE: http://localhost:3000
+        run: |
+          npm run preview:serve &
+          SERVER_PID=$!
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:3000 >/dev/null 2>&1; then
+              break
+            fi
+            sleep 1
+          done
+          npm run preview:screens:safe || true
+          kill $SERVER_PID || true
+
+      - name: Upload screenshots artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: previews-${{ github.run_id }}
+          path: .previews/
+          if-no-files-found: warn
