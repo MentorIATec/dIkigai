@@ -82,20 +82,28 @@ export function decodePrivateKey(rawValue?: string | null): string | undefined {
   return decoded.replace(/\\n/g, '\n');
 }
 
-function getFirebaseConfig(): ServiceAccountConfig {
+function getFirebaseConfig(): ServiceAccountConfig | null {
   if (cachedConfig) {
     return cachedConfig;
   }
   const projectId = process.env.FIREBASE_PROJECT_ID;
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKeyValue = decodePrivateKey(process.env.FIREBASE_PRIVATE_KEY);
+  const privateKeyValue = process.env.FIREBASE_PRIVATE_KEY ? decodePrivateKey(process.env.FIREBASE_PRIVATE_KEY) : null;
 
   if (!projectId || !clientEmail || !privateKeyValue) {
-    throw new Error('Missing Firebase Admin configuration. Set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY.');
+    return null; // Firebase no está configurado, usar modo dev
   }
 
   cachedConfig = { projectId, clientEmail, privateKey: privateKeyValue };
   return cachedConfig;
+}
+
+function ensureFirebaseConfig(): ServiceAccountConfig {
+  const config = getFirebaseConfig();
+  if (!config) {
+    throw new Error('Firebase Admin not configured. Set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY environment variables.');
+  }
+  return config;
 }
 
 function stripPem(pem: string, header: string, footer: string): string {
@@ -112,7 +120,7 @@ function pemToArrayBuffer(pem: string, header: string, footer: string): ArrayBuf
 
 async function getPrivateKey(): Promise<CryptoKey> {
   if (!cachedPrivateKey) {
-    const { privateKey } = getFirebaseConfig();
+    const { privateKey } = ensureFirebaseConfig();
     const keyData = pemToArrayBuffer(privateKey, '-----BEGIN PRIVATE KEY-----', '-----END PRIVATE KEY-----');
     cachedPrivateKey = getSubtleCrypto().importKey(
       'pkcs8',
@@ -145,7 +153,7 @@ function parseCacheControl(cacheControl: string | null): number {
 }
 
 async function createServiceAccountAssertion(scope: string): Promise<string> {
-  const { clientEmail } = getFirebaseConfig();
+  const { clientEmail } = ensureFirebaseConfig();
   const issuedAt = Math.floor(Date.now() / 1000);
   const payload = {
     iss: clientEmail,
@@ -243,7 +251,7 @@ async function getPublicKey(kid: string): Promise<CryptoKey> {
 }
 
 async function lookupUser(uid: string): Promise<FirebaseUserRecord | null> {
-  const { projectId } = getFirebaseConfig();
+  const { projectId } = ensureFirebaseConfig();
   const accessToken = await getAccessToken();
   const response = await fetch(`https://identitytoolkit.googleapis.com/v1/projects/${projectId}/accounts:lookup`, {
     method: 'POST',
@@ -263,7 +271,7 @@ async function lookupUser(uid: string): Promise<FirebaseUserRecord | null> {
 }
 
 function assertSessionClaims(payload: Record<string, unknown>): asserts payload is Record<string, unknown> {
-  const { projectId } = getFirebaseConfig();
+  const { projectId } = ensureFirebaseConfig();
   const issuer = `${SESSION_ISSUER_PREFIX}${projectId}`;
   if (payload.iss !== issuer) {
     throw new Error('Invalid Firebase session issuer');
@@ -302,7 +310,7 @@ function extractRole(payload: Record<string, unknown>, customAttributes?: string
 }
 
 export async function createFirebaseSessionCookie(idToken: string, expiresInMs = 1000 * 60 * 60 * 24 * 7): Promise<string> {
-  const { projectId } = getFirebaseConfig();
+  const { projectId } = ensureFirebaseConfig();
   const accessToken = await getAccessToken();
   const validDuration = Math.min(Math.max(60, Math.floor(expiresInMs / 1000)), MAX_SESSION_DURATION_SECONDS);
 
@@ -397,7 +405,7 @@ export async function verifyFirebaseSessionCookie(cookie: string, checkRevoked =
 }
 
 export async function revokeFirebaseSessions(uid: string): Promise<void> {
-  const { projectId } = getFirebaseConfig();
+  const { projectId } = ensureFirebaseConfig();
   const accessToken = await getAccessToken();
   const response = await fetch(`https://identitytoolkit.googleapis.com/v1/projects/${projectId}/accounts:revokeRefreshTokens`, {
     method: 'POST',
@@ -449,7 +457,7 @@ export async function verifyFirebaseIdToken(idToken: string, checkRevoked = true
   }
 
   const payload = JSON.parse(utf8Decode(base64UrlDecode(payloadPart))) as Record<string, unknown>;
-  const { projectId } = getFirebaseConfig();
+  const { projectId } = ensureFirebaseConfig();
   const issuer = `https://securetoken.google.com/${projectId}`;
   if (payload.iss !== issuer) {
     throw new Error('Invalid Firebase ID token issuer');
@@ -503,7 +511,7 @@ export async function verifyFirebaseIdToken(idToken: string, checkRevoked = true
 }
 
 export async function setFirebaseCustomUserClaims(uid: string, claims: Record<string, unknown>): Promise<void> {
-  const { projectId } = getFirebaseConfig();
+  const { projectId } = ensureFirebaseConfig();
   const accessToken = await getAccessToken();
   const response = await fetch(`https://identitytoolkit.googleapis.com/v1/projects/${projectId}/accounts:update`, {
     method: 'POST',
