@@ -70,24 +70,31 @@ function encryptMatricula(matricula: string): { encrypted: string; last4: string
 
 // Función para validar sesión
 async function validateSession(): Promise<string | null> {
+  console.log('validateSession called, useMockStore:', useMockStore);
+  console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID ? 'defined' : 'undefined');
+  
   if (useMockStore) {
     // En modo mock, siempre retornar un usuario válido para pruebas
+    console.log('Using mock store, returning mock-user');
     return 'mock-user';
   }
 
   try {
     if (!process.env.FIREBASE_PROJECT_ID) {
       // Si Firebase no está configurado, usar modo mock
+      console.log('Firebase not configured, using mock-user');
       return 'mock-user';
     }
     
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get(COOKIE_NAME)?.value;
+    console.log('Session cookie found:', !!sessionCookie);
     
     if (!sessionCookie) return null;
     
     const auth = getAuth();
     const decodedToken = await auth.verifySessionCookie(sessionCookie);
+    console.log('Token verified, uid:', decodedToken.uid);
     return decodedToken.uid;
   } catch (error) {
     console.error('Error validating session:', error);
@@ -98,24 +105,32 @@ async function validateSession(): Promise<string | null> {
 
 export async function GET() {
   try {
+    console.log('GET /api/profile called');
     const uid = await validateSession();
+    console.log('validateSession returned uid:', uid);
+    
     if (!uid) {
+      console.log('No uid, returning 401');
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
     if (useMockStore) {
+      console.log('Using mock store for GET');
       const profile = globalStores.__mockProfiles?.[uid] ?? null;
       return NextResponse.json({ profile });
     }
 
+    console.log('Using Firebase for GET, uid:', uid);
     const db = getFirestore();
     const profileDoc = await db.collection('student_profiles').doc(uid).get();
     
     if (!profileDoc.exists) {
+      console.log('Profile document does not exist');
       return NextResponse.json({ profile: null });
     }
 
     const profile = profileDoc.data() as StudentProfile;
+    console.log('Profile retrieved successfully');
     return NextResponse.json({ profile });
   } catch (error) {
     console.error('Error getting profile:', error);
@@ -125,12 +140,17 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('POST /api/profile called');
     const uid = await validateSession();
+    console.log('validateSession returned uid:', uid);
+    
     if (!uid) {
+      console.log('No uid, returning 401');
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
     const body = await request.json();
+    console.log('Request body:', { semesterNumber: body.semesterNumber, carreraId: body.carreraId, matricula: body.matricula ? 'provided' : 'not provided' });
     const { semesterNumber, carreraId, carreraName, matricula } = body;
 
     // Validar datos requeridos
@@ -199,20 +219,24 @@ export async function POST(request: NextRequest) {
     }
 
     if (useMockStore) {
+      console.log('Using mock store for POST');
       if (globalStores.__mockProfiles) {
         globalStores.__mockProfiles[uid] = {
           ...profile,
         };
       }
     } else {
+      console.log('Using Firebase for POST, uid:', uid);
       // Guardar perfil
       const db = getFirestore();
       await db.collection('student_profiles').doc(uid).set({
         ...profile,
         updatedAt: new Date().toISOString()
       });
+      console.log('Profile saved to Firebase successfully');
     }
 
+    console.log('Returning success response');
     return NextResponse.json({ profile });
   } catch (error) {
     console.error('Error saving profile:', error);
