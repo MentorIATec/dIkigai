@@ -9,35 +9,26 @@ import { Suspense } from 'react';
 
 export const dynamic = 'force-dynamic';
 
-const emphasisPattern = /(\*\*[^*]+\*\*)/g;
+import GeneradorMetas from '@/app/(app)/goal-bank/ui/GeneradorMetas';
 
-function renderWithEmphasis(text: string): ReactNode[] {
-  return text.split(emphasisPattern).filter(Boolean).map((segment, index) => {
-    if (segment.startsWith('**') && segment.endsWith('**')) {
-      return (
-        <span key={index} className="font-semibold text-foreground">
-          {segment.slice(2, -2)}
-        </span>
-      );
-    }
+export const dynamic = 'force-dynamic';
 
+export default function GoalBankPage(): JSX.Element {
+  const flag = process.env.NEXT_PUBLIC_GOAL_GEN_V2;
+  const isEnabled =
+    flag === undefined || flag === '1' || flag?.toLowerCase() === 'true' || flag?.toLowerCase() === 'enabled';
+
+  if (!isEnabled) {
     return (
-      <span key={index}>
-        {segment}
-      </span>
+      <section className="space-y-4">
+        <h1 className="text-3xl font-headline font-semibold tracking-tight">Generador de metas</h1>
+        <p className="text-muted-foreground">
+          El generador de metas estará disponible próximamente. Mientras tanto, puedes trabajar con tus metas actuales en
+          MiVidaTec → Mi Plan de Vida.
+        </p>
+      </section>
     );
-  });
-}
-
-function getActionSteps(pasosAccion: CuratedGoal['pasosAccion']): string[] {
-  return pasosAccion
-    .split(';')
-    .map((step) => step.trim())
-    .filter((step) => step.length > 0);
-}
-
-export default function GoalBankPage() {
-  const defaultStage = curatedGoalStages[0]?.etapa ?? 'exploracion';
+  }
 
   return (
     <div className="space-y-6">

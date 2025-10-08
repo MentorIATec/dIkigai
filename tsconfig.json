@@ -19,7 +19,13 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@playwright/test": ["./vendor/playwright-test"],
+      "playwright": ["./vendor/playwright"],
+      "@axe-core/playwright": ["./vendor/axe-playwright"],
+      "@storybook/react": ["./vendor/storybook-react"],
+      "msw": ["./vendor/msw"],
+      "npm-run-all": ["./vendor/npm-run-all"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

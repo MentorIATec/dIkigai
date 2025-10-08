@@ -6,24 +6,7 @@ import { goals, mockUser } from "@/lib/data";
 import type { Goal, StudentProfile } from "@/lib/types";
 import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 
-const allGoals = goals; // In a real app, this would be a fetch for all users' goals.
-
-const statusVariantMap: { [key in Goal['status']]: 'default' | 'secondary' | 'outline' | 'destructive' } = {
-    'en-progreso': 'secondary',
-    'completada': 'default',
-    'reajustada': 'outline',
-    'sin-empezar': 'destructive',
-}
-
-const statusTextMap: { [key in Goal['status']]: string } = {
-    'en-progreso': 'En Progreso',
-    'completada': 'Completada',
-    'reajustada': 'Reajustada',
-    'sin-empezar': 'Sin Empezar',
-}
-
-// Mock function to get user name
-const getUserName = (userId: string) => userId === 'user-1' ? 'Ana Pérez' : 'Carlos Ruíz';
+export const dynamic = "force-dynamic";
 
 // Mock function to get user profile status
 const getUserProfileStatus = (userId: string): { complete: boolean; missing: string[] } => {
