@@ -9,10 +9,6 @@ import { Suspense } from 'react';
 
 export const dynamic = 'force-dynamic';
 
-import GeneradorMetas from '@/app/(app)/goal-bank/ui/GeneradorMetas';
-
-export const dynamic = 'force-dynamic';
-
 export default function GoalBankPage(): JSX.Element {
   const flag = process.env.NEXT_PUBLIC_GOAL_GEN_V2;
   const isEnabled =
