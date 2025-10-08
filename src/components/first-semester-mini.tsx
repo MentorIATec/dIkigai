@@ -266,3 +266,4 @@ export function FirstSemesterMini({ onGenerateGoal, onOpenTemplate }: FirstSemes
     </div>
   );
 }
+

@@ -125,3 +125,4 @@ export function BrujulaTest({ stage, onComplete, onBack }: BrujulaTestProps) {
     </Card>
   );
 }
+

@@ -13,6 +13,8 @@ export default function GoalBankPage(): JSX.Element {
   const flag = process.env.NEXT_PUBLIC_GOAL_GEN_V2;
   const isEnabled =
     flag === undefined || flag === '1' || flag?.toLowerCase() === 'true' || flag?.toLowerCase() === 'enabled';
+  
+  const defaultStage = curatedGoalStages[0]?.etapa || 'exploracion';
 
   if (!isEnabled) {
     return (
@@ -117,4 +119,23 @@ export default function GoalBankPage(): JSX.Element {
       </Tabs>
     </div>
   );
+}
+
+function renderWithEmphasis(text: string): ReactNode {
+  // Renderizar texto con énfasis en **texto**
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+}
+
+function getActionSteps(pasosAccion: string): string[] {
+  // Dividir los pasos de acción por líneas y limpiar
+  return pasosAccion
+    .split('\n')
+    .map(step => step.trim())
+    .filter(step => step.length > 0);
 }
