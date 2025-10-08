@@ -1,31 +1,27 @@
-export type StudentStage = 'exploracion' | 'enfoque' | 'especializacion' | 'graduacion';
+import type { SemesterStage } from '../types';
 
-export function normalizeSemester(value: number | string): number {
-  if (value === '8+' || value === '8plus') {
-    return 8;
+/**
+ * Normaliza el número de semestre a un rango válido (1-8)
+ * @param n Número de semestre o '8+'
+ * @returns Número normalizado entre 1 y 8
+ */
+export function normalizeSemester(n: number | '8+'): number {
+  if (n === '8+') return 8;
+  if (typeof n === 'number') {
+    return Math.max(1, Math.min(8, n));
   }
-  const parsed = Number.parseInt(String(value), 10);
-  if (!Number.isFinite(parsed) || Number.isNaN(parsed)) {
-    return 1;
-  }
-  if (parsed <= 1) {
-    return 1;
-  }
-  if (parsed >= 8) {
-    return 8;
-  }
-  return parsed;
+  return 1;
 }
 
-export function computeStage(semesterNumber: number): StudentStage {
-  if (semesterNumber <= 3) {
-    return 'exploracion';
-  }
-  if (semesterNumber <= 6) {
-    return 'enfoque';
-  }
-  if (semesterNumber === 7) {
-    return 'especializacion';
-  }
-  return 'graduacion';
+/**
+ * Calcula la etapa académica basada en el número de semestre
+ * @param n Número de semestre normalizado
+ * @returns Etapa académica correspondiente
+ */
+export function computeStage(n: number): SemesterStage {
+  if (n >= 1 && n <= 3) return 'exploracion';
+  if (n >= 4 && n <= 6) return 'enfoque';
+  if (n === 7) return 'especializacion';
+  if (n >= 8) return 'graduacion';
+  return 'exploracion';
 }

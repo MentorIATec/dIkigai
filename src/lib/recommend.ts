@@ -1,65 +1,86 @@
-import { goalDiagnosticTests } from '@/lib/goal-diagnostic-tests';
-import type { DiagnosticFocusArea } from '@/lib/types';
-import type { GoalTemplate } from '@/lib/types.goal-templates';
+import type { SemesterStage, StudentProfile } from './types';
+import type { DiagnosticAnswer } from './types.goal-templates';
+import { curatedGoalBankExtended } from './curated-goals';
 
-type Answer = {
-  key: string;
-  value: number;
-};
+export interface RecommendationInput {
+  stage: SemesterStage;
+  answers: DiagnosticAnswer[];
+  profile?: StudentProfile;
+  selectedGoalIds?: string[];
+}
 
-type QuestionFocusMap = Record<string, DiagnosticFocusArea[]>;
+export interface RecommendedGoal {
+  id: string;
+  score: number;
+  reason: string;
+}
 
-const questionFocusAreas: QuestionFocusMap = goalDiagnosticTests.reduce<QuestionFocusMap>((acc, test) => {
-  test.questions.forEach((question) => {
-    acc[question.key] = question.focusAreas;
-  });
-  return acc;
-}, {} as QuestionFocusMap);
-
-export function recommendGoals(
-  answers: Answer[],
-  opts: { templates: GoalTemplate[]; limit?: number },
-): GoalTemplate[] {
-  const { templates, limit = 6 } = opts;
-  const areaScores = new Map<string, number>();
-
-  answers.forEach(({ key, value }) => {
-    if (Number.isNaN(value) || value > 3) {
-      return;
+/**
+ * Genera recomendaciones de metas basadas en el diagnóstico y perfil del estudiante
+ */
+export function generateRecommendations(input: RecommendationInput): RecommendedGoal[] {
+  const { stage, answers, profile, selectedGoalIds = [] } = input;
+  
+  // Obtener metas de la etapa actual
+  const stageGoals = curatedGoalBankExtended[stage]?.metas || [];
+  
+  // Calcular scores para cada meta
+  const scoredGoals = stageGoals.map(goal => {
+    let score = 0;
+    const reasons: string[] = [];
+    
+    // Priorizar metas de la etapa actual
+    score += 2;
+    reasons.push('Meta de tu etapa académica');
+    
+    // Bonus por coincidencia con áreas de enfoque (score ≤ 3)
+    const focusAreas = answers
+      .filter(answer => answer.score <= 3)
+      .map(answer => answer.key.toLowerCase());
+    
+    if (focusAreas.some(area => 
+      goal.dimension.toLowerCase().includes(area) ||
+      goal.categoria.toLowerCase().includes(area)
+    )) {
+      score += 2;
+      reasons.push('Coincide con áreas de mejora identificadas');
     }
-
-    const areas = questionFocusAreas[key];
-    if (!areas || areas.length === 0) {
-      return;
+    
+    // Bonus por coincidencia de categoría
+    const answerCategories = answers.map(answer => answer.key.toLowerCase());
+    if (answerCategories.some(category => 
+      goal.categoria.toLowerCase().includes(category)
+    )) {
+      score += 1;
+      reasons.push('Coincide con categoría de interés');
     }
-
-    const weight = Math.max(0, 4 - Math.max(1, value));
-
-    areas.forEach((area) => {
-      const areaKey = `${area.dimension}|${area.categoria}`;
-      const current = areaScores.get(areaKey) ?? 0;
-      areaScores.set(areaKey, current + weight);
-    });
-  });
-
-  if (areaScores.size === 0) {
-    return [];
-  }
-
-  const scored = templates.map((template, index) => {
-    const key = `${template.dimension}|${template.categoria}`;
-    const score = areaScores.get(key) ?? 0;
-    return { template, score, index };
-  });
-
-  return scored
-    .filter((entry) => entry.score > 0)
-    .sort((a, b) => {
-      if (b.score !== a.score) {
-        return b.score - a.score;
+    
+    // Bonus por coincidencia con carrera (si aplica)
+    if (profile?.carreraName) {
+      const carreraLower = profile.carreraName.toLowerCase();
+      if (goal.metaSmarter.toLowerCase().includes(carreraLower) ||
+          goal.pasosAccion.toLowerCase().includes(carreraLower)) {
+        score += 1;
+        reasons.push('Relevante para tu carrera');
       }
-      return a.index - b.index;
-    })
-    .slice(0, limit)
-    .map((entry) => entry.template);
+    }
+    
+    // Penalizar metas ya seleccionadas
+    if (selectedGoalIds.includes(goal.id)) {
+      score -= 1;
+      reasons.push('Ya seleccionada anteriormente');
+    }
+    
+    return {
+      id: goal.id,
+      score,
+      reason: reasons.join(', ')
+    };
+  });
+  
+  // Ordenar por score descendente y tomar top N
+  return scoredGoals
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 8)
+    .filter(goal => goal.score > 0);
 }

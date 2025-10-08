@@ -1,669 +1,448 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { buildFlatTemplates, indexByDimension } from '@/lib/build-templates';
-import { curatedGoalBank, curatedGoalStages } from '@/lib/curated-goals';
-import { getStageCuratedKey, getStageDiagnostic, periodoToStage } from '@/lib/diagnostics.stage-map';
-import { recommendGoals } from '@/lib/recommend';
-import type { CuratedGoal } from '@/lib/types';
-import {
-  PERIODOS,
-  isPeriodoId,
-  isStage,
-  type GoalTemplate,
-  type PeriodoId,
-  type Stage,
-  type WellbeingDimension,
-} from '@/lib/types.goal-templates';
-import { cn } from '@/lib/utils';
-import { useTelemetry } from '@/hooks/use-telemetry';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ArrowRight, Compass, Sparkles, Target, FileText, ExternalLink, AlertCircle, CheckCircle } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { BrujulaTest } from '@/components/brújula-test';
+import { FirstSemesterMini } from '@/components/async-first-semester-mini';
+import { CompactRecommendations } from '@/components/async-compact-recommendations';
+import { FilteredCatalog } from '@/components/async-filtered-catalog';
+import { curatedGoalBankExtended } from '@/lib/curated-goals';
+import type { SemesterStage } from '@/lib/types';
+import type { DiagnosticAnswer, DiagnosticResult } from '@/lib/types.goal-templates';
+import type { StudentProfile } from '@/lib/types';
 
-const emphasisPattern = /(\*\*[^*]+\*\*)/g;
-
-const STORAGE_KEYS = {
-  periodo: 'goal-generator:periodo',
-  answers: (stage: Stage) => `goal-generator:answers:${stage}`,
-};
-
-function renderWithEmphasis(text: string): ReactNode[] {
-  return text
-    .split(emphasisPattern)
-    .filter(Boolean)
-    .map((segment, index) => {
-      if (segment.startsWith('**') && segment.endsWith('**')) {
-        return (
-          <span key={index} className="font-semibold text-foreground">
-            {segment.slice(2, -2)}
-          </span>
-        );
-      }
-
-      return (
-        <span key={index}>
-          {segment}
-        </span>
-      );
-    });
+interface GeneradorMetasProps {
+  stage: SemesterStage;
+  periodKey?: string;
 }
 
-function getActionSteps(pasosAccion: CuratedGoal['pasosAccion']): string[] {
-  return pasosAccion
-    .split(';')
-    .map((step) => step.trim())
-    .filter((step) => step.length > 0);
-}
+type ViewMode = 'welcome' | 'brújula' | 'results';
+type RightTab = 'results' | 'catalog' | 'explore';
 
-type CustomGoal = {
-  description: string;
-  dimension: string;
-  deadline: string;
-};
+export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
+  const router = useRouter();
+  const [viewMode, setViewMode] = useState<ViewMode>('welcome');
+  const [rightTab, setRightTab] = useState<RightTab>('results');
+  const [recommendedGoalIds, setRecommendedGoalIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState<StudentProfile | null>(null);
+  const [hasCompletedDiagnostic, setHasCompletedDiagnostic] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showFullCatalogModal, setShowFullCatalogModal] = useState(false);
 
-const templates = buildFlatTemplates(curatedGoalBank);
-const templatesByDimension = indexByDimension(templates);
-const templatesByStageId = templates.reduce<Record<string, GoalTemplate[]>>((acc, template) => {
-  if (!acc[template.stageId]) {
-    acc[template.stageId] = [];
-  }
-  acc[template.stageId].push(template);
-  return acc;
-}, {} as Record<string, GoalTemplate[]>);
-
-const dimensionOptions = Object.keys(templatesByDimension).sort((a, b) =>
-  a.localeCompare(b, 'es-MX'),
-) as WellbeingDimension[];
-
-const DEFAULT_PERIODO: PeriodoId = PERIODOS[0]?.id ?? 'AD-2025';
-
-export type GeneradorMetasProps = {
-  initialPeriodoId?: PeriodoId;
-  initialAnswers?: Record<string, number>;
-  disablePersistence?: boolean;
-};
-
-export default function GeneradorMetas({
-  initialPeriodoId,
-  initialAnswers,
-  disablePersistence = false,
-}: GeneradorMetasProps = {}): JSX.Element {
-  const telemetry = useTelemetry();
-  const searchParams = useSearchParams();
-  const searchParamsKey = searchParams?.toString();
-  const isPreview = searchParams?.get('preview') === '1';
-  const persistenceEnabled = !disablePersistence && isPreview;
-  const [periodoId, setPeriodoId] = useState<PeriodoId>(initialPeriodoId ?? DEFAULT_PERIODO);
-  const [selectedDimension, setSelectedDimension] = useState<WellbeingDimension | ''>('');
-  const [customGoals, setCustomGoals] = useState<CustomGoal[]>(() =>
-    Array.from({ length: 3 }, () => ({ description: '', dimension: '', deadline: '' })),
-  );
-  const [answers, setAnswers] = useState<Record<string, number>>(initialAnswers ?? {});
-  const [submitted, setSubmitted] = useState(false);
-  const [recommended, setRecommended] = useState<GoalTemplate[]>([]);
-  const [showFullStage, setShowFullStage] = useState(false);
-  const [validationActive, setValidationActive] = useState(false);
-
-  const stage = useMemo<Stage>(() => periodoToStage(periodoId), [periodoId]);
-  const diagnostic = useMemo(() => getStageDiagnostic(stage), [stage]);
-  const curatedStageKey = useMemo(() => getStageCuratedKey(stage), [stage]);
-  const curatedStage = useMemo(
-    () => curatedGoalStages.find((stageEntry) => stageEntry.etapa === curatedStageKey),
-    [curatedStageKey],
-  );
-  const stageTemplates = useMemo(
-    () => (curatedStageKey ? templatesByStageId[curatedStageKey] ?? [] : []),
-    [curatedStageKey],
-  );
-  const selectedDimensionMetas = selectedDimension
-    ? templatesByDimension[selectedDimension] ?? []
-    : [];
-
-  const initialAnswersRef = useRef(initialAnswers);
-  const hydratedRef = useRef(false);
-
+  // Cargar perfil y diagnóstico previo
   useEffect(() => {
-    if (hydratedRef.current) {
-      return;
-    }
-    hydratedRef.current = true;
-
-    let resolvedPeriodo: PeriodoId = initialPeriodoId ?? DEFAULT_PERIODO;
-    const queryPeriodo = searchParams?.get('periodo');
-    const queryStage = searchParams?.get('stage');
-
-    if (isPeriodoId(queryPeriodo)) {
-      resolvedPeriodo = queryPeriodo;
-    } else if (isStage(queryStage)) {
-      const matching = PERIODOS.find((periodo) => periodo.stage === queryStage);
-      if (matching) {
-        resolvedPeriodo = matching.id;
-      }
-    } else if (persistenceEnabled && typeof window !== 'undefined') {
-      const storedPeriodo = window.localStorage.getItem(STORAGE_KEYS.periodo);
-      if (isPeriodoId(storedPeriodo)) {
-        resolvedPeriodo = storedPeriodo;
-      }
-    }
-
-    setPeriodoId(resolvedPeriodo);
-  }, [searchParamsKey, initialPeriodoId, disablePersistence, persistenceEnabled]);
-
-  useEffect(() => {
-    if (!persistenceEnabled || typeof window === 'undefined') {
-      return;
-    }
-    window.localStorage.setItem(STORAGE_KEYS.periodo, periodoId);
-  }, [periodoId, persistenceEnabled]);
-
-  useEffect(() => {
-    telemetry.track('goal_generator.stage_selected', { stage, periodoId });
-  }, [telemetry, stage, periodoId]);
-
-  useEffect(() => {
-    if (!diagnostic) {
-      setAnswers({});
-      setRecommended([]);
-      setSubmitted(false);
-      setShowFullStage(false);
-      setValidationActive(false);
-      return;
-    }
-
-    let stageAnswers: Record<string, number> | null = null;
-
-    if (persistenceEnabled && typeof window !== 'undefined') {
-      const stored = window.localStorage.getItem(STORAGE_KEYS.answers(stage));
-      if (stored) {
-        try {
-          stageAnswers = JSON.parse(stored) as Record<string, number>;
-        } catch {
-          stageAnswers = null;
+    async function loadData() {
+      try {
+        // Cargar perfil
+        const profileResponse = await fetch('/api/profile');
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          setProfile(profileData.profile);
         }
+
+        // Cargar diagnóstico previo si existe
+        if (periodKey) {
+          const diagnosticResponse = await fetch(`/api/diagnostics/${stage}?latest=1&periodKey=${periodKey}`);
+          if (diagnosticResponse.ok) {
+            const diagnosticData = await diagnosticResponse.json();
+            if (diagnosticData.results && diagnosticData.results.length > 0) {
+              const latestResult = diagnosticData.results[0] as DiagnosticResult;
+              setRecommendedGoalIds(latestResult.recommendedGoalIds);
+              setHasCompletedDiagnostic(true);
+              setViewMode('results');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
       }
     }
 
-    if (!stageAnswers && initialAnswersRef.current) {
-      stageAnswers = initialAnswersRef.current;
-      initialAnswersRef.current = undefined;
-    }
+    loadData();
+  }, [stage, periodKey]);
 
-    setAnswers(stageAnswers ?? {});
-    setRecommended([]);
-    setSubmitted(false);
-    setShowFullStage(false);
-    setValidationActive(false);
-  }, [diagnostic, stage, disablePersistence, persistenceEnabled]);
-
-  useEffect(() => {
-    if (!diagnostic || !persistenceEnabled || typeof window === 'undefined') {
-      return;
-    }
-    window.localStorage.setItem(STORAGE_KEYS.answers(stage), JSON.stringify(answers));
-  }, [answers, diagnostic, stage, persistenceEnabled]);
-
-  const allQuestionsAnswered = diagnostic
-    ? diagnostic.questions.every((question) => typeof answers[question.key] === 'number')
-    : false;
-
-  const recommendedAreaKeys = useMemo(
-    () => new Set(recommended.map((item) => `${item.dimension}|${item.categoria}`)),
-    [recommended],
-  );
-
-  const handlePeriodoChange = (value: PeriodoId) => {
-    setPeriodoId(value);
-    telemetry.track('goal_generator.period_selected', {
-      periodoId: value,
-      stage: periodoToStage(value),
-    });
-  };
-
-  const handleAnswerChange = (questionKey: string, value: string) => {
-    setValidationActive(true);
-    setAnswers((prev) => ({
-      ...prev,
-      [questionKey]: Number.parseInt(value, 10),
-    }));
-  };
-
-  const handleGenerateRecommendations = () => {
-    if (!diagnostic) {
-      return;
-    }
-
-    if (!allQuestionsAnswered) {
-      setValidationActive(true);
-      return;
-    }
-
-    const normalizedAnswers = diagnostic.questions.map((question) => ({
-      key: question.key,
-      value: Number(answers[question.key]),
-    }));
-
-    const suggestions = recommendGoals(normalizedAnswers, {
-      templates: stageTemplates,
-      limit: 6,
-    });
-
-    setSubmitted(true);
-    setRecommended(suggestions);
-    setShowFullStage(false);
-    telemetry.track('goal_generator.recommendations_generated', {
-      stage,
-      periodoId,
-      totalSuggestions: suggestions.length,
-    });
-  };
-
-  const handleRevealFullStage = () => {
-    setShowFullStage((previous) => {
-      const next = !previous;
-      telemetry.track('goal_generator.toggle_full_bank', {
-        stage,
-        periodoId,
-        expanded: next,
+  const handleBrújulaComplete = async (answers: DiagnosticAnswer[]) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/diagnostics/${stage}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          periodKey,
+          answers
+        }),
       });
-      return next;
-    });
-  };
 
-  const handleClearResponses = () => {
-    setAnswers({});
-    setRecommended([]);
-    setSubmitted(false);
-    setShowFullStage(false);
-    setValidationActive(false);
-    if (persistenceEnabled && diagnostic && typeof window !== 'undefined') {
-      window.localStorage.removeItem(STORAGE_KEYS.answers(stage));
+      if (response.ok) {
+        const data = await response.json();
+        setRecommendedGoalIds(data.recommendedGoalIds || []);
+        setHasCompletedDiagnostic(true);
+        setViewMode('results');
+        setRightTab('results');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.message || `Error del servidor (${response.status})`;
+        setError(`No se pudieron generar las recomendaciones: ${errorMessage}`);
+        console.error('Error submitting diagnostic:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData
+        });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error de conexión';
+      setError(`Error de conexión: ${errorMessage}`);
+      console.error('Error submitting diagnostic:', error);
+    } finally {
+      setLoading(false);
     }
-    telemetry.track('goal_generator.cleared', { stage, periodoId });
   };
 
-  const handleDimensionSelect = (value: string) => {
-    setSelectedDimension(value as WellbeingDimension);
-    telemetry.track('goal_generator.dimension_selected', { dimension: value });
+  const handleGenerateGoal = () => {
+    // Lógica para generar una meta aleatoria
+    const stageGoals = curatedGoalBankExtended[stage]?.metas || [];
+    if (stageGoals.length > 0) {
+      const randomGoal = stageGoals[Math.floor(Math.random() * stageGoals.length)];
+      // Redirigir a crear meta con plantilla
+      router.push(`/goals/new?template=${randomGoal.id}`);
+    }
   };
 
-  const handleCustomGoalChange = (index: number, field: keyof CustomGoal, value: string) => {
-    setCustomGoals((prev) => {
-      const next = [...prev];
-      next[index] = {
-        ...next[index],
-        [field]: value,
-      };
-      return next;
-    });
+  const handleOpenTemplate = () => {
+    // Redirigir a crear meta desde plantilla vacía
+    router.push('/goals/new');
   };
 
-  return (
-    <div className="space-y-6">
-      <header className="space-y-3">
-        <h1 className="text-3xl font-bold font-headline tracking-tight">Generador de metas</h1>
-        <p className="max-w-3xl text-muted-foreground">
-          Selecciona tu periodo académico, completa el diagnóstico correspondiente y obtén metas SMARTER sugeridas.
-          Después, personalízalas y regístralas en{' '}
-          <span className="font-medium text-foreground">MiVidaTec → Mi Plan de Vida</span>.
-        </p>
-      </header>
+  const getStageLabel = (stage: SemesterStage) => {
+    switch (stage) {
+      case 'exploracion': return 'Exploración';
+      case 'enfoque': return 'Enfoque';
+      case 'especializacion': return 'Especialización';
+      case 'graduacion': return 'Graduación';
+      default: return stage;
+    }
+  };
 
-      <Card className="border-dashed">
-        <CardHeader className="space-y-2">
-          <CardTitle className="font-headline text-2xl">¿En qué periodo académico te encuentras?</CardTitle>
-          <CardDescription className="text-base leading-7">
-            Elige tu periodo actual para mostrar el diagnóstico y las metas alineadas a tu etapa.
+  // Verificar si falta perfil
+  if (!profile || !profile.semesterNumber || !profile.carreraName) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-headline flex items-center gap-2">
+            <Compass className="h-5 w-5" />
+            Asistente de Metas
+          </CardTitle>
+          <CardDescription>
+            Completa tu perfil para acceder a recomendaciones personalizadas
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="max-w-sm space-y-2">
-            <Label htmlFor="periodo-select" className="text-sm font-semibold">
-              Periodo actual
-            </Label>
-            <Select value={periodoId} onValueChange={(value) => handlePeriodoChange(value as PeriodoId)}>
-              <SelectTrigger id="periodo-select">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PERIODOS.map((periodo) => (
-                  <SelectItem key={periodo.id} value={periodo.id}>
-                    {periodo.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <Alert>
+            <ExternalLink className="h-4 w-4" />
+            <AlertDescription>
+              Para recibir recomendaciones personalizadas, necesitas completar tu perfil académico.
+            </AlertDescription>
+          </Alert>
+          <Button asChild className="mt-4 w-full">
+            <Link href="/profile">
+              Completar Perfil
+            </Link>
+          </Button>
         </CardContent>
       </Card>
+    );
+  }
 
-      {stage === 'primerSemestre' ? (
-        <Card>
-          <CardHeader className="space-y-3">
-            <CardTitle className="font-headline text-2xl">Construye tus primeras metas</CardTitle>
-            <CardDescription className="text-base leading-7">
-              Sigue las indicaciones para interpretar tu Índice de Bienestar Integral y diseña tres metas SMARTER iniciales
-              antes de registrarlas en tu plan de vida.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <ol className="list-decimal space-y-3 pl-5 text-sm leading-6 text-muted-foreground">
-              <li>
-                Revisa tus resultados del Índice de Bienestar Integral en{' '}
-                <span className="font-medium text-foreground">Mi Tec → MiVidaTec → Índice de Bienestar Integral</span>.
-              </li>
-              <li>Selecciona tres dimensiones que desees reforzar.</li>
-              <li>Usa las sugerencias para redactar tres metas SMARTER que después registrarás en MiVidaTec.</li>
-            </ol>
-
-            <div className="space-y-4">
-              <div className="max-w-md space-y-2">
-                <Label htmlFor="dimension-select" className="text-sm font-semibold">
-                  Explora metas por dimensión
-                </Label>
-                <Select value={selectedDimension} onValueChange={handleDimensionSelect}>
-                  <SelectTrigger id="dimension-select">
-                    <SelectValue placeholder="Selecciona una dimensión" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {dimensionOptions.map((dimension) => (
-                      <SelectItem key={dimension} value={dimension}>
-                        {dimension}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {selectedDimensionMetas.length > 0 ? (
-                <Accordion type="single" collapsible className="space-y-2">
-                  {selectedDimensionMetas.map((meta) => (
-                    <AccordionItem key={meta.id} value={meta.id}>
-                      <AccordionTrigger className="text-left text-sm font-semibold">
-                        {renderWithEmphasis(meta.metaSmarter)}
-                      </AccordionTrigger>
-                      <AccordionContent className="space-y-3 text-sm leading-6 text-muted-foreground">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Badge variant="secondary">{meta.dimension}</Badge>
-                          <Badge variant="outline" className="capitalize">
-                            {meta.categoria}
-                          </Badge>
-                          <span className="text-xs font-mono uppercase tracking-wide text-muted-foreground">{meta.id}</span>
-                        </div>
-                        <div>
-                          <p className="font-semibold text-foreground">Pasos sugeridos</p>
-                          <ul className="mt-2 list-disc space-y-1.5 pl-5">
-                            {getActionSteps(meta.pasosAccion).map((step, index) => (
-                              <li key={`${meta.id}-dimension-${index}`}>{renderWithEmphasis(step)}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              ) : (
-                <p className="text-sm text-muted-foreground">Selecciona una dimensión para ver sugerencias relacionadas.</p>
-              )}
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Define tus tres metas iniciales</h3>
-              <div className="grid gap-4 md:grid-cols-3">
-                {customGoals.map((goal, index) => (
-                  <div key={`custom-goal-${index}`} className="space-y-3 rounded-lg border p-4">
-                    <h4 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Meta {index + 1}</h4>
-                    <div className="space-y-2">
-                      <Label htmlFor={`meta-description-${index}`}>Descripción</Label>
-                      <Textarea
-                        id={`meta-description-${index}`}
-                        placeholder="Describe tu meta SMARTER"
-                        value={goal.description}
-                        onChange={(event) => handleCustomGoalChange(index, 'description', event.target.value)}
-                        className="min-h-[96px]"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`meta-dimension-${index}`}>Dimensión</Label>
-                      <Select value={goal.dimension} onValueChange={(value) => handleCustomGoalChange(index, 'dimension', value)}>
-                        <SelectTrigger id={`meta-dimension-${index}`}>
-                          <SelectValue placeholder="Selecciona una dimensión" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {dimensionOptions.map((dimension) => (
-                            <SelectItem key={`${dimension}-${index}`} value={dimension}>
-                              {dimension}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`meta-date-${index}`}>Fecha objetivo</Label>
-                      <Input
-                        id={`meta-date-${index}`}
-                        type="date"
-                        value={goal.deadline}
-                        onChange={(event) => handleCustomGoalChange(index, 'deadline', event.target.value)}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <MiVidaTecReminder />
-          </CardContent>
-        </Card>
-      ) : (
-        diagnostic && (
-          <div className="space-y-6">
-            <Card className="border-dashed">
-              <CardHeader className="space-y-2">
-                <CardTitle className="font-headline text-2xl">{diagnostic.stageLabel}</CardTitle>
-                <CardDescription className="text-base leading-7">{diagnostic.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form
-                  className="space-y-5"
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    handleGenerateRecommendations();
-                  }}
-                >
-                  {diagnostic.questions.map((question) => {
-                    const questionValue = answers[question.key]?.toString() ?? '';
-                    const showValidationMessage = validationActive && typeof answers[question.key] !== 'number';
-
-                    return (
-                      <fieldset
-                        key={question.key}
-                        className="space-y-3 rounded-lg border border-border/70 bg-muted/40 p-4"
-                      >
-                        <legend className="text-sm font-semibold leading-6">{question.title}</legend>
-                        <RadioGroup
-                          value={questionValue}
-                          onValueChange={(value) => handleAnswerChange(question.key, value)}
-                          className="space-y-2"
-                        >
-                          {question.options.map((option, index) => {
-                            const optionValue = (index + 1).toString();
-                            const inputId = `${diagnostic.stage}-${question.key}-${index}`;
-
-                            return (
-                              <div
-                                key={optionValue}
-                                className="flex items-start gap-3 rounded-md border border-transparent bg-background/80 p-3 shadow-sm transition hover:border-primary/60 hover:bg-background"
-                              >
-                                <RadioGroupItem value={optionValue} id={inputId} className="mt-1" />
-                                <Label htmlFor={inputId} className="flex-1 cursor-pointer text-sm leading-6">
-                                  {option}
-                                </Label>
-                              </div>
-                            );
-                          })}
-                        </RadioGroup>
-                        {showValidationMessage && (
-                          <p className="text-xs font-medium text-destructive">Selecciona una opción para continuar.</p>
-                        )}
-                      </fieldset>
-                    );
-                  })}
-
-                  <div className="flex flex-wrap items-center gap-3">
-                    <Button type="submit" disabled={!allQuestionsAnswered}>
-                      Generar metas sugeridas
-                    </Button>
-                    <Button type="button" variant="outline" onClick={handleClearResponses}>
-                      Limpiar respuestas
-                    </Button>
-                    {!allQuestionsAnswered && (
-                      <p className="text-xs text-muted-foreground">
-                        Responde todas las preguntas para habilitar el generador.
-                      </p>
-                    )}
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-
-            {curatedStage && (
+  // Caso especial: Primer semestre
+  if (profile.semesterNumber === 1) {
+    return (
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Columna izquierda: Mini asistente */}
+        <div>
+          <FirstSemesterMini 
+            onGenerateGoal={handleGenerateGoal}
+            onOpenTemplate={handleOpenTemplate}
+          />
+        </div>
+        
+        {/* Columna derecha: Tabs */}
+        <div>
+          <Tabs value={rightTab} onValueChange={(value) => setRightTab(value as RightTab)} className="space-y-4">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="results">Inspiración</TabsTrigger>
+              <TabsTrigger value="catalog">Catálogo</TabsTrigger>
+              <TabsTrigger value="explore">Explorar</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="results" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className="font-headline text-2xl">{curatedStage.titulo}</CardTitle>
-                  <CardDescription className="text-base leading-7">
-                    {renderWithEmphasis(curatedStage.descripcion)}
+                  <CardTitle className="font-headline flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-purple-600" />
+                    Tu inspiración
+                  </CardTitle>
+                  <CardDescription>
+                    Metas sugeridas basadas en tu etapa de exploración
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  {submitted ? (
-                    recommended.length > 0 ? (
-                      <section className="space-y-4">
-                        <h3 className="text-lg font-semibold">Metas sugeridas</h3>
-                        <div className="space-y-4">
-                          {recommended.map((meta) => (
-                            <GoalTemplateCard key={meta.id} meta={meta} highlighted />
-                          ))}
-                        </div>
-                      </section>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        ¡Excelente! Tus respuestas muestran buen avance. Explora más metas para mantener tu ritmo.
-                      </p>
-                    )
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      Responde el diagnóstico y genera sugerencias personalizadas para tu etapa.
+                <CardContent>
+                  <div className="text-center py-8">
+                    <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground mb-4">
+                      Usa el mini asistente para generar metas personalizadas
                     </p>
-                  )}
-
-                  {submitted && (
-                    <div className="space-y-3">
-                      <Button variant="outline" onClick={handleRevealFullStage}>
-                        {showFullStage ? 'Ocultar más sugerencias' : 'Generar más sugerencias'}
-                      </Button>
-                      {showFullStage && (
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-semibold">Más metas curadas</h3>
-                          {stageTemplates.length > 0 ? (
-                            <div className="space-y-4">
-                              {stageTemplates.map((meta) => {
-                                const isHighlighted = recommendedAreaKeys.has(`${meta.dimension}|${meta.categoria}`);
-                                return <GoalTemplateCard key={meta.id} meta={meta} highlighted={isHighlighted} />;
-                              })}
-                            </div>
-                          ) : (
-                            <p className="text-sm text-muted-foreground">
-                              Aún no hay un banco curado disponible para esta etapa.
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <MiVidaTecReminder />
+                    <Button onClick={handleGenerateGoal} variant="outline">
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Generar inspiración
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
-            )}
-          </div>
-        )
-      )}
-    </div>
-  );
-}
-
-type GoalTemplateCardProps = {
-  meta: GoalTemplate;
-  highlighted?: boolean;
-};
-
-function GoalTemplateCard({ meta, highlighted }: GoalTemplateCardProps) {
-  return (
-    <article
-      className={cn(
-        'rounded-lg border bg-card/60 p-5 shadow-sm transition hover:border-primary/50 hover:shadow-md',
-        highlighted && 'border-primary/60 bg-primary/10',
-      )}
-    >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary">{meta.dimension}</Badge>
-          <Badge variant="outline" className="capitalize">
-            {meta.categoria}
-          </Badge>
+            </TabsContent>
+            
+            <TabsContent value="catalog" className="space-y-4">
+              <FilteredCatalog
+                stage={stage}
+                recommendedGoalIds={[]}
+                onGenerateGoal={handleGenerateGoal}
+                onOpenTemplate={handleOpenTemplate}
+              />
+            </TabsContent>
+            
+            <TabsContent value="explore" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="font-headline">Explorar más</CardTitle>
+                  <CardDescription>
+                    Otras opciones para definir tus metas
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid gap-3">
+                    <Button asChild variant="outline" className="h-auto p-4">
+                      <Link href="/goals/new">
+                        <Target className="mr-2 h-4 w-4" />
+                        <div className="text-left">
+                          <div className="font-medium">Crear meta nueva</div>
+                          <div className="text-xs text-muted-foreground">
+                            Desde cero con plantilla
+                          </div>
+                        </div>
+                        <ArrowRight className="ml-auto h-4 w-4" />
+                      </Link>
+                    </Button>
+                    
+                    <Button asChild className="h-auto p-4">
+                      <Link href="/goals">
+                        <Target className="mr-2 h-4 w-4" />
+                        <div className="text-left">
+                          <div className="font-medium">Ver mis metas</div>
+                          <div className="text-xs text-muted-foreground">
+                            Gestionar metas existentes
+                          </div>
+                        </div>
+                        <ArrowRight className="ml-auto h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
-        <span className="text-xs font-mono uppercase tracking-wide text-muted-foreground">{meta.id}</span>
       </div>
-      <p className="mt-3 text-base leading-7">{renderWithEmphasis(meta.metaSmarter)}</p>
-      <div className="mt-4">
-        <p className="text-sm font-semibold text-muted-foreground">Pasos sugeridos</p>
-        <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-6 text-muted-foreground">
-          {getActionSteps(meta.pasosAccion).map((step, index) => (
-            <li key={`${meta.id}-step-${index}`}>{renderWithEmphasis(step)}</li>
-          ))}
-        </ul>
-      </div>
-    </article>
-  );
-}
+    );
+  }
 
-function MiVidaTecReminder() {
+  // Layout principal con columnas
   return (
-    <Alert className="border-primary/40 bg-primary/5">
-      <AlertTitle>Guarda tus metas en MiVidaTec</AlertTitle>
-      <AlertDescription className="space-y-2 text-sm leading-6">
-        <p>
-          Una vez definidas tus metas, regístralas en{' '}
-          <span className="font-medium">MiVidaTec → Mi Plan de Vida</span> para darles seguimiento.
-        </p>
-        <p>
-          Consulta el{' '}
-          <Link
-            href="https://drive.google.com/file/d/18kojUabG2z00cgmQXGU_6zLGmAL3weE9/view"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-primary underline"
-          >
-            tutorial de apoyo
-          </Link>{' '}
-          si necesitas ayuda durante el registro.
-        </p>
-      </AlertDescription>
-    </Alert>
+    <div className="grid gap-6 lg:grid-cols-2">
+      {/* Columna izquierda: Test o bienvenida */}
+      <div>
+        {viewMode === 'welcome' && (
+          <Card className="bg-gradient-to-br from-blue-50/80 to-indigo-100/60 border-blue-200/60">
+            <CardHeader>
+              <CardTitle className="font-headline flex items-center gap-2">
+                <Compass className="h-6 w-6 text-blue-600" />
+                Brújula de {getStageLabel(stage)}
+              </CardTitle>
+              <CardDescription className="text-base">
+                Completa un diagnóstico rápido para recibir recomendaciones personalizadas basadas en tu etapa académica.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <h4 className="font-semibold">¿Qué incluye el test?</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Preguntas específicas para tu etapa</li>
+                    <li>• Evaluación de tus áreas de enfoque</li>
+                    <li>• Recomendaciones personalizadas</li>
+                    <li>• Metas curadas para tu nivel</li>
+                  </ul>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold">Beneficios</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Metas alineadas con tu progreso</li>
+                    <li>• Enfoque en áreas de mejora</li>
+                    <li>• Planificación estratégica</li>
+                    <li>• Seguimiento personalizado</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <Button onClick={() => setViewMode('brújula')} className="w-full">
+                <Compass className="mr-2 h-4 w-4" />
+                Iniciar Brújula de {getStageLabel(stage)}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {viewMode === 'brújula' && (
+          <BrujulaTest
+            stage={stage as any}
+            onComplete={handleBrújulaComplete}
+            onBack={() => setViewMode('welcome')}
+          />
+        )}
+
+        {viewMode === 'results' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-headline flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                Diagnóstico completado
+              </CardTitle>
+              <CardDescription>
+                Has completado la Brújula de {getStageLabel(stage)}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-center py-4">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="h-8 w-8 text-green-600" />
+                </div>
+                <p className="text-muted-foreground mb-4">
+                  Revisa tus recomendaciones en la columna derecha
+                </p>
+                <Button onClick={() => setViewMode('brújula')} variant="outline">
+                  <Compass className="mr-2 h-4 w-4" />
+                  Realizar nuevo diagnóstico
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+      
+      {/* Columna derecha: Tabs con resultados */}
+      <div>
+        <Tabs value={rightTab} onValueChange={(value) => setRightTab(value as RightTab)} className="space-y-4">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="results">Resultados</TabsTrigger>
+            <TabsTrigger value="catalog">Catálogo</TabsTrigger>
+            <TabsTrigger value="explore">Explorar</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="results" className="space-y-4">
+            <CompactRecommendations
+              recommendedGoalIds={recommendedGoalIds}
+              stage={stage}
+              onRetakeTest={() => setViewMode('brújula')}
+              onViewCatalog={() => setRightTab('catalog')}
+              onViewFullCatalog={() => setShowFullCatalogModal(true)}
+              error={error}
+            />
+          </TabsContent>
+          
+          <TabsContent value="catalog" className="space-y-4">
+            <FilteredCatalog
+              stage={stage}
+              recommendedGoalIds={recommendedGoalIds}
+              onGenerateGoal={handleGenerateGoal}
+              onOpenTemplate={handleOpenTemplate}
+            />
+          </TabsContent>
+          
+          <TabsContent value="explore" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-headline">Explorar más</CardTitle>
+                <CardDescription>
+                  Otras opciones para definir tus metas
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-3">
+                  <Button asChild variant="outline" className="h-auto p-4">
+                    <Link href="/goals/new">
+                      <Target className="mr-2 h-4 w-4" />
+                      <div className="text-left">
+                        <div className="font-medium">Crear meta nueva</div>
+                        <div className="text-xs text-muted-foreground">
+                          Desde cero con plantilla
+                        </div>
+                      </div>
+                      <ArrowRight className="ml-auto h-4 w-4" />
+                    </Link>
+                  </Button>
+                  
+                  <Button asChild className="h-auto p-4">
+                    <Link href="/goals">
+                      <Target className="mr-2 h-4 w-4" />
+                      <div className="text-left">
+                        <div className="font-medium">Ver mis metas</div>
+                        <div className="text-xs text-muted-foreground">
+                          Gestionar metas existentes
+                        </div>
+                      </div>
+                      <ArrowRight className="ml-auto h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Modal del catálogo completo */}
+      <Dialog open={showFullCatalogModal} onOpenChange={setShowFullCatalogModal}>
+        <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-headline flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Catálogo completo de metas
+            </DialogTitle>
+            <DialogDescription>
+              Catálogo completo opcional con todas las metas disponibles para tu etapa de {getStageLabel(stage)}. 
+              Las metas recomendadas aparecen destacadas.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <FilteredCatalog
+              stage={stage}
+              recommendedGoalIds={recommendedGoalIds}
+              onGenerateGoal={handleGenerateGoal}
+              onOpenTemplate={handleOpenTemplate}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

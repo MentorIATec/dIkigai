@@ -1,0 +1,9 @@
+# Arquitectura y guardrails
+- Next.js App Router (v15). Toda lectura de query en cliente debe ir en Client Components bajo <Suspense>. Server pages: `export const dynamic = "force-dynamic"`.
+- Autenticación: Firebase (session cookie HttpOnly). Mantener fallback AUTH_PROVIDER=dev. No exponer PII en tokens/cookies.
+- Privacidad: matrícula nunca en claro fuera de `student_private/{uid}` (AES-256-GCM con keyring). Guardar solo `matricula_last4` y `matricula_hash`.
+- Etapas académicas: exploracion=1–3, enfoque=4–6, especializacion=7, graduacion=8+. Si `semesterNumber>8` normalizar a 8.
+- Generador de metas: mantener nombre y flujo (diagnóstico → metas sugeridas → ver más). Períodos AD/FJ 2025+.
+- Preview: `?preview=1` activa mocks (MSW) solo en cliente. No inicializar MSW en layout root.
+- Admin: /admin/** requiere role=admin; log de auditoría al ver matrícula y al exportar CSV; rate limit en rutas admin.
+- No crear dependencias pesadas (Playwright/Storybook) salvo que se pida.

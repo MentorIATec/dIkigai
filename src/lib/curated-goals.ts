@@ -1,5 +1,4 @@
-import type { CuratedGoalBank, CuratedGoalStage } from './types';
-import { curatedGoalStagesSchema } from '@/lib/schemas';
+import type { CuratedGoalBank, CuratedGoalBankExtended, CuratedGoalStage } from './types';
 
 const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
   {
@@ -634,6 +633,68 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
           'Identificar las materias con mayor reto; Buscar horario de tutores esta semana; Bloquear tiempo para 2 sesiones antes del parcial.'
       }
     ]
+  },
+  {
+    etapa: 'graduacion',
+    titulo: 'Graduación (8° Semestre en adelante)',
+    descripcion:
+      'Metas orientadas a la culminación exitosa de estudios, transición al mercado laboral, y preparación para el futuro profesional.',
+    metas: [
+      {
+        id: 'GRA_OCP01',
+        dimension: 'Ocupacional',
+        categoria: 'carrera',
+        metaSmarter:
+          'Completar exitosamente la defensa de tesis o proyecto final en el plazo establecido.',
+        pasosAccion:
+          'Revisar cronograma oficial; Establecer fechas límite internas; Reunirse semanalmente con asesor/a; Entregar borrador completo 2 semanas antes de la defensa.'
+      },
+      {
+        id: 'GRA_OCP02',
+        dimension: 'Ocupacional',
+        categoria: 'carrera',
+        metaSmarter:
+          'Aplicar exitosamente a 10 posiciones laborales relevantes en 6 semanas.',
+        pasosAccion:
+          'Optimizar CV y perfil LinkedIn; Personalizar cartas de presentación; Aplicar a 2 posiciones por semana; Dar seguimiento cada 5 días.'
+      },
+      {
+        id: 'GRA_OCP03',
+        dimension: 'Ocupacional',
+        categoria: 'carrera',
+        metaSmarter:
+          'Establecer red profesional de 20 contactos relevantes en la industria antes de graduarse.',
+        pasosAccion:
+          'Identificar profesionales clave; Conectar en LinkedIn; Asistir a 3 eventos de networking; Mantener comunicación regular.'
+      },
+      {
+        id: 'GRA_INT01',
+        dimension: 'Intelectual',
+        categoria: 'academico',
+        metaSmarter:
+          'Completar certificación profesional relevante para la industria en 8 semanas.',
+        pasosAccion:
+          'Identificar certificación clave; Inscribirse al programa; Dedicar 5 horas semanales; Completar examen final.'
+      },
+      {
+        id: 'GRA_FIN01',
+        dimension: 'Financiera',
+        categoria: 'financiera',
+        metaSmarter:
+          'Crear plan financiero post-graduación con presupuesto de 6 meses en 4 semanas.',
+        pasosAccion:
+          'Calcular gastos mensuales; Establecer fondo de emergencia; Investigar opciones de inversión; Crear plan de ahorro.'
+      },
+      {
+        id: 'GRA_EMO01',
+        dimension: 'Emocional',
+        categoria: 'emocional',
+        metaSmarter:
+          'Desarrollar estrategias de manejo de estrés para la transición profesional en 6 semanas.',
+        pasosAccion:
+          'Identificar fuentes de estrés; Aprender técnicas de relajación; Practicar mindfulness diario; Crear rutina de autocuidado.'
+      }
+    ]
   }
 ]);
 
@@ -644,9 +705,27 @@ export function buildCuratedGoalBank(
 ): CuratedGoalBank {
   return stages.reduce<CuratedGoalBank>((acc, stage) => {
     const { etapa, ...rest } = stage;
-    acc[etapa] = rest;
+    if (etapa !== 'graduacion') {
+      acc[etapa as keyof CuratedGoalBank] = rest;
+    }
     return acc;
   }, {} as CuratedGoalBank);
 }
 
+export function buildCuratedGoalBankExtended(
+  stages: CuratedGoalStage[] = metasCuradasData
+): CuratedGoalBankExtended {
+  return stages.reduce<CuratedGoalBankExtended>((acc, stage) => {
+    const { etapa, ...rest } = stage;
+    if (etapa === 'longitudinal') {
+      // Mapear longitudinal a graduacion para el sistema extendido
+      acc['graduacion'] = rest;
+    } else {
+      acc[etapa as keyof CuratedGoalBankExtended] = rest;
+    }
+    return acc;
+  }, {} as CuratedGoalBankExtended);
+}
+
 export const curatedGoalBank = buildCuratedGoalBank();
+export const curatedGoalBankExtended = buildCuratedGoalBankExtended();

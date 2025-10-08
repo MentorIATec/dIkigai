@@ -40,6 +40,22 @@ export type SemesterStageKey =
   | 'especializacion'
   | 'longitudinal';
 
+export type SemesterStage = 'exploracion' | 'enfoque' | 'especializacion' | 'graduacion';
+
+export interface StudentProfile {
+  semesterNumber: number;
+  semesterStage: SemesterStage;
+  carreraId?: string;
+  carreraName?: string;
+  matricula_last4?: string | null;
+  matricula_hash?: string | null;
+  consent?: {
+    profile: boolean;
+    version: string;
+    acceptedAt: string;
+  };
+}
+
 export type CuratedGoal = {
   id: string;
   dimension: string;
@@ -49,7 +65,7 @@ export type CuratedGoal = {
 };
 
 export type CuratedGoalStage = {
-  etapa: SemesterStageKey;
+  etapa: SemesterStageKey | 'graduacion';
   titulo: string;
   descripcion: string;
   metas: CuratedGoal[];
@@ -60,28 +76,7 @@ export type CuratedGoalBank = Record<
   Omit<CuratedGoalStage, 'etapa'>
 >;
 
-export type DiagnosticFocusArea = {
-  dimension: string;
-  categoria: string;
-  label: string;
-};
-
-export type DiagnosticQuestion = {
-  key: string;
-  title: string;
-  options: string[];
-  focusAreas: DiagnosticFocusArea[];
-};
-
-export type StageDiagnosticTest = {
-  stage: Extract<SemesterStageKey, 'exploracion' | 'enfoque' | 'especializacion'>;
-  stageLabel: string;
-  title: string;
-  description: string;
-  questions: DiagnosticQuestion[];
-};
-
-export type StageDiagnosticTestBank = Record<
-  StageDiagnosticTest['stage'],
-  StageDiagnosticTest
+export type CuratedGoalBankExtended = Record<
+  SemesterStage,
+  Omit<CuratedGoalStage, 'etapa'>
 >;

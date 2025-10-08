@@ -35,8 +35,10 @@ import {
   LogOut,
   FilePlus2,
   BookMarked,
+  User,
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
+import { StudentAvatar } from '@/components/student-avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { setupMocksIfNeeded } from '@/mocks/enable-preview';
 import { TelemetryProvider, createMockTelemetry } from '@/hooks/use-telemetry';
@@ -65,10 +67,7 @@ function AppHeader({ displayName, displayEmail, onLogout }: AppHeaderProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-            <Avatar className="h-9 w-9">
-              {userAvatar && <AvatarImage src={userAvatar.imageUrl} alt={displayName} />}
-              <AvatarFallback>{displayName.slice(0, 2).toUpperCase()}</AvatarFallback>
-            </Avatar>
+            <StudentAvatar size="lg" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -78,6 +77,12 @@ function AppHeader({ displayName, displayEmail, onLogout }: AppHeaderProps) {
               <p className="text-xs leading-none text-muted-foreground">{displayEmail}</p>
             </div>
           </DropdownMenuLabel>
+          <DropdownMenuItem asChild>
+            <Link href="/profile">
+              <User className="mr-2 h-4 w-4" />
+              <span>Mi Perfil</span>
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <Settings className="mr-2 h-4 w-4" />
@@ -203,11 +208,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <SidebarMenuButton
                   asChild
                   isActive={isActive('/goal-bank')}
-                  tooltip="Generador de metas"
+                  tooltip="Asistente de Metas"
                 >
                   <Link href="/goal-bank">
                     <BookMarked />
-                    <span>Generador de metas</span>
+                    <span>Asistente de Metas</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -220,6 +225,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/goals/new">
                     <FilePlus2 />
                     <span>Nueva Meta</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/profile')}
+                  tooltip="Mi Perfil"
+                >
+                  <Link href="/profile">
+                    <User />
+                    <span>Mi Perfil</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
