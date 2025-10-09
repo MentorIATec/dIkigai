@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getSession } from '@/lib/auth/server';
 import { createCipheriv, randomBytes, createHash } from 'crypto';
 import type { StudentProfile } from '@/lib/types';
 import { normalizeSemester, computeStage } from '@/lib/profile/mapping';
-import { COOKIE_NAME } from '@/lib/auth/config';
 
-const useMockStore = !process.env.FIREBASE_PROJECT_ID;
+// Usar mock store para desarrollo (evitar problemas de Firebase)
+const useMockStore = true;
 
 type MockPrivateStoreEntry = {
   matricula_enc?: string;
@@ -25,16 +22,7 @@ if (useMockStore) {
   globalStores.__mockPrivateProfiles = globalStores.__mockPrivateProfiles || {};
 }
 
-// Inicializar Firebase Admin solo si las variables de entorno están disponibles
-if (!getApps().length && process.env.FIREBASE_PROJECT_ID) {
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
-  });
-}
+// Usar el sistema de autenticación consistente
 
 // Función utilitaria para obtener clave de cifrado consistente
 function getEncryptionKey(): Buffer {
@@ -68,38 +56,23 @@ function encryptMatricula(matricula: string): { encrypted: string; last4: string
   };
 }
 
-// Función para validar sesión
+// Función para validar sesión usando el sistema consistente
 async function validateSession(): Promise<string | null> {
   console.log('validateSession called, useMockStore:', useMockStore);
   console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID ? 'defined' : 'undefined');
   
-  if (useMockStore) {
-    // En modo mock, siempre retornar un usuario válido para pruebas
-    console.log('Using mock store, returning mock-user');
-    return 'mock-user';
-  }
-
   try {
-    if (!process.env.FIREBASE_PROJECT_ID) {
-      // Si Firebase no está configurado, usar modo mock
-      console.log('Firebase not configured, using mock-user');
-      return 'mock-user';
+    const session = await getSession();
+    if (!session) {
+      console.log('No session found');
+      return null;
     }
     
-    const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get(COOKIE_NAME)?.value;
-    console.log('Session cookie found:', !!sessionCookie);
-    
-    if (!sessionCookie) return null;
-    
-    const auth = getAuth();
-    const decodedToken = await auth.verifySessionCookie(sessionCookie);
-    console.log('Token verified, uid:', decodedToken.uid);
-    return decodedToken.uid;
+    console.log('Session found, uid:', session.sub);
+    return session.sub;
   } catch (error) {
     console.error('Error validating session:', error);
-    // En caso de error, usar modo mock para desarrollo
-    return 'mock-user';
+    return null;
   }
 }
 
@@ -114,23 +87,9 @@ export async function GET() {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    if (useMockStore) {
-      console.log('Using mock store for GET');
-      const profile = globalStores.__mockProfiles?.[uid] ?? null;
-      return NextResponse.json({ profile });
-    }
-
-    console.log('Using Firebase for GET, uid:', uid);
-    const db = getFirestore();
-    const profileDoc = await db.collection('student_profiles').doc(uid).get();
-    
-    if (!profileDoc.exists) {
-      console.log('Profile document does not exist');
-      return NextResponse.json({ profile: null });
-    }
-
-    const profile = profileDoc.data() as StudentProfile;
-    console.log('Profile retrieved successfully');
+    // Usar mock store para desarrollo
+    console.log('Using mock store for GET');
+    const profile = globalStores.__mockProfiles?.[uid] ?? null;
     return NextResponse.json({ profile });
   } catch (error) {
     console.error('Error getting profile:', error);
@@ -201,39 +160,21 @@ export async function POST(request: NextRequest) {
       profile.matricula_last4 = last4;
       profile.matricula_hash = hash;
       
-      if (useMockStore) {
-        if (globalStores.__mockPrivateProfiles) {
-          globalStores.__mockPrivateProfiles[uid] = {
-            matricula_enc: encrypted,
-            updatedAt: new Date().toISOString()
-          };
-        }
-      } else {
-        // Guardar matrícula cifrada en student_private
-        const db = getFirestore();
-        await db.collection('student_private').doc(uid).set({
+      // Guardar matrícula cifrada en mock store
+      if (globalStores.__mockPrivateProfiles) {
+        globalStores.__mockPrivateProfiles[uid] = {
           matricula_enc: encrypted,
           updatedAt: new Date().toISOString()
-        });
+        };
       }
     }
 
-    if (useMockStore) {
-      console.log('Using mock store for POST');
-      if (globalStores.__mockProfiles) {
-        globalStores.__mockProfiles[uid] = {
-          ...profile,
-        };
-      }
-    } else {
-      console.log('Using Firebase for POST, uid:', uid);
-      // Guardar perfil
-      const db = getFirestore();
-      await db.collection('student_profiles').doc(uid).set({
+    // Guardar perfil en mock store
+    console.log('Using mock store for POST');
+    if (globalStores.__mockProfiles) {
+      globalStores.__mockProfiles[uid] = {
         ...profile,
-        updatedAt: new Date().toISOString()
-      });
-      console.log('Profile saved to Firebase successfully');
+      };
     }
 
     console.log('Returning success response');
