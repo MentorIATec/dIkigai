@@ -21,6 +21,7 @@ export default function GoalBankPage(): JSX.Element {
   const flag = process.env.NEXT_PUBLIC_GOAL_GEN_V2;
   const [isInspirationOpen, setIsInspirationOpen] = useState(false);
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
+  const [currentStage, setCurrentStage] = useState<SemesterStage>('exploracion');
   const { toast } = useToast();
   const isEnabled =
     flag === undefined || flag === '1' || flag?.toLowerCase() === 'true' || flag?.toLowerCase() === 'enabled';
@@ -54,11 +55,11 @@ export default function GoalBankPage(): JSX.Element {
           Asistente de Metas
         </h1>
         <p className="mt-2 max-w-3xl text-sm sm:text-base text-muted-foreground">
-          Tu guía personalizada para definir metas académicas. Completa un diagnóstico rápido o explora nuestro catálogo de metas SMARTER.
+          Tu guía personalizada para definir metas académicas. Explora metas por dimensión del bienestar y alinéalas con tu etapa académica.
         </p>
       </div>
 
-      <Tabs defaultValue={defaultStage} className="space-y-4">
+      <Tabs defaultValue={defaultStage} className="space-y-4" onValueChange={(value) => setCurrentStage(value as SemesterStage)}>
         <TabsList className="flex w-full flex-wrap gap-1 bg-muted/40 p-1 rounded-lg">
           {curatedGoalStages.map((stage) => (
             <TabsTrigger
@@ -76,6 +77,41 @@ export default function GoalBankPage(): JSX.Element {
             {/* Layout de una sola columna */}
             <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
               
+              {/* Banner especial para 1er semestre con IBI y tutorial */}
+              {stage.etapa === 'exploracion' && (
+                <Card className="bg-gradient-to-br from-green-50/80 to-emerald-100/60 border-green-200/60 animate-fade-in-down">
+                  <CardHeader className="pb-4 sm:pb-6 px-4 sm:px-6">
+                    <CardTitle className="text-xl sm:text-2xl font-bold text-green-900 mb-2 flex items-center gap-2">
+                      <Sparkles className="h-5 w-5" />
+                      ¡Bienvenido/a a tu primer semestre!
+                    </CardTitle>
+                    <CardDescription className="text-base sm:text-lg leading-6 text-green-800">
+                      <strong>Para 1er semestre:</strong> Ya tienes tu <strong>Índice de Bienestar Integral (IBI)</strong> completado. 
+                      Usa esos resultados para crear metas alineadas a tus necesidades de bienestar.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3 px-4 sm:px-6">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button asChild variant="default" className="flex-1 bg-green-600 hover:bg-green-700">
+                        <a href="https://samp.itesm.mx/Preparatoria/MiVidaTec" target="_blank" rel="noopener noreferrer">
+                          <Target className="mr-2 h-4 w-4" />
+                          Ver mi IBI (Índice de Bienestar)
+                        </a>
+                      </Button>
+                      <Button asChild variant="outline" className="flex-1">
+                        <a href="https://drive.google.com/file/d/18kojUabG2z00cgmQXGU_6zLGmAL3weE9/view" target="_blank" rel="noopener noreferrer">
+                          <FileText className="mr-2 h-4 w-4" />
+                          Tutorial: Cómo actualizar metas
+                        </a>
+                      </Button>
+                    </div>
+                    <p className="text-xs text-green-700 text-center">
+                      💡 Flujo recomendado: Consulta tu IBI → Crea metas alineadas → Actualiza en Mi Plan de Vida
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Hero Section - Descripción de la etapa */}
               <Card className="bg-gradient-to-br from-blue-50/80 to-indigo-100/60 border-blue-200/60 animate-fade-in-down">
                 <CardHeader className="text-center pb-4 sm:pb-6 px-4 sm:px-6">
@@ -87,6 +123,52 @@ export default function GoalBankPage(): JSX.Element {
                   </CardDescription>
                 </CardHeader>
               </Card>
+
+              {/* Panel informativo específico por semestre */}
+              {stage.etapa === 'enfoque' && (
+                <Card className="bg-gradient-to-br from-amber-50/80 to-yellow-100/60 border-amber-200/60">
+                  <CardContent className="p-4 sm:p-6">
+                    <h3 className="text-lg font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                      <Target className="h-5 w-5" />
+                      Etapa de Enfoque
+                    </h3>
+                    <p className="text-sm text-amber-800">
+                      En esta etapa, profundiza en tus habilidades técnicas y define tu camino profesional. 
+                      Enfócate en proyectos que construyan tu portafolio y en hacer networking relevante.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+              
+              {stage.etapa === 'especializacion' && (
+                <Card className="bg-gradient-to-br from-purple-50/80 to-violet-100/60 border-purple-200/60">
+                  <CardContent className="p-4 sm:p-6">
+                    <h3 className="text-lg font-semibold text-purple-900 mb-2 flex items-center gap-2">
+                      <Target className="h-5 w-5" />
+                      Etapa de Especialización
+                    </h3>
+                    <p className="text-sm text-purple-800">
+                      Momento de proyectos de alto impacto y preparación para el mercado laboral. 
+                      Optimiza tu CV, practica entrevistas y finaliza tu proyecto de titulación.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+              
+              {stage.etapa === 'graduacion' && (
+                <Card className="bg-gradient-to-br from-rose-50/80 to-pink-100/60 border-rose-200/60">
+                  <CardContent className="p-4 sm:p-6">
+                    <h3 className="text-lg font-semibold text-rose-900 mb-2 flex items-center gap-2">
+                      <Target className="h-5 w-5" />
+                      Etapa de Graduación
+                    </h3>
+                    <p className="text-sm text-rose-800">
+                      ¡Última recta! Enfócate en completar tu tesis/proyecto final, aplicar a posiciones y 
+                      prepararte para la transición al mundo profesional. Gestiona tu tiempo sabiamente.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Action Center - Botones principales */}
               <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -156,7 +238,7 @@ export default function GoalBankPage(): JSX.Element {
       <FullscreenInspirationOverlay
         isOpen={isInspirationOpen}
         onClose={() => setIsInspirationOpen(false)}
-        stageTitle={curatedGoalStages.find(stage => stage.etapa === defaultStage)?.titulo || 'Exploración'}
+        stageTitle={curatedGoalStages.find(stage => stage.etapa === currentStage)?.titulo || 'Exploración'}
         onGenerateGoal={(dimension) => {
           console.log('Generando meta para dimensión:', dimension);
           // TODO: Implementar lógica de generación
@@ -166,8 +248,8 @@ export default function GoalBankPage(): JSX.Element {
       <FullscreenCatalogOverlay
         isOpen={isCatalogOpen}
         onClose={() => setIsCatalogOpen(false)}
-        goals={curatedGoalStages.find(stage => stage.etapa === defaultStage)?.metas || []}
-        stageTitle={curatedGoalStages.find(stage => stage.etapa === defaultStage)?.titulo || 'Exploración'}
+        goals={curatedGoalStages.find(stage => stage.etapa === currentStage)?.metas || []}
+        stageTitle={curatedGoalStages.find(stage => stage.etapa === currentStage)?.titulo || 'Exploración'}
         onSelectGoal={(goal) => {
           handleGoalSelected(goal);
           setIsCatalogOpen(false);

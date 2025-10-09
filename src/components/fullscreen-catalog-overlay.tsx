@@ -38,14 +38,12 @@ function getActionSteps(pasosAccion: string): string[] {
 export function FullscreenCatalogOverlay({ isOpen, onClose, goals, stageTitle, onSelectGoal }: FullscreenCatalogOverlayProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDimension, setSelectedDimension] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [savingGoalId, setSavingGoalId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Extraer dimensiones y categorías únicas
-  const dimensions = useMemo(() => Array.from(new Set(goals.map(g => g.dimension))), [goals]);
-  const categories = useMemo(() => Array.from(new Set(goals.map(g => g.categoria))), [goals]);
+  // Extraer dimensiones únicas
+  const dimensions = useMemo(() => Array.from(new Set(goals.map(g => g.dimension))).sort(), [goals]);
 
   // Filtrar metas
   const filteredGoals = useMemo(() => {
@@ -58,17 +56,13 @@ export function FullscreenCatalogOverlay({ isOpen, onClose, goals, stageTitle, o
       // Filtro de dimensión
       const matchesDimension = !selectedDimension || goal.dimension === selectedDimension;
       
-      // Filtro de categoría
-      const matchesCategory = !selectedCategory || goal.categoria === selectedCategory;
-      
-      return matchesSearch && matchesDimension && matchesCategory;
+      return matchesSearch && matchesDimension;
     });
-  }, [goals, searchTerm, selectedDimension, selectedCategory]);
+  }, [goals, searchTerm, selectedDimension]);
 
   const handleResetFilters = () => {
     setSearchTerm('');
     setSelectedDimension(null);
-    setSelectedCategory(null);
   };
 
   const handleSelectGoal = async (goal: CuratedGoal) => {
@@ -120,8 +114,8 @@ export function FullscreenCatalogOverlay({ isOpen, onClose, goals, stageTitle, o
                   <Target className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-green-900">Catálogo Completo</h2>
-                  <p className="text-green-700">{stageTitle} - {filteredGoals.length} de {goals.length} metas</p>
+                  <h2 className="text-2xl font-bold text-green-900">Catálogo de Metas</h2>
+                  <p className="text-green-700">{stageTitle} - {filteredGoals.length} metas disponibles</p>
                 </div>
               </div>
               <Button variant="ghost" size="sm" onClick={onClose}>
@@ -145,14 +139,14 @@ export function FullscreenCatalogOverlay({ isOpen, onClose, goals, stageTitle, o
               <div className="flex flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium text-muted-foreground">Dimensión:</span>
+                  <span className="text-sm font-medium text-muted-foreground">Dimensión del Bienestar:</span>
                 </div>
                 <Button
                   variant={selectedDimension === null ? "secondary" : "outline"}
                   size="sm"
                   onClick={() => setSelectedDimension(null)}
                 >
-                  Todas
+                  Todas las dimensiones
                 </Button>
                 {dimensions.map((dimension) => (
                   <Button
@@ -166,31 +160,7 @@ export function FullscreenCatalogOverlay({ isOpen, onClose, goals, stageTitle, o
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-muted-foreground">Categoría:</span>
-                </div>
-                <Button
-                  variant={selectedCategory === null ? "secondary" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedCategory(null)}
-                >
-                  Todas
-                </Button>
-                {categories.map((category) => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? "secondary" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedCategory(category)}
-                    className="capitalize"
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
-
-              {(searchTerm || selectedDimension || selectedCategory) && (
+              {(searchTerm || selectedDimension) && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -207,21 +177,11 @@ export function FullscreenCatalogOverlay({ isOpen, onClose, goals, stageTitle, o
           <div className="px-6 py-4 border-b bg-gray-50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{filteredGoals.length}</div>
-                  <div className="text-sm text-blue-700">Metas mostradas</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">
-                    {new Set(filteredGoals.map(g => g.dimension)).size}
-                  </div>
-                  <div className="text-sm text-green-700">Dimensiones</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">
-                    {new Set(filteredGoals.map(g => g.categoria)).size}
-                  </div>
-                  <div className="text-sm text-purple-700">Categorías</div>
+                <div className="text-sm text-muted-foreground">
+                  {filteredGoals.length === 0 && 'No se encontraron metas con los filtros seleccionados'}
+                  {filteredGoals.length === 1 && 'Mostrando 1 meta'}
+                  {filteredGoals.length > 1 && `Mostrando ${filteredGoals.length} metas`}
+                  {selectedDimension && ` en la dimensión ${selectedDimension}`}
                 </div>
               </div>
               <div className="flex items-center gap-2">
