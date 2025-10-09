@@ -14,6 +14,7 @@ import { BrujulaTest } from '@/components/brújula-test';
 import { FirstSemesterMini } from '@/components/async-first-semester-mini';
 import { CompactRecommendations } from '@/components/async-compact-recommendations';
 import { FilteredCatalog } from '@/components/async-filtered-catalog';
+import { MinimalInspirationSidebar } from '@/components/minimal-inspiration-sidebar';
 import { curatedGoalBankExtended } from '@/lib/curated-goals';
 import type { SemesterStage } from '@/lib/types';
 import type { DiagnosticAnswer, DiagnosticResult } from '@/lib/types.goal-templates';
@@ -177,90 +178,14 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
           />
         </div>
         
-        {/* Columna derecha: Tabs */}
+        {/* Columna derecha: Sidebar minimalista */}
         <div>
-          <Tabs value={rightTab} onValueChange={(value) => setRightTab(value as RightTab)} className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="results">Inspiración</TabsTrigger>
-              <TabsTrigger value="catalog">Catálogo</TabsTrigger>
-              <TabsTrigger value="explore">Explorar</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="results" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="font-headline flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-purple-600" />
-                    Tu inspiración
-                  </CardTitle>
-                  <CardDescription>
-                    Metas sugeridas basadas en tu etapa de exploración
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-8">
-                    <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground mb-4">
-                      Usa el mini asistente para generar metas personalizadas
-                    </p>
-                    <Button onClick={handleGenerateGoal} variant="outline">
-                      <Sparkles className="mr-2 h-4 w-4" />
-                      Generar inspiración
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="catalog" className="space-y-4">
-              <FilteredCatalog
-                stage={stage}
-                recommendedGoalIds={[]}
-                onGenerateGoal={handleGenerateGoal}
-                onOpenTemplate={handleOpenTemplate}
-              />
-            </TabsContent>
-            
-            <TabsContent value="explore" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="font-headline">Explorar más</CardTitle>
-                  <CardDescription>
-                    Otras opciones para definir tus metas
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid gap-3">
-                    <Button asChild variant="outline" className="h-auto p-4">
-                      <Link href="/goals/new">
-                        <Target className="mr-2 h-4 w-4" />
-                        <div className="text-left">
-                          <div className="font-medium">Crear meta nueva</div>
-                          <div className="text-xs text-muted-foreground">
-                            Desde cero con plantilla
-                          </div>
-                        </div>
-                        <ArrowRight className="ml-auto h-4 w-4" />
-                      </Link>
-                    </Button>
-                    
-                    <Button asChild className="h-auto p-4">
-                      <Link href="/goals">
-                        <Target className="mr-2 h-4 w-4" />
-                        <div className="text-left">
-                          <div className="font-medium">Ver mis metas</div>
-                          <div className="text-xs text-muted-foreground">
-                            Gestionar metas existentes
-                          </div>
-                        </div>
-                        <ArrowRight className="ml-auto h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          <MinimalInspirationSidebar
+            stage={getStageLabel(stage)}
+            onGenerateGoal={handleGenerateGoal}
+            hasCompletedDiagnostic={hasCompletedDiagnostic}
+            recommendedGoalIds={recommendedGoalIds}
+          />
         </div>
       </div>
     );
@@ -349,75 +274,14 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
         )}
       </div>
       
-      {/* Columna derecha: Tabs con resultados */}
+      {/* Columna derecha: Sidebar minimalista */}
       <div>
-        <Tabs value={rightTab} onValueChange={(value) => setRightTab(value as RightTab)} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3 bg-muted/50">
-            <TabsTrigger value="results" className="text-sm">Inspiración</TabsTrigger>
-            <TabsTrigger value="catalog" className="text-sm">Catálogo</TabsTrigger>
-            <TabsTrigger value="explore" className="text-sm">Explorar</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="results" className="space-y-4">
-            <CompactRecommendations
-              recommendedGoalIds={recommendedGoalIds}
-              stage={stage}
-              onRetakeTest={() => setViewMode('brújula')}
-              onViewCatalog={() => setRightTab('catalog')}
-              onViewFullCatalog={() => setShowFullCatalogModal(true)}
-              error={error}
-            />
-          </TabsContent>
-          
-          <TabsContent value="catalog" className="space-y-4">
-            <FilteredCatalog
-              stage={stage}
-              recommendedGoalIds={recommendedGoalIds}
-              onGenerateGoal={handleGenerateGoal}
-              onOpenTemplate={handleOpenTemplate}
-            />
-          </TabsContent>
-          
-          <TabsContent value="explore" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-headline">Explorar más</CardTitle>
-                <CardDescription>
-                  Otras opciones para definir tus metas
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-3">
-                  <Button asChild variant="outline" className="h-auto p-4">
-                    <Link href="/goals/new">
-                      <Target className="mr-2 h-4 w-4" />
-                      <div className="text-left">
-                        <div className="font-medium">Crear meta nueva</div>
-                        <div className="text-xs text-muted-foreground">
-                          Desde cero con plantilla
-                        </div>
-                      </div>
-                      <ArrowRight className="ml-auto h-4 w-4" />
-                    </Link>
-                  </Button>
-                  
-                  <Button asChild className="h-auto p-4">
-                    <Link href="/goals">
-                      <Target className="mr-2 h-4 w-4" />
-                      <div className="text-left">
-                        <div className="font-medium">Ver mis metas</div>
-                        <div className="text-xs text-muted-foreground">
-                          Gestionar metas existentes
-                        </div>
-                      </div>
-                      <ArrowRight className="ml-auto h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        <MinimalInspirationSidebar
+          stage={getStageLabel(stage)}
+          onGenerateGoal={handleGenerateGoal}
+          hasCompletedDiagnostic={hasCompletedDiagnostic}
+          recommendedGoalIds={recommendedGoalIds}
+        />
       </div>
 
       {/* Modal del catálogo completo */}
