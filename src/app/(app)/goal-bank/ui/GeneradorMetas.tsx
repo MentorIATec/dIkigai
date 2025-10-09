@@ -352,10 +352,10 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
       {/* Columna derecha: Tabs con resultados */}
       <div>
         <Tabs value={rightTab} onValueChange={(value) => setRightTab(value as RightTab)} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="results">Resultados</TabsTrigger>
-            <TabsTrigger value="catalog">Catálogo</TabsTrigger>
-            <TabsTrigger value="explore">Explorar</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 bg-muted/50">
+            <TabsTrigger value="results" className="text-sm">Inspiración</TabsTrigger>
+            <TabsTrigger value="catalog" className="text-sm">Catálogo</TabsTrigger>
+            <TabsTrigger value="explore" className="text-sm">Explorar</TabsTrigger>
           </TabsList>
           
           <TabsContent value="results" className="space-y-4">

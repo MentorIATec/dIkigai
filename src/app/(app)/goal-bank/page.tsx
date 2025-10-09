@@ -40,12 +40,12 @@ export default function GoalBankPage(): JSX.Element {
       </div>
 
       <Tabs defaultValue={defaultStage} className="space-y-4">
-        <TabsList className="flex w-full flex-wrap gap-2 bg-muted/60 p-1">
+        <TabsList className="flex w-full flex-wrap gap-1 bg-muted/40 p-1 rounded-lg">
           {curatedGoalStages.map((stage) => (
             <TabsTrigger
               key={stage.etapa}
               value={stage.etapa}
-              className="flex-1 whitespace-normal px-4 py-2 text-center text-sm font-medium sm:flex-none sm:px-6"
+              className="flex-1 whitespace-normal px-3 py-2.5 text-center text-sm font-medium transition-all sm:flex-none sm:px-4 data-[state=active]:bg-background data-[state=active]:shadow-sm"
             >
               {stage.titulo}
             </TabsTrigger>
@@ -54,13 +54,10 @@ export default function GoalBankPage(): JSX.Element {
 
         {curatedGoalStages.map((stage) => (
           <TabsContent key={stage.etapa} value={stage.etapa} className="space-y-6">
-            <div className="grid gap-6 lg:grid-cols-3">
-              <div className="lg:col-span-2">
+            <div className="grid gap-6 xl:grid-cols-3">
+              <div className="xl:col-span-2">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="font-headline text-2xl">
-                      {stage.titulo}
-                    </CardTitle>
                     <CardDescription className="text-base leading-7">
                       {renderWithEmphasis(stage.descripcion)}
                     </CardDescription>
@@ -69,35 +66,49 @@ export default function GoalBankPage(): JSX.Element {
                     {stage.metas.map((meta) => (
                       <article
                         key={meta.id}
-                        className="rounded-lg border bg-card/60 p-5 shadow-sm transition hover:border-primary/50 hover:shadow-md"
+                        className="group rounded-xl border bg-gradient-to-br from-card/80 to-card/40 p-6 shadow-sm transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
                       >
-                        <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                           <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="secondary">{meta.dimension}</Badge>
-                            <Badge variant="outline" className="capitalize">
+                            <Badge variant="secondary" className="text-xs font-medium">
+                              {meta.dimension}
+                            </Badge>
+                            <Badge variant="outline" className="capitalize text-xs">
                               {meta.categoria}
                             </Badge>
                           </div>
-                          <span className="text-xs font-mono uppercase tracking-wide text-muted-foreground">
+                          <span className="text-xs font-mono uppercase tracking-wide text-muted-foreground/70">
                             {meta.id}
                           </span>
                         </div>
 
-                        <p className="mt-3 text-base leading-7">
-                          {renderWithEmphasis(meta.metaSmarter)}
-                        </p>
+                        <div className="space-y-3">
+                          <h3 className="text-lg font-semibold leading-6 text-foreground">
+                            {renderWithEmphasis(meta.metaSmarter)}
+                          </h3>
+                        </div>
 
-                        <div className="mt-4">
-                          <p className="text-sm font-semibold text-muted-foreground">
-                            Pasos sugeridos
-                          </p>
-                          <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-6 text-muted-foreground">
+                        <div className="mt-4 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-semibold text-muted-foreground">
+                              Pasos sugeridos
+                            </p>
+                            <Button size="sm" variant="outline" className="h-8 text-xs">
+                              Seleccionar meta
+                            </Button>
+                          </div>
+                          <div className="space-y-2">
                             {getActionSteps(meta.pasosAccion).map((step, index) => (
-                              <li key={`${meta.id}-step-${index}`}>
-                                {renderWithEmphasis(step)}
-                              </li>
+                              <div key={`${meta.id}-step-${index}`} className="flex items-start gap-3 p-2 rounded-md bg-muted/30">
+                                <div className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                                  <span className="text-xs font-medium text-primary">{index + 1}</span>
+                                </div>
+                                <p className="text-sm leading-5 text-muted-foreground">
+                                  {renderWithEmphasis(step)}
+                                </p>
+                              </div>
                             ))}
-                          </ul>
+                          </div>
                         </div>
                       </article>
                     ))}
@@ -105,7 +116,7 @@ export default function GoalBankPage(): JSX.Element {
                 </Card>
               </div>
               
-              <div className="lg:col-span-1">
+              <div className="xl:col-span-1">
                 <Suspense fallback={<div>Cargando generador...</div>}>
                   <GeneradorMetas 
                     stage={stage.etapa === 'longitudinal' ? 'graduacion' : stage.etapa as SemesterStage} 
