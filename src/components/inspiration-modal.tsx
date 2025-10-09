@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Heart, Brain, Activity, DollarSign, Users, Dove, Briefcase, RefreshCw, Target } from 'lucide-react';
+import { Sparkles, Heart, Brain, Activity, DollarSign, Users, Bird, Briefcase, RefreshCw, Target } from 'lucide-react';
 
 interface InspirationModalProps {
   isOpen: boolean;
@@ -20,7 +20,7 @@ const wellBeingDimensions = [
   { id: 'fisica', label: 'Física', icon: Activity, color: 'text-yellow-500', bgColor: 'bg-yellow-50' },
   { id: 'financiera', label: 'Financiera', icon: DollarSign, color: 'text-green-500', bgColor: 'bg-green-50' },
   { id: 'social', label: 'Social', icon: Users, color: 'text-blue-500', bgColor: 'bg-blue-50' },
-  { id: 'espiritual', label: 'Espiritual', icon: Dove, color: 'text-purple-500', bgColor: 'bg-purple-50' },
+  { id: 'espiritual', label: 'Espiritual', icon: Bird, color: 'text-purple-500', bgColor: 'bg-purple-50' },
   { id: 'ocupacional', label: 'Ocupacional', icon: Briefcase, color: 'text-orange-500', bgColor: 'bg-orange-50' },
 ];
 
