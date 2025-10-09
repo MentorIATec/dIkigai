@@ -28,51 +28,90 @@ const dimensions = [
 export function FullscreenInspirationOverlay({ isOpen, onClose, stageTitle, onGenerateGoal }: FullscreenInspirationOverlayProps) {
   const [selectedDimension, setSelectedDimension] = useState<string | null>(null);
   const [step, setStep] = useState<'select' | 'customize' | 'results'>('select');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedGoal, setGeneratedGoal] = useState<CuratedGoal | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleDimensionSelect = (dimension: string) => {
     setSelectedDimension(dimension);
+    setError(null);
     setStep('customize');
   };
 
-  const handleGenerate = () => {
-    if (selectedDimension) {
+  const handleGenerate = async () => {
+    if (!selectedDimension) return;
+    
+    setIsGenerating(true);
+    setError(null);
+    
+    try {
+      const response = await fetch('/api/goals/generate-inspiration', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          dimension: selectedDimension,
+          stage: 'exploracion', // TODO: Obtener la etapa actual del usuario
+          context: `Dimensión del bienestar: ${selectedDimension}`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error generando inspiración');
+      }
+
+      const data = await response.json();
+      setGeneratedGoal(data.goal);
       onGenerateGoal(selectedDimension);
       setStep('results');
+    } catch (err) {
+      console.error('Error generando inspiración:', err);
+      setError('Hubo un error al generar la inspiración. Por favor, intenta nuevamente.');
+    } finally {
+      setIsGenerating(false);
     }
   };
 
   const handleReset = () => {
     setSelectedDimension(null);
+    setGeneratedGoal(null);
+    setError(null);
     setStep('select');
   };
 
+  const handleClose = () => {
+    handleReset();
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden p-0">
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden p-0 w-[95vw] sm:w-full">
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-purple-50 to-pink-50">
-            <div>
-              <h2 className="text-2xl font-bold text-purple-900">Generador de Inspiración</h2>
-              <p className="text-purple-700 mt-1">Crea metas personalizadas para tu etapa de {stageTitle}</p>
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b bg-gradient-to-r from-purple-50 to-pink-50">
+            <div className="flex-1 min-w-0 pr-4">
+              <h2 className="text-xl sm:text-2xl font-bold text-purple-900 truncate">Generador de Inspiración</h2>
+              <p className="text-sm sm:text-base text-purple-700 mt-1">Crea metas personalizadas para tu etapa de {stageTitle}</p>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose}>
+            <Button variant="ghost" size="sm" onClick={handleClose} className="flex-shrink-0">
               <X className="h-5 w-5" />
             </Button>
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
             {step === 'select' && (
               <div className="max-w-4xl mx-auto">
-                <div className="text-center mb-8">
-                  <h3 className="text-3xl font-bold mb-4">¿En qué dimensión del bienestar te gustaría enfocarte?</h3>
-                  <p className="text-lg text-muted-foreground">
+                <div className="text-center mb-6 sm:mb-8">
+                  <h3 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">¿En qué dimensión del bienestar te gustaría enfocarte?</h3>
+                  <p className="text-base sm:text-lg text-muted-foreground">
                     Selecciona una dimensión para recibir metas personalizadas específicas para esa área
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                   {dimensions.map((dimension) => {
                     const IconComponent = dimension.icon;
                     return (
@@ -134,22 +173,32 @@ export function FullscreenInspirationOverlay({ isOpen, onClose, stageTitle, onGe
                       </div>
                       
                       <div className="flex gap-4 justify-center">
-                        <Button variant="outline" onClick={handleReset}>
+                        <Button variant="outline" onClick={handleReset} disabled={isGenerating}>
                           <ArrowRight className="mr-2 h-4 w-4 rotate-180" />
                           Cambiar dimensión
                         </Button>
-                        <Button onClick={handleGenerate} className="bg-purple-600 hover:bg-purple-700">
-                          <Sparkles className="mr-2 h-4 w-4" />
-                          Generar Inspiración
+                        <Button 
+                          onClick={handleGenerate} 
+                          className="bg-purple-600 hover:bg-purple-700"
+                          disabled={isGenerating}
+                        >
+                          <Sparkles className={`mr-2 h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`} />
+                          {isGenerating ? 'Generando...' : 'Generar Inspiración'}
                         </Button>
                       </div>
+                      
+                      {error && (
+                        <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200">
+                          <p className="text-sm text-red-800">{error}</p>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
               </div>
             )}
 
-            {step === 'results' && (
+            {step === 'results' && generatedGoal && (
               <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-8">
                   <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
@@ -157,23 +206,57 @@ export function FullscreenInspirationOverlay({ isOpen, onClose, stageTitle, onGe
                   </div>
                   <h3 className="text-3xl font-bold mb-4">¡Inspiración Generada!</h3>
                   <p className="text-lg text-muted-foreground">
-                    Hemos creado metas personalizadas para tu dimensión {dimensions.find(d => d.id === selectedDimension)?.label}
+                    Hemos creado una meta personalizada para tu dimensión {dimensions.find(d => d.id === selectedDimension)?.label}
                   </p>
                 </div>
 
                 <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
                   <CardContent className="p-8">
-                    <div className="text-center space-y-6">
-                      <p className="text-lg">
-                        Tu inspiración personalizada está lista. Las metas han sido generadas basándose en tu etapa académica y la dimensión seleccionada.
-                      </p>
+                    <div className="space-y-6">
+                      {/* Meta generada */}
+                      <div className="bg-white rounded-lg p-6 shadow-sm">
+                        <div className="flex items-center gap-2 mb-4">
+                          <Badge variant="secondary" className="text-sm font-medium">
+                            {generatedGoal.dimension}
+                          </Badge>
+                          <Badge variant="outline" className="capitalize text-sm">
+                            {generatedGoal.categoria}
+                          </Badge>
+                          <Badge className="bg-green-600 text-white">
+                            <Sparkles className="mr-1 h-3 w-3" />
+                            Generada con AI
+                          </Badge>
+                        </div>
+
+                        <h4 className="text-xl font-semibold mb-4 text-foreground">
+                          {generatedGoal.metaSmarter}
+                        </h4>
+
+                        <div className="space-y-3">
+                          <p className="text-sm font-medium text-muted-foreground">Pasos de acción sugeridos:</p>
+                          <div className="space-y-2">
+                            {generatedGoal.pasosAccion.split('\n').filter(Boolean).map((step, index) => (
+                              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-green-50">
+                                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-600 flex items-center justify-center mt-0.5">
+                                  <span className="text-xs font-medium text-white">{index + 1}</span>
+                                </div>
+                                <p className="text-sm leading-5 text-foreground">
+                                  {step.trim()}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                       
                       <div className="flex gap-4 justify-center">
                         <Button variant="outline" onClick={handleReset}>
+                          <Sparkles className="mr-2 h-4 w-4" />
                           Generar otra inspiración
                         </Button>
-                        <Button onClick={onClose} className="bg-green-600 hover:bg-green-700">
-                          Ver mis metas
+                        <Button onClick={handleClose} className="bg-green-600 hover:bg-green-700">
+                          <CheckCircle className="mr-2 h-4 w-4" />
+                          Cerrar
                         </Button>
                       </div>
                     </div>

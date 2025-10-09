@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 import { Target, Sparkles, ArrowRight, Eye } from 'lucide-react';
 import { FullCatalogModal } from './full-catalog-modal';
 import type { CuratedGoal } from '@/lib/types';
@@ -33,10 +34,49 @@ function getActionSteps(pasosAccion: string): string[] {
 
 export function FeaturedGoalsPreview({ goals, stageTitle, onSelectGoal }: FeaturedGoalsPreviewProps) {
   const [isFullCatalogOpen, setIsFullCatalogOpen] = useState(false);
+  const [savingGoalId, setSavingGoalId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Mostrar solo las primeras 3 metas como destacadas
   const featuredGoals = goals.slice(0, 3);
   const remainingCount = goals.length - 3;
+
+  const handleSelectGoal = async (goal: CuratedGoal) => {
+    setSavingGoalId(goal.id);
+    
+    try {
+      const response = await fetch('/api/goals/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ goal }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error guardando meta');
+      }
+
+      // Llamar al callback del parent
+      onSelectGoal(goal);
+      
+      toast({
+        title: '¡Meta guardada!',
+        description: 'La meta ha sido agregada a tu plan de vida exitosamente.',
+        duration: 4000,
+      });
+    } catch (error) {
+      console.error('Error guardando meta:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudo guardar la meta. Por favor, intenta nuevamente.',
+        variant: 'destructive',
+        duration: 4000,
+      });
+    } finally {
+      setSavingGoalId(null);
+    }
+  };
 
   return (
     <>
@@ -108,11 +148,12 @@ export function FeaturedGoalsPreview({ goals, stageTitle, onSelectGoal }: Featur
 
                 <Button 
                   size="sm"
-                  onClick={() => onSelectGoal(meta)}
+                  onClick={() => handleSelectGoal(meta)}
+                  disabled={savingGoalId === meta.id}
                   className="flex-shrink-0"
                 >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Seleccionar
+                  <Sparkles className={`mr-2 h-4 w-4 ${savingGoalId === meta.id ? 'animate-spin' : ''}`} />
+                  {savingGoalId === meta.id ? 'Guardando...' : 'Seleccionar'}
                 </Button>
               </div>
             </div>

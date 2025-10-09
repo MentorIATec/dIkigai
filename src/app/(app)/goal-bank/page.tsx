@@ -10,6 +10,7 @@ import { FeaturedGoalsPreview } from '@/components/featured-goals-preview';
 import { FullscreenInspirationOverlay } from '@/components/fullscreen-inspiration-overlay';
 import { FullscreenCatalogOverlay } from '@/components/fullscreen-catalog-overlay';
 import { Sparkles, Target, FileText } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import type { CuratedGoal, SemesterStage } from '@/lib/types';
 import type { ReactNode } from 'react';
 import { Suspense, useState } from 'react';
@@ -20,10 +21,19 @@ export default function GoalBankPage(): JSX.Element {
   const flag = process.env.NEXT_PUBLIC_GOAL_GEN_V2;
   const [isInspirationOpen, setIsInspirationOpen] = useState(false);
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
+  const { toast } = useToast();
   const isEnabled =
     flag === undefined || flag === '1' || flag?.toLowerCase() === 'true' || flag?.toLowerCase() === 'enabled';
   
   const defaultStage = curatedGoalStages[0]?.etapa || 'exploracion';
+
+  const handleGoalSelected = (goal: CuratedGoal) => {
+    toast({
+      title: '¡Meta guardada!',
+      description: 'La meta ha sido agregada a tu plan de vida exitosamente.',
+      duration: 4000,
+    });
+  };
 
   if (!isEnabled) {
     return (
@@ -38,12 +48,12 @@ export default function GoalBankPage(): JSX.Element {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
       <div>
-        <h1 className="text-3xl font-bold font-headline tracking-tight">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-headline tracking-tight">
           Asistente de Metas
         </h1>
-        <p className="mt-2 max-w-3xl text-muted-foreground">
+        <p className="mt-2 max-w-3xl text-sm sm:text-base text-muted-foreground">
           Tu guía personalizada para definir metas académicas. Completa un diagnóstico rápido o explora nuestro catálogo de metas SMARTER.
         </p>
       </div>
@@ -62,34 +72,34 @@ export default function GoalBankPage(): JSX.Element {
         </TabsList>
 
         {curatedGoalStages.map((stage) => (
-          <TabsContent key={stage.etapa} value={stage.etapa} className="space-y-8">
+          <TabsContent key={stage.etapa} value={stage.etapa} className="space-y-6 sm:space-y-8">
             {/* Layout de una sola columna */}
-            <div className="max-w-4xl mx-auto space-y-8">
+            <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
               
               {/* Hero Section - Descripción de la etapa */}
-              <Card className="bg-gradient-to-br from-blue-50/80 to-indigo-100/60 border-blue-200/60">
-                <CardHeader className="text-center pb-6">
-                  <CardTitle className="text-3xl font-bold text-blue-900 mb-4">
+              <Card className="bg-gradient-to-br from-blue-50/80 to-indigo-100/60 border-blue-200/60 animate-fade-in-down">
+                <CardHeader className="text-center pb-4 sm:pb-6 px-4 sm:px-6">
+                  <CardTitle className="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-900 mb-3 sm:mb-4">
                     {stage.titulo}
                   </CardTitle>
-                  <CardDescription className="text-lg leading-8 text-blue-800 max-w-3xl mx-auto">
+                  <CardDescription className="text-base sm:text-lg leading-6 sm:leading-8 text-blue-800 max-w-3xl mx-auto">
                     {renderWithEmphasis(stage.descripcion)}
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               {/* Action Center - Botones principales */}
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 <Card 
-                  className="group hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200"
+                  className="group hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 animate-fade-in-up animation-delay-100"
                   onClick={() => setIsInspirationOpen(true)}
                 >
-                  <CardContent className="p-8 text-center">
+                  <CardContent className="p-6 sm:p-8 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
                       <Sparkles className="h-8 w-8 text-purple-600" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2 text-purple-900">Generar Inspiración</h3>
-                    <p className="text-purple-700 mb-4">Recibe metas personalizadas basadas en tus necesidades específicas</p>
+                    <h3 className="text-lg sm:text-xl font-semibold mb-2 text-purple-900">Generar Inspiración</h3>
+                    <p className="text-sm sm:text-base text-purple-700 mb-4">Recibe metas personalizadas basadas en tus necesidades específicas</p>
                     <Button className="w-full bg-purple-600 hover:bg-purple-700">
                       <Sparkles className="mr-2 h-4 w-4" />
                       Comenzar
@@ -98,15 +108,15 @@ export default function GoalBankPage(): JSX.Element {
                 </Card>
 
                 <Card 
-                  className="group hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer bg-gradient-to-br from-green-50 to-emerald-50 border-green-200"
+                  className="group hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 animate-fade-in-up animation-delay-200"
                   onClick={() => setIsCatalogOpen(true)}
                 >
-                  <CardContent className="p-8 text-center">
+                  <CardContent className="p-6 sm:p-8 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors">
                       <Target className="h-8 w-8 text-green-600" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2 text-green-900">Explorar Catálogo</h3>
-                    <p className="text-green-700 mb-4">Descubre todas las metas disponibles para tu etapa académica</p>
+                    <h3 className="text-lg sm:text-xl font-semibold mb-2 text-green-900">Explorar Catálogo</h3>
+                    <p className="text-sm sm:text-base text-green-700 mb-4">Descubre todas las metas disponibles para tu etapa académica</p>
                     <Button className="w-full bg-green-600 hover:bg-green-700">
                       <Target className="mr-2 h-4 w-4" />
                       Explorar
@@ -114,13 +124,13 @@ export default function GoalBankPage(): JSX.Element {
                   </CardContent>
                 </Card>
 
-                <Card className="group hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer bg-gradient-to-br from-orange-50 to-yellow-50 border-orange-200 md:col-span-2 lg:col-span-1">
-                  <CardContent className="p-8 text-center">
+                <Card className="group hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer bg-gradient-to-br from-orange-50 to-yellow-50 border-orange-200 sm:col-span-2 lg:col-span-1 animate-fade-in-up animation-delay-300">
+                  <CardContent className="p-6 sm:p-8 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-100 flex items-center justify-center group-hover:bg-orange-200 transition-colors">
                       <FileText className="h-8 w-8 text-orange-600" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2 text-orange-900">Mis Metas Activas</h3>
-                    <p className="text-orange-700 mb-4">Gestiona y da seguimiento a tus metas en progreso</p>
+                    <h3 className="text-lg sm:text-xl font-semibold mb-2 text-orange-900">Mis Metas Activas</h3>
+                    <p className="text-sm sm:text-base text-orange-700 mb-4">Gestiona y da seguimiento a tus metas en progreso</p>
                     <Button className="w-full bg-orange-600 hover:bg-orange-700">
                       <FileText className="mr-2 h-4 w-4" />
                       Ver Metas
@@ -134,10 +144,7 @@ export default function GoalBankPage(): JSX.Element {
                 <FeaturedGoalsPreview
                   goals={stage.metas}
                   stageTitle={stage.titulo}
-                  onSelectGoal={(goal) => {
-                    // TODO: Implementar selección de meta
-                    console.log('Meta seleccionada:', goal);
-                  }}
+                  onSelectGoal={handleGoalSelected}
                 />
               )}
             </div>
@@ -162,9 +169,8 @@ export default function GoalBankPage(): JSX.Element {
         goals={curatedGoalStages.find(stage => stage.etapa === defaultStage)?.metas || []}
         stageTitle={curatedGoalStages.find(stage => stage.etapa === defaultStage)?.titulo || 'Exploración'}
         onSelectGoal={(goal) => {
-          console.log('Meta seleccionada:', goal);
+          handleGoalSelected(goal);
           setIsCatalogOpen(false);
-          // TODO: Implementar selección de meta
         }}
       />
     </div>
