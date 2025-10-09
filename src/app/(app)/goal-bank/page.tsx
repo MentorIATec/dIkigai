@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { curatedGoalStages } from '@/lib/curated-goals';
 import { GeneradorMetas } from './ui/GeneradorMetas';
+import { FeaturedGoalsPreview } from '@/components/featured-goals-preview';
 import type { CuratedGoal, SemesterStage } from '@/lib/types';
 import type { ReactNode } from 'react';
 import { Suspense } from 'react';
@@ -56,65 +57,25 @@ export default function GoalBankPage(): JSX.Element {
         {curatedGoalStages.map((stage) => (
           <TabsContent key={stage.etapa} value={stage.etapa} className="space-y-6">
             <div className="grid gap-6 xl:grid-cols-3">
-              <div className="xl:col-span-2">
+              <div className="xl:col-span-2 space-y-6">
+                {/* Descripción de la etapa */}
                 <Card>
                   <CardHeader>
                     <CardDescription className="text-base leading-7">
                       {renderWithEmphasis(stage.descripcion)}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    {stage.metas.map((meta) => (
-                      <article
-                        key={meta.id}
-                        className="group rounded-xl border bg-gradient-to-br from-card/80 to-card/40 p-6 shadow-sm transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
-                      >
-                        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="secondary" className="text-xs font-medium">
-                              {meta.dimension}
-                            </Badge>
-                            <Badge variant="outline" className="capitalize text-xs">
-                              {meta.categoria}
-                            </Badge>
-                          </div>
-                          <span className="text-xs font-mono uppercase tracking-wide text-muted-foreground/70">
-                            {meta.id}
-                          </span>
-                        </div>
-
-                        <div className="space-y-3">
-                          <h3 className="text-lg font-semibold leading-6 text-foreground">
-                            {renderWithEmphasis(meta.metaSmarter)}
-                          </h3>
-                        </div>
-
-                        <div className="mt-4 space-y-3">
-                          <div className="flex items-center justify-between">
-                            <p className="text-sm font-semibold text-muted-foreground">
-                              Pasos sugeridos
-                            </p>
-                            <Button size="sm" variant="outline" className="h-8 text-xs">
-                              Seleccionar meta
-                            </Button>
-                          </div>
-                          <div className="space-y-2">
-                            {getActionSteps(meta.pasosAccion).map((step, index) => (
-                              <div key={`${meta.id}-step-${index}`} className="flex items-start gap-3 p-2 rounded-md bg-muted/30">
-                                <div className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                                  <span className="text-xs font-medium text-primary">{index + 1}</span>
-                                </div>
-                                <p className="text-sm leading-5 text-muted-foreground">
-                                  {renderWithEmphasis(step)}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </CardContent>
                 </Card>
+
+                {/* Vista previa de metas destacadas */}
+                <FeaturedGoalsPreview
+                  goals={stage.metas}
+                  stageTitle={stage.titulo}
+                  onSelectGoal={(goal) => {
+                    // TODO: Implementar selección de meta
+                    console.log('Meta seleccionada:', goal);
+                  }}
+                />
               </div>
               
               <div className="xl:col-span-1">
