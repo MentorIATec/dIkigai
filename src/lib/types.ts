@@ -35,12 +35,13 @@ export type GoalTemplate = {
 export type Semester = string;
 
 export type SemesterStageKey =
+  | 'primerSemestre'
   | 'exploracion'
   | 'enfoque'
   | 'especializacion'
   | 'longitudinal';
 
-export type SemesterStage = 'exploracion' | 'enfoque' | 'especializacion' | 'graduacion';
+export type SemesterStage = 'primerSemestre' | 'exploracion' | 'enfoque' | 'especializacion' | 'graduacion';
 
 export interface StudentProfile {
   semesterNumber: number;

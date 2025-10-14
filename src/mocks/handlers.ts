@@ -66,4 +66,68 @@ export const handlers = [
     return HttpResponse.json(previewDiagnostics);
   }),
   http('POST', '/api/preview/telemetry', () => HttpResponse.json({ ok: true })),
+  
+  // Mocks para API de diagnostics real
+  http('POST', '/api/diagnostics/:stage', ({ params, request }) => {
+    const { stage } = params;
+    console.log(`📝 Mock POST /api/diagnostics/${stage}`);
+    return HttpResponse.json({ 
+      recommendedGoalIds: ['MOCK_GOAL_1', 'MOCK_GOAL_2'] 
+    });
+  }),
+  
+  http('GET', '/api/diagnostics/:stage', ({ params, request }) => {
+    const { stage } = params;
+    const url = new URL(request.url);
+    const latest = url.searchParams.get('latest') === '1';
+    const periodKey = url.searchParams.get('periodKey');
+    
+    console.log(`📋 Mock GET /api/diagnostics/${stage}`, { latest, periodKey });
+    
+    // Simular diagnóstico completado con respuestas específicas por etapa
+    let mockAnswers: any[] = [];
+    
+    if (stage === 'exploracion') {
+      mockAnswers = [
+        { questionKey: 'orientacion_carrera', score: 5, dimension: 'Ocupacional' },
+        { questionKey: 'habilidades_blandas', score: 4, dimension: 'Social' },
+        { questionKey: 'autoconocimiento', score: 5, dimension: 'Intelectual' }
+      ];
+    } else if (stage === 'enfoque') {
+      mockAnswers = [
+        { questionKey: 'semestre_tec', score: 5, dimension: 'Ocupacional' },
+        { questionKey: 'servicio_social', score: 4, dimension: 'Social' },
+        { questionKey: 'practicas', score: 5, dimension: 'Ocupacional' },
+        { questionKey: 'idioma', score: 4, dimension: 'Intelectual' }
+      ];
+    } else if (stage === 'especializacion') {
+      mockAnswers = [
+        { questionKey: 'situacion_profesional', score: 5, dimension: 'Ocupacional' },
+        { questionKey: 'meta_exatec', score: 4, dimension: 'Ocupacional' },
+        { questionKey: 'balance_vida', score: 5, dimension: 'Emocional' },
+        { questionKey: 'preparacion_profesional', score: 4, dimension: 'Ocupacional' }
+      ];
+    } else {
+      // Fallback para otras etapas
+      mockAnswers = [
+        { questionKey: 'test_question_1', score: 5, dimension: 'Ocupacional' },
+        { questionKey: 'test_question_2', score: 4, dimension: 'Social' },
+        { questionKey: 'test_question_3', score: 5, dimension: 'Intelectual' }
+      ];
+    }
+    
+    const mockResult = {
+      id: `mock_${stage}_${Date.now()}`,
+      uid: 'ana.perez@example.com',
+      stage,
+      periodKey: periodKey || `${stage}-${Date.now()}`,
+      answers: mockAnswers,
+      createdAt: new Date().toISOString(),
+      recommendedGoalIds: ['MOCK_GOAL_1', 'MOCK_GOAL_2']
+    };
+    
+    console.log(`🎯 Mock respuestas para ${stage}:`, mockAnswers);
+    
+    return HttpResponse.json({ results: [mockResult] });
+  }),
 ];

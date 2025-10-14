@@ -7,6 +7,8 @@ declare global {
 }
 
 export async function setupMocksIfNeeded(): Promise<void> {
+  // MSW HABILITADO PARA MOCKS DE API DE DIAGNOSTICS
+  
   if (typeof window === 'undefined') {
     return;
   }

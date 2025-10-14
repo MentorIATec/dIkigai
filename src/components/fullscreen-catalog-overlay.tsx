@@ -115,7 +115,7 @@ export function FullscreenCatalogOverlay({ isOpen, onClose, goals, stageTitle, o
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-green-900">Catálogo de Metas</h2>
-                  <p className="text-green-700">{stageTitle} - {filteredGoals.length} metas disponibles</p>
+                  <p className="text-green-700">{stageTitle}</p>
                 </div>
               </div>
               <Button variant="ghost" size="sm" onClick={onClose}>

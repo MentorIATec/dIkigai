@@ -92,11 +92,6 @@ export function FeaturedGoalsPreview({ goals, stageTitle, onSelectGoal }: Featur
                 Las metas más relevantes para tu etapa de {stageTitle}
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-xs">
-                {goals.length} metas disponibles
-              </Badge>
-            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -168,7 +163,7 @@ export function FeaturedGoalsPreview({ goals, stageTitle, onSelectGoal }: Featur
                 onClick={() => setIsFullCatalogOpen(true)}
               >
                 <Eye className="mr-2 h-4 w-4" />
-                Ver todas las metas ({remainingCount} más)
+                Ver más metas disponibles
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>

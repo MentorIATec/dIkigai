@@ -217,7 +217,7 @@ export default function ProfilePage() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+                          {[1, 2, 3, 4, 5, 6, 7].map((sem) => (
                             <SelectItem key={sem} value={sem.toString()}>
                               {sem}° Semestre
                             </SelectItem>
@@ -225,7 +225,7 @@ export default function ProfilePage() {
                           <SelectItem value="8+">8° o más</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormDescription>Etapa calculada</FormDescription>
+                      <FormDescription>Etapa académica automática</FormDescription>
                       <div>
                         <Badge variant="secondary">{computedStage}</Badge>
                       </div>

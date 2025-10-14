@@ -1,9 +1,9 @@
 export const BRUJULA_TESTS = {
   exploracion: {
     stageLabel: "Test Exploración",
-    title: "Diagnóstico de Exploración Vocacional",
+    title: "Brújula de Cambio de Etapa",
     description:
-      "Este test busca acompañarte generando ideas sobre carrera, hábitos académicos y primeras experiencias profesionales.",
+      "Completa este diagnóstico para prepararte para tu siguiente etapa académica.",
     questions: [
       {
         key: "carrera",
@@ -57,9 +57,9 @@ export const BRUJULA_TESTS = {
   },
   enfoque: {
     stageLabel: "Test Enfoque",
-    title: "Diagnóstico de Enfoque Profesional",
+    title: "Brújula de Cambio de Etapa",
     description:
-      "Profundicemos en las decisiones de mediano plazo para el/la estudiante: Semestre Tec, certificaciones y preparación para prácticas.",
+      "Completa este diagnóstico para prepararte para tu siguiente etapa académica.",
     questions: [
       {
         key: "servicio_social",
@@ -113,9 +113,9 @@ export const BRUJULA_TESTS = {
   },
   especializacion: {
     stageLabel: "Test Especialización",
-    title: "Checklist de Candidaturas a Graduación",
+    title: "Checklist de Graduación",
     description:
-      "Este checklist ayuda a el/la estudiante a validar su preparación profesional, metas de primer año como EXATEC y balance de vida.",
+      "Valida tu preparación profesional, metas de primer año como EXATEC y balance de vida para una transición exitosa.",
     questions: [
       {
         key: "situacion_profesional",
@@ -154,7 +154,55 @@ export const BRUJULA_TESTS = {
       {
         key: "preparacion_profesional",
         title:
-          "4️⃣ En una escala del 1 al 5, ¿qué tan preparado/a se siente el/la estudiante para los retos del mundo profesional (entrevistas, negociaciones, adaptación)?",
+          "4️⃣ En una escala del 1 al 5, ¿qué tan preparado/a me siento para los retos del mundo profesional (entrevistas, negociaciones, adaptación)?",
+        options: ["1", "2", "3", "4", "5"],
+      },
+    ],
+  },
+  graduacion: {
+    stageLabel: "Test Graduación",
+    title: "Brújula de Cambio de Etapa",
+    description:
+      "Completa este diagnóstico para prepararte para tu siguiente etapa académica.",
+    questions: [
+      {
+        key: "situacion_profesional",
+        title:
+          "1️⃣ ¿Cuál es mi situación profesional actual?",
+        options: [
+          "💼 Ya tengo un empleo de tiempo completo.",
+          "🧑‍💻 Estoy en prácticas profesionales (medio tiempo).",
+          "🚀 Estoy emprendiendo mi propio proyecto.",
+          "🔎 Sigo buscando y explorando oportunidades.",
+        ],
+      },
+      {
+        key: "meta_exatec",
+        title:
+          "2️⃣ Pensando en mi primer año como EXATEC, ¿cuál es mi meta principal?",
+        options: [
+          "📈 Consolidarme en un empleo que me apasione.",
+          "🎓 Adquirir certificaciones o especializarme en mi área.",
+          "💡 Emprender o hacer crecer mi negocio.",
+          "📚 Aplicar a un posgrado.",
+          "❓ Aún lo estoy definiendo.",
+        ],
+      },
+      {
+        key: "balance_vida",
+        title:
+          "3️⃣ Más allá de lo profesional, ¿cómo me siento con mi balance de vida en esta etapa de transición?",
+        options: [
+          "✨ Con energía y equilibrio entre mis metas.",
+          "🧘 Enfocado/a principalmente en mi carrera.",
+          "😩 Un poco abrumado/a, me cuesta encontrar balance.",
+          "🤔 Inseguro/a, no he pensado en mis metas personales.",
+        ],
+      },
+      {
+        key: "preparacion_profesional",
+        title:
+          "4️⃣ En una escala del 1 al 5, ¿qué tan preparado/a me siento para los retos del mundo profesional (entrevistas, negociaciones, adaptación)?",
         options: ["1", "2", "3", "4", "5"],
       },
     ],

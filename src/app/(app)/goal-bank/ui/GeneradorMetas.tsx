@@ -10,12 +10,17 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ArrowRight, Compass, Sparkles, Target, FileText, ExternalLink, AlertCircle, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 import { BrujulaTest } from '@/components/brújula-test';
 import { FirstSemesterMini } from '@/components/async-first-semester-mini';
 import { CompactRecommendations } from '@/components/async-compact-recommendations';
 import { FilteredCatalog } from '@/components/async-filtered-catalog';
 import { MinimalInspirationSidebar } from '@/components/minimal-inspiration-sidebar';
+import { SmartRecommendationsView } from '@/components/smart-recommendations-view';
+import { InspirationModal } from '@/components/inspiration-modal';
 import { curatedGoalBankExtended } from '@/lib/curated-goals';
+import { generateSmartRecommendations, type SmartRecommendations } from '@/lib/recommend';
+import { useDiagnosticStorage, useSelectedGoalsStorage } from '@/hooks/use-local-storage';
 import type { SemesterStage } from '@/lib/types';
 import type { DiagnosticAnswer, DiagnosticResult } from '@/lib/types.goal-templates';
 import type { StudentProfile } from '@/lib/types';
@@ -30,14 +35,32 @@ type RightTab = 'results' | 'catalog' | 'explore';
 
 export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [viewMode, setViewMode] = useState<ViewMode>('welcome');
   const [rightTab, setRightTab] = useState<RightTab>('results');
   const [recommendedGoalIds, setRecommendedGoalIds] = useState<string[]>([]);
+  const [smartRecommendations, setSmartRecommendations] = useState<SmartRecommendations | null>(null);
+  const [diagnosticAnswers, setDiagnosticAnswers] = useState<DiagnosticAnswer[]>([]);
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [hasCompletedDiagnostic, setHasCompletedDiagnostic] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showFullCatalogModal, setShowFullCatalogModal] = useState(false);
+  const [showInspirationModal, setShowInspirationModal] = useState(false);
+
+  // 🗄️ HOOKS DE PERSISTENCIA BÁSICA
+  const { 
+    markDiagnosticCompleted, 
+    getCompletedDiagnostic, 
+    hasCompletedDiagnostic: hasCompletedInStorage,
+    isLoaded: diagnosticStorageLoaded 
+  } = useDiagnosticStorage();
+  
+  const { 
+    selectedGoals, 
+    addSelectedGoal, 
+    removeSelectedGoal 
+  } = useSelectedGoalsStorage();
 
   // Cargar perfil y diagnóstico previo
   useEffect(() => {
@@ -50,7 +73,30 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
           setProfile(profileData.profile);
         }
 
-        // Cargar diagnóstico previo si existe
+        // 🗄️ PRIORIDAD: Cargar desde localStorage si está disponible
+        if (diagnosticStorageLoaded && hasCompletedInStorage(stage)) {
+          const localData = getCompletedDiagnostic(stage);
+          if (localData) {
+            console.log('📱 Cargando diagnóstico desde localStorage:', localData);
+            setRecommendedGoalIds(localData.recommendedGoalIds || []);
+            setHasCompletedDiagnostic(true);
+            
+            // Generar recomendaciones desde datos locales
+            if (localData.answers && localData.answers.length > 0) {
+              const recommendations = generateSmartRecommendations({
+                stage,
+                answers: localData.answers,
+                selectedGoalIds: localData.recommendedGoalIds || []
+              });
+              setSmartRecommendations(recommendations);
+            }
+            
+            setViewMode('results');
+            return; // Salir temprano si encontramos datos locales
+          }
+        }
+
+        // Fallback: Cargar diagnóstico previo desde API si existe
         if (periodKey) {
           const diagnosticResponse = await fetch(`/api/diagnostics/${stage}?latest=1&periodKey=${periodKey}`);
           if (diagnosticResponse.ok) {
@@ -59,6 +105,18 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
               const latestResult = diagnosticData.results[0] as DiagnosticResult;
               setRecommendedGoalIds(latestResult.recommendedGoalIds);
               setHasCompletedDiagnostic(true);
+              
+              // CRÍTICO: Generar recomendaciones inteligentes con las respuestas guardadas
+              if (latestResult.answers && latestResult.answers.length > 0) {
+                console.log('🔄 Regenerando recomendaciones desde diagnóstico previo:', latestResult.answers);
+                const recommendations = generateSmartRecommendations({
+                  stage,
+                  answers: latestResult.answers,
+                  selectedGoalIds: latestResult.recommendedGoalIds || []
+                });
+                setSmartRecommendations(recommendations);
+              }
+              
               setViewMode('results');
             }
           }
@@ -69,12 +127,34 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
     }
 
     loadData();
-  }, [stage, periodKey]);
+  }, [stage, periodKey, diagnosticStorageLoaded, hasCompletedInStorage, getCompletedDiagnostic]);
 
   const handleBrújulaComplete = async (answers: DiagnosticAnswer[]) => {
     setLoading(true);
     setError(null);
     try {
+      // Guardar respuestas
+      setDiagnosticAnswers(answers);
+
+      // Generar recomendaciones inteligentes
+      const recommendations = generateSmartRecommendations({
+        stage,
+        answers,
+        profile: profile || undefined,
+        selectedGoalIds: recommendedGoalIds
+      });
+
+      setSmartRecommendations(recommendations);
+
+      // Extraer IDs de todas las metas recomendadas
+      const allRecommendedIds = [
+        recommendations.priorityGoal?.id,
+        recommendations.complementaryGoal?.id,
+        ...recommendations.longitudinalGoals.map(g => g.id),
+        ...recommendations.otherRecommendations.map(g => g.id)
+      ].filter(Boolean) as string[];
+
+      // Guardar en el servidor
       const response = await fetch(`/api/diagnostics/${stage}`, {
         method: 'POST',
         headers: {
@@ -82,43 +162,149 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
         },
         body: JSON.stringify({
           periodKey,
-          answers
+          answers,
+          recommendedGoalIds: allRecommendedIds
         }),
       });
 
+      // 🗄️ GUARDAR EN LOCALSTORAGE (PERSISTENCIA BÁSICA)
+      const diagnosticData = {
+        stage,
+        answers,
+        recommendedGoalIds: allRecommendedIds,
+        recommendations,
+        periodKey,
+        completedAt: new Date().toISOString()
+      };
+
+      
+      markDiagnosticCompleted(stage, diagnosticData);
+      console.log('💾 Guardado en localStorage:', diagnosticData);
+
+      // 🗄️ SIEMPRE ACTUALIZAR EL ESTADO LOCAL (persistencia básica funciona)
+      setRecommendedGoalIds(allRecommendedIds);
+      setHasCompletedDiagnostic(true);
+      setViewMode('results');
+      setRightTab('results');
+
       if (response.ok) {
         const data = await response.json();
-        setRecommendedGoalIds(data.recommendedGoalIds || []);
-        setHasCompletedDiagnostic(true);
-        setViewMode('results');
-        setRightTab('results');
+        toast({
+          title: "¡Diagnóstico completado!",
+          description: "Tus respuestas y recomendaciones se han guardado correctamente.",
+        });
       } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.message || `Error del servidor (${response.status})`;
-        setError(`No se pudieron generar las recomendaciones: ${errorMessage}`);
-        console.error('Error submitting diagnostic:', {
+        // API falló, pero localStorage funcionó
+        console.warn('⚠️ API falló, pero datos guardados en localStorage:', {
           status: response.status,
-          statusText: response.statusText,
-          error: errorData
+          statusText: response.statusText
+        });
+        
+        toast({
+          title: "¡Diagnóstico completado!",
+          description: "Tus respuestas se guardaron localmente. Los datos se sincronizarán cuando sea posible.",
+          variant: "default"
         });
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error de conexión';
-      setError(`Error de conexión: ${errorMessage}`);
       console.error('Error submitting diagnostic:', error);
+      
+      // 🗄️ SIEMPRE MOSTRAR RECOMENDACIONES (localStorage ya funcionó)
+      setRecommendedGoalIds(allRecommendedIds);
+      setHasCompletedDiagnostic(true);
+      setViewMode('results');
+      setRightTab('results');
+      
+      // Mostrar toast informativo
+      toast({
+        title: "¡Diagnóstico completado!",
+        description: "Hubo un problema de conexión, pero tus datos se guardaron localmente.",
+        variant: "default"
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGenerateGoal = () => {
-    // Lógica para generar una meta aleatoria
-    const stageGoals = curatedGoalBankExtended[stage]?.metas || [];
-    if (stageGoals.length > 0) {
-      const randomGoal = stageGoals[Math.floor(Math.random() * stageGoals.length)];
-      // Redirigir a crear meta con plantilla
-      router.push(`/goals/new?template=${randomGoal.id}`);
+  const handleSelectGoal = async (goalId: string) => {
+    try {
+      console.log('🎯 DEBUG handleSelectGoal - Iniciando:', {
+        goalId,
+        currentRecommendedGoalIds: recommendedGoalIds,
+        alreadySelected: recommendedGoalIds.includes(goalId)
+      });
+
+      // Verificar si la meta ya fue seleccionada
+      if (recommendedGoalIds.includes(goalId)) {
+        console.log('⚠️ Meta ya seleccionada en recommendedGoalIds:', goalId);
+        // No retornar, permitir que se guarde en selectedGoals
+      }
+
+      // Verificar si la meta ya fue seleccionada en selectedGoals
+      if (selectedGoals.includes(goalId)) {
+        console.log('⚠️ Meta ya seleccionada en selectedGoals:', goalId);
+        toast({
+          title: 'Meta ya seleccionada',
+          description: 'Esta meta ya está en tu plan de vida.',
+          variant: 'default',
+          duration: 3000,
+        });
+        return;
+      }
+
+      // 🗄️ SIEMPRE GUARDAR EN LOCALSTORAGE (persistencia básica funciona)
+      setRecommendedGoalIds(prev => [...prev, goalId]);
+      addSelectedGoal(goalId);
+      console.log('💾 Meta guardada en localStorage:', {
+        goalId,
+        newRecommendedGoalIds: [...recommendedGoalIds, goalId],
+        selectedGoalsAfterAdd: [...selectedGoals, goalId]
+      });
+
+      const response = await fetch('/api/goals/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ goalId }),
+      });
+
+      if (response.ok) {
+        // API funcionó correctamente
+        toast({
+          title: '¡Meta guardada exitosamente! 🎯',
+          description: 'La meta ha sido agregada a tu plan de vida.',
+          duration: 3000,
+        });
+      } else {
+        // API falló, pero localStorage funcionó
+        console.warn('⚠️ API de metas falló, pero guardado en localStorage:', {
+          status: response.status,
+          goalId
+        });
+        
+        toast({
+          title: '¡Meta guardada localmente! 🎯',
+          description: 'La meta se guardó localmente y se sincronizará cuando sea posible.',
+          duration: 3000,
+        });
+      }
+
+      console.log('Meta guardada exitosamente:', goalId);
+    } catch (error) {
+      console.error('Error al guardar meta:', error);
+      
+      // 🗄️ SIEMPRE MOSTRAR ÉXITO (localStorage ya funcionó)
+      toast({
+        title: '¡Meta guardada localmente! 🎯',
+        description: 'Hubo un problema de conexión, pero la meta se guardó localmente.',
+        duration: 3000,
+      });
     }
+  };
+
+  const handleGenerateGoal = () => {
+    setShowInspirationModal(true);
   };
 
   const handleOpenTemplate = () => {
@@ -128,10 +314,10 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
 
   const getStageLabel = (stage: SemesterStage) => {
     switch (stage) {
-      case 'exploracion': return 'Exploración';
-      case 'enfoque': return 'Enfoque';
-      case 'especializacion': return 'Especialización';
-      case 'graduacion': return 'Graduación';
+      case 'exploracion': return 'Cambio de Etapa';
+      case 'enfoque': return 'Cambio de Etapa';
+      case 'especializacion': return 'Cierre de Mentoría';
+      case 'graduacion': return 'Cierre de Mentoría';
       default: return stage;
     }
   };
@@ -181,10 +367,11 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
         {/* Columna derecha: Sidebar minimalista */}
         <div>
           <MinimalInspirationSidebar
-            stage={getStageLabel(stage)}
+            stage={stage}
             onGenerateGoal={handleGenerateGoal}
             hasCompletedDiagnostic={hasCompletedDiagnostic}
             recommendedGoalIds={recommendedGoalIds}
+            onSelectGoal={handleSelectGoal}
           />
         </div>
       </div>
@@ -201,10 +388,12 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
             <CardHeader>
               <CardTitle className="font-headline flex items-center gap-2">
                 <Compass className="h-6 w-6 text-blue-600" />
-                Brújula de {getStageLabel(stage)}
+                {stage === 'especializacion' || stage === 'graduacion' ? 'Planea tus metas como futuro EXATEC' : `Brújula de ${getStageLabel(stage)}`}
               </CardTitle>
               <CardDescription className="text-base">
-                Completa un diagnóstico rápido para recibir recomendaciones personalizadas basadas en tu etapa académica.
+                {stage === 'especializacion' || stage === 'graduacion' 
+                  ? 'Completa este diagnóstico para validar tu preparación profesional y definir metas para tu transición como EXATEC.'
+                  : 'Completa un diagnóstico rápido para recibir recomendaciones personalizadas basadas en tu etapa académica.'}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -231,7 +420,7 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
               
               <Button onClick={() => setViewMode('brújula')} className="w-full">
                 <Compass className="mr-2 h-4 w-4" />
-                Iniciar Brújula de {getStageLabel(stage)}
+                {stage === 'especializacion' || stage === 'graduacion' ? 'Iniciar Cierre de Mentoría' : `Iniciar Brújula de ${getStageLabel(stage)}`}
               </Button>
             </CardContent>
           </Card>
@@ -245,7 +434,19 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
           />
         )}
 
-        {viewMode === 'results' && (
+        {viewMode === 'results' && smartRecommendations && (
+          <>
+            {console.log('🎯 RENDERIZANDO SmartRecommendationsView:', smartRecommendations)}
+            <SmartRecommendationsView
+              recommendations={smartRecommendations}
+              stage={stage}
+              onSelectGoal={handleSelectGoal}
+              onNewDiagnostic={() => setViewMode('brújula')}
+            />
+          </>
+        )}
+
+        {viewMode === 'results' && !smartRecommendations && (
           <Card>
             <CardHeader>
               <CardTitle className="font-headline flex items-center gap-2">
@@ -253,7 +454,9 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
                 Diagnóstico completado
               </CardTitle>
               <CardDescription>
-                Has completado la Brújula de {getStageLabel(stage)}
+                {stage === 'especializacion' || stage === 'graduacion' 
+                  ? 'Has completado tu Cierre de Mentoría'
+                  : `Has completado la Brújula de ${getStageLabel(stage)}`}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -277,10 +480,11 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
       {/* Columna derecha: Sidebar minimalista */}
       <div>
         <MinimalInspirationSidebar
-          stage={getStageLabel(stage)}
+          stage={stage}
           onGenerateGoal={handleGenerateGoal}
           hasCompletedDiagnostic={hasCompletedDiagnostic}
           recommendedGoalIds={recommendedGoalIds}
+          onSelectGoal={handleSelectGoal}
         />
       </div>
 
@@ -307,6 +511,14 @@ export function GeneradorMetas({ stage, periodKey }: GeneradorMetasProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de inspiración */}
+      <InspirationModal
+        isOpen={showInspirationModal}
+        onClose={() => setShowInspirationModal(false)}
+        stage={stage}
+        onSelectGoal={handleSelectGoal}
+      />
     </div>
   );
 }

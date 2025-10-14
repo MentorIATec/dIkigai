@@ -1,30 +1,46 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, Target, ArrowRight, CheckCircle } from 'lucide-react';
 import { InspirationModal } from './inspiration-modal';
+import type { SemesterStage } from '@/lib/types';
 
 interface MinimalInspirationSidebarProps {
-  stage: string;
-  onGenerateGoal: (dimension: string) => void;
+  stage: SemesterStage;
+  onGenerateGoal: () => void;
   hasCompletedDiagnostic?: boolean;
   recommendedGoalIds?: string[];
+  onSelectGoal?: (goalId: string) => void;
 }
 
 export function MinimalInspirationSidebar({ 
   stage, 
   onGenerateGoal, 
   hasCompletedDiagnostic = false,
-  recommendedGoalIds = []
+  recommendedGoalIds = [],
+  onSelectGoal
 }: MinimalInspirationSidebarProps) {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleGenerateGoal = (dimension: string) => {
-    onGenerateGoal(dimension);
-    setIsModalOpen(false);
+  // Función para obtener etiqueta legible del stage
+  const getStageLabel = (stage: SemesterStage): string => {
+    switch (stage) {
+      case 'exploracion': return 'Cambio de Etapa';
+      case 'enfoque': return 'Cambio de Etapa';
+      case 'especializacion': return 'Cierre de Mentoría';
+      case 'graduacion': return 'Cierre de Mentoría';
+      case 'primerSemestre': return 'Primer Semestre';
+      default: return stage;
+    }
+  };
+
+  const handleGenerateGoal = () => {
+    onGenerateGoal();
   };
 
   return (
@@ -37,7 +53,7 @@ export function MinimalInspirationSidebar({
             Tu Inspiración
           </CardTitle>
           <CardDescription className="text-sm">
-            Metas personalizadas para tu etapa de {stage}
+            Metas personalizadas para tu etapa de {getStageLabel(stage)}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -83,7 +99,7 @@ export function MinimalInspirationSidebar({
           <Button 
             variant="outline" 
             className="w-full justify-between"
-            onClick={() => onGenerateGoal('random')}
+            onClick={() => onGenerateGoal()}
           >
             <span>Inspiración aleatoria</span>
             <ArrowRight className="h-4 w-4" />
@@ -92,7 +108,7 @@ export function MinimalInspirationSidebar({
           <Button 
             variant="outline" 
             className="w-full justify-between"
-            onClick={() => onGenerateGoal('custom')}
+            onClick={() => router.push('/goals/new')}
           >
             <span>Crear meta personalizada</span>
             <ArrowRight className="h-4 w-4" />
@@ -104,8 +120,8 @@ export function MinimalInspirationSidebar({
       <InspirationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onGenerateGoal={handleGenerateGoal}
         stage={stage}
+        onSelectGoal={onSelectGoal}
       />
     </div>
   );

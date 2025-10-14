@@ -9,24 +9,72 @@ import { GeneradorMetas } from './ui/GeneradorMetas';
 import { FeaturedGoalsPreview } from '@/components/featured-goals-preview';
 import { FullscreenInspirationOverlay } from '@/components/fullscreen-inspiration-overlay';
 import { FullscreenCatalogOverlay } from '@/components/fullscreen-catalog-overlay';
+import { SemesterSpecificView } from '@/components/semester-specific-view';
 import { Sparkles, Target, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import type { CuratedGoal, SemesterStage } from '@/lib/types';
+import { useSearchParams } from 'next/navigation';
+import { computeStage } from '@/lib/profile/mapping';
+import type { CuratedGoal, SemesterStage, StudentProfile } from '@/lib/types';
 import type { ReactNode } from 'react';
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 
 export const dynamic = 'force-dynamic';
 
 export default function GoalBankPage(): JSX.Element {
+  const searchParams = useSearchParams();
   const flag = process.env.NEXT_PUBLIC_GOAL_GEN_V2;
   const [isInspirationOpen, setIsInspirationOpen] = useState(false);
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
-  const [currentStage, setCurrentStage] = useState<SemesterStage>('exploracion');
+  const [currentStage, setCurrentStage] = useState<SemesterStage>('primerSemestre');
+  const [profile, setProfile] = useState<StudentProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showTest, setShowTest] = useState(false);
   const { toast } = useToast();
   const isEnabled =
     flag === undefined || flag === '1' || flag?.toLowerCase() === 'true' || flag?.toLowerCase() === 'enabled';
   
-  const defaultStage = curatedGoalStages[0]?.etapa || 'exploracion';
+  const defaultStage = curatedGoalStages[0]?.etapa || 'primerSemestre';
+  
+  // NUEVA UX LEAN: Obtener perfil del usuario
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const response = await fetch('/api/profile');
+        if (response.ok) {
+          const data = await response.json();
+          setProfile(data.profile);
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProfile();
+  }, []);
+  
+  const userSemester = profile?.semesterNumber || 1;
+  
+  // DEBUG: Log del perfil y semestre
+  useEffect(() => {
+    if (profile) {
+      console.log('🔍 DEBUG PROFILE:', {
+        semesterNumber: profile.semesterNumber,
+        semesterStage: profile.semesterStage,
+        carreraName: profile.carreraName
+      });
+    }
+  }, [profile]);
+  
+  // Detectar si se quiere mostrar un test específico
+  useEffect(() => {
+    const testParam = searchParams.get('test');
+    console.log('URL params:', { testParam, profile: !!profile });
+    if (testParam) {
+      setShowTest(true);
+      console.log('Setting showTest to true');
+    }
+  }, [searchParams, profile]);
 
   const handleGoalSelected = (goal: CuratedGoal) => {
     toast({
@@ -48,6 +96,52 @@ export default function GoalBankPage(): JSX.Element {
     );
   }
 
+  // NUEVA UX LEAN: Mostrar vista específica por semestre
+  if (loading) {
+    return (
+      <div className="space-y-6 px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="text-muted-foreground">Cargando tu perfil...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Si se quiere mostrar un test específico, mostrar el GeneradorMetas
+  if (showTest && profile) {
+    console.log('Rendering test view:', { showTest, profile: profile.semesterStage });
+    return (
+      <div className="space-y-6 px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-headline tracking-tight">
+              Asistente de Metas
+            </h1>
+            <p className="mt-2 max-w-3xl text-sm sm:text-base text-muted-foreground">
+              Test personalizado para tu etapa académica.
+            </p>
+          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowTest(false)}
+          >
+            ← Volver a vista general
+          </Button>
+        </div>
+
+        <GeneradorMetas 
+          stage={profile.semesterStage as SemesterStage} 
+          periodKey={`${profile.semesterStage}-${Date.now()}`}
+        />
+      </div>
+    );
+  }
+
+  // Vista UX LEAN por defecto
+  console.log('Rendering UX LEAN view:', { userSemester, profile: !!profile, showTest });
   return (
     <div className="space-y-6 px-4 sm:px-6 lg:px-8">
       <div>
@@ -55,7 +149,56 @@ export default function GoalBankPage(): JSX.Element {
           Asistente de Metas
         </h1>
         <p className="mt-2 max-w-3xl text-sm sm:text-base text-muted-foreground">
-          Tu guía personalizada para definir metas académicas. Explora metas por dimensión del bienestar y alinéalas con tu etapa académica.
+          Tu guía personalizada para definir metas académicas basada en tu etapa actual.
+        </p>
+      </div>
+
+      {/* NUEVA VISTA UX LEAN */}
+      <SemesterSpecificView 
+        semester={userSemester} 
+        profile={profile || undefined}
+        onGenerateGoal={() => setIsInspirationOpen(true)}
+      />
+
+      {/* Modal de Catálogo de Metas */}
+      <FullscreenCatalogOverlay
+        isOpen={isInspirationOpen}
+        onClose={() => setIsInspirationOpen(false)}
+        goals={curatedGoalStages.find(stage => stage.etapa === computeStage(userSemester))?.metas || []}
+        stageTitle={curatedGoalStages.find(stage => stage.etapa === computeStage(userSemester))?.titulo || 'Exploración'}
+        onSelectGoal={(goal) => {
+          setIsInspirationOpen(false);
+          handleGoalSelected(goal);
+        }}
+      />
+    </div>
+  );
+}
+
+// FUNCIÓN LEGACY: Mantener para compatibilidad si se necesita
+function LegacyGoalBankPage(): JSX.Element {
+  const [isInspirationOpen, setIsInspirationOpen] = useState(false);
+  const [isCatalogOpen, setIsCatalogOpen] = useState(false);
+  const [currentStage, setCurrentStage] = useState<SemesterStage>('primerSemestre');
+  const { toast } = useToast();
+  const defaultStage = curatedGoalStages[0]?.etapa || 'primerSemestre';
+
+  const handleGoalSelected = (goal: CuratedGoal) => {
+    toast({
+      title: '¡Meta guardada!',
+      description: 'La meta ha sido agregada a tu plan de vida exitosamente.',
+      duration: 4000,
+    });
+  };
+
+  return (
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
+      <div>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-headline tracking-tight">
+          Asistente de Metas (Legacy)
+        </h1>
+        <p className="mt-2 max-w-3xl text-sm sm:text-base text-muted-foreground">
+          Vista legacy con tabs múltiples - será eliminada en futuras versiones.
         </p>
       </div>
 
@@ -93,7 +236,7 @@ export default function GoalBankPage(): JSX.Element {
                   <CardContent className="space-y-3 px-4 sm:px-6">
                     <div className="flex flex-col sm:flex-row gap-3">
                       <Button asChild variant="default" className="flex-1 bg-green-600 hover:bg-green-700">
-                        <a href="https://samp.itesm.mx/Preparatoria/MiVidaTec" target="_blank" rel="noopener noreferrer">
+                        <a href="http://mitec.tec.mx/#/" target="_blank" rel="noopener noreferrer">
                           <Target className="mr-2 h-4 w-4" />
                           Ver mi IBI (Índice de Bienestar)
                         </a>
@@ -139,6 +282,14 @@ export default function GoalBankPage(): JSX.Element {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Tests Brújula - Solo para etapas que tienen tests */}
+              {(stage.etapa === 'exploracion' || stage.etapa === 'enfoque' || stage.etapa === 'especializacion') && (
+                <GeneradorMetas 
+                  stage={stage.etapa as SemesterStage} 
+                  periodKey={`${stage.etapa}-${Date.now()}`}
+                />
+              )}
               
               {stage.etapa === 'especializacion' && (
                 <Card className="bg-gradient-to-br from-purple-50/80 to-violet-100/60 border-purple-200/60">
@@ -170,7 +321,8 @@ export default function GoalBankPage(): JSX.Element {
                 </Card>
               )}
 
-              {/* Action Center - Botones principales */}
+              {/* Action Center - Solo para etapa longitudinal */}
+              {stage.etapa === 'longitudinal' && (
               <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 <Card 
                   className="group hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 animate-fade-in-up animation-delay-100"
@@ -220,6 +372,7 @@ export default function GoalBankPage(): JSX.Element {
                   </CardContent>
                 </Card>
               </div>
+              )}
 
               {/* Vista previa de metas destacadas - Solo si hay metas */}
               {stage.metas.length > 0 && (

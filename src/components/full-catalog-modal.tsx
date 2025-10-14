@@ -55,13 +55,7 @@ export function FullCatalogModal({ isOpen, onClose, goals, stageTitle, onSelectG
 
         <div className="space-y-6 pt-6">
           {/* Estadísticas rápidas */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-blue-600">{goals.length}</div>
-                <div className="text-sm text-blue-700">Metas disponibles</div>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold text-green-600">
