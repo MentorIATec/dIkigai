@@ -31,7 +31,7 @@ export function MinimalInspirationSidebar({
   const getStageLabel = (stage: SemesterStage): string => {
     switch (stage) {
       case 'exploracion': return 'Cambio de Etapa';
-      case 'enfoque': return 'Cambio de Etapa';
+      case 'enfoque': return 'Enfoque';
       case 'especializacion': return 'Cierre de Mentoría';
       case 'graduacion': return 'Cierre de Mentoría';
       case 'primerSemestre': return 'Primer Semestre';

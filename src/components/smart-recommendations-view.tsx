@@ -30,7 +30,7 @@ export function SmartRecommendationsView({
   const [complementaryAlternatives, setComplementaryAlternatives] = useState<CuratedGoal[]>([]);
   const [selectedGoalIds, setSelectedGoalIds] = useState<string[]>([]);
 
-  const { priorityGoal, complementaryGoal, longitudinalGoals } = recommendations;
+  const { priorityGoal, complementaryGoal, longitudinalGoals, otherRecommendations } = recommendations;
 
   // Detectar si son recomendaciones complementarias (puntajes altos)
   const isComplementaryMode = priorityGoal && 
@@ -236,6 +236,84 @@ export function SmartRecommendationsView({
                         <Button 
                           onClick={() => {
                             console.log('🖱️ DEBUG Botón clickeado:', {
+                              recommendationId: recommendation.id,
+                              recommendationTitle: recommendation.goal.metaSmarter.substring(0, 50) + '...'
+                            });
+                            handleSelectGoal(recommendation.id);
+                          }}
+                          size="sm"
+                          variant="outline"
+                          className="w-full"
+                        >
+                          <CheckCircle className="mr-2 h-4 w-4" />
+                          Seleccionar esta meta
+                        </Button>
+                      ) : (
+                        <div className="text-xs text-muted-foreground">
+                          ❌ onSelectGoal no disponible
+                        </div>
+                      );
+                    })()}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Otras Recomendaciones Inteligentes */}
+      {otherRecommendations.length > 0 && (
+        <>
+          <Separator className="my-6" />
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-blue-600" />
+              <h3 className="text-lg font-semibold font-headline">
+                Recomendaciones Adicionales
+              </h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Estas metas complementan tu desarrollo en otras dimensiones del bienestar.
+            </p>
+            <div className="grid gap-4">
+              {otherRecommendations.map((recommendation, index) => (
+                <Card key={recommendation.id} className="hover:border-primary transition-colors">
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {index + 1}.
+                          </span>
+                          <span className="text-sm font-semibold">
+                            {recommendation.goal.dimension}
+                          </span>
+                          <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                            {recommendation.badge}
+                          </span>
+                        </div>
+                        <CardTitle className="text-base font-headline">
+                          {recommendation.goal.metaSmarter}
+                        </CardTitle>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      📋 {recommendation.goal.pasosAccion}
+                    </p>
+                    {(() => {
+                      console.log('🔍 DEBUG Renderizando botón (otras recomendaciones):', {
+                        hasOnSelectGoal: !!onSelectGoal,
+                        recommendationId: recommendation.id,
+                        recommendationTitle: recommendation.goal.metaSmarter.substring(0, 30) + '...'
+                      });
+                      
+                      return onSelectGoal ? (
+                        <Button 
+                          onClick={() => {
+                            console.log('🖱️ DEBUG Botón clickeado (otras recomendaciones):', {
                               recommendationId: recommendation.id,
                               recommendationTitle: recommendation.goal.metaSmarter.substring(0, 50) + '...'
                             });

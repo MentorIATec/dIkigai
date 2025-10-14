@@ -127,7 +127,7 @@ export function InspirationModal({ isOpen, onClose, stage, onSelectGoal }: Inspi
     }
     
     // Para etapas avanzadas (enfoque, especialización), combinar metas específicas + longitudinales
-    const longitudinalData = curatedGoalBankExtended['graduacion']; // longitudinal mapeado a graduacion
+    const longitudinalData = curatedGoalBankExtended['longitudinal'];
     const longitudinalGoals = longitudinalData?.metas.filter(goal => goal.dimension === selectedDimension) || [];
     
     // Combinar metas de la etapa específica + longitudinales

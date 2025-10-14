@@ -92,7 +92,7 @@ export const QUESTION_WEIGHTS: Record<SemesterStage, StageQuestionConfig> = {
       label: 'planeación de Semestre Tec'
     },
     servicio_social: {
-      dimension: 'Social',
+      dimension: 'Ocupacional',
       weight: 0.7,
       urgencyThreshold: 3,
       label: 'avance de servicio social'

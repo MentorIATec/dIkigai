@@ -640,19 +640,28 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
         pasosAccion:
           'Solicitar informes en Consejería Emocional (Centrales Sur, 4to piso); Inscribirme al taller; Implementar técnicas aprendidas; Registrar efectividad semanalmente; Adaptar método a mi rutina.'
       },
+      {
+        id: 'ENF_INT_IDIOMA',
+        dimension: 'Intelectual',
+        categoria: 'idioma',
+        metaSmarter:
+          'Obtener certificación de inglés (TOEFL, IELTS) con puntaje mínimo para intercambio o Semestre Tec en 8 semanas.',
+        pasosAccion:
+          'Investigar requisitos de puntaje para Semestre Tec; Seleccionar certificación (TOEFL/IELTS); Inscribirme al examen; Dedicar 3 horas semanales de estudio; Tomar examen y obtener certificación.'
+      },
       // NUEVAS METAS ESPECÍFICAS - SERVICIO SOCIAL
       {
         id: 'ENF_SERV01',
-        dimension: 'Social',
-        categoria: 'social',
+        dimension: 'Ocupacional',
+        categoria: 'servicio_social',
         metaSmarter: 'Completar todas las horas de servicio social requeridas antes del Semestre Tec en 12 semanas.',
         pasosAccion:
           'Revisar horas acumuladas en Mi Tec; Identificar horas faltantes; Seleccionar proyecto de servicio social; Dedicar tiempo semanal consistente; Documentar experiencia para CV.'
       },
       {
         id: 'ENF_SERV02',
-        dimension: 'Social',
-        categoria: 'social',
+        dimension: 'Ocupacional',
+        categoria: 'servicio_social',
         metaSmarter: 'Participar en un proyecto de servicio social que se alinee con mi área de interés profesional durante 8 semanas.',
         pasosAccion:
           'Investigar proyectos disponibles; Seleccionar uno relacionado a mi carrera; Inscribirme y comprometerme; Aplicar conocimientos académicos; Documentar impacto y aprendizajes.'
@@ -661,7 +670,7 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
       {
         id: 'ENF_TEC01',
         dimension: 'Ocupacional',
-        categoria: 'carrera',
+        categoria: 'semestre_tec',
         metaSmarter: 'Explorar todas las opciones disponibles de Semestre Tec con mi Director/a de Programa y tener muy clara mi decisión en 6 semanas.',
         pasosAccion:
           'Agendar cita con Director/a de Programa; Revisar catálogo completo de opciones; Evaluar 4 categorías: investigación, internship, intercambio, concentración; Hacer lista de pros y contras; Definir top 3 opciones.'
@@ -669,7 +678,7 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
       {
         id: 'ENF_TEC02',
         dimension: 'Ocupacional',
-        categoria: 'carrera',
+        categoria: 'semestre_tec',
         metaSmarter: 'Definir 3-5 opciones específicas de Semestre Tec que me interesen y preparar aplicaciones en 8 semanas.',
         pasosAccion:
           'Seleccionar 3-5 opciones específicas; Investigar requisitos de cada una; Preparar documentos necesarios; Contactar coordinadores/as; Iniciar proceso de aplicación.'
@@ -677,8 +686,8 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
       {
         id: 'ENF_TEC03',
         dimension: 'Ocupacional',
-        categoria: 'carrera',
-        metaSmarter: 'Conectar con 2 estudiantes que hayan realizado Semestre Tec en opciones que me interesan para conocer su experiencia en 4 semanas.',
+        categoria: 'semestre_tec',
+        metaSmarter: 'Conectar con 2 estudiantes que hayan realizado Semestre Tec en opciones que me interesen para conocer su experiencia en 4 semanas.',
         pasosAccion:
           'Buscar exalumnos/as en LinkedIn; Contactar a través de grupos estudiantiles; Preparar preguntas sobre su experiencia; Escuchar sobre retos y beneficios; Documentar insights para mi decisión.'
       },
@@ -692,13 +701,31 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
           'Proponer la idea en el grupo esta semana; Definir fecha y actividad; Enviar invitación y confirmar asistencia.'
       },
       {
-        id: 'ENF_SOC02',
+        id: 'ENF_SOC03',
+        dimension: 'Ocupacional',
+        categoria: 'carrera',
+        metaSmarter:
+          'Aplicar al programa extraacadémico de Peer como mentor/a estudiantil para estudiantes de primeros semestres durante este periodo académico.',
+        pasosAccion:
+          'Contactar a mi mentor/a estudiantil; Pedir informes del programa Peer o acudir a sesiones informativas; Aplicar a la convocatoria; Capacitarme con los diplomados; Desarrollar habilidades de liderazgo y mentoría.'
+      },
+      {
+        id: 'ENF_SOC04',
         dimension: 'Social',
         categoria: 'social',
         metaSmarter:
-          'Participar como voluntario/a o líder en 1 proyecto de Servicio Social o de impacto social durante este periodo académico.',
+          'Participar activamente en 3 eventos de networking profesional o conferencias de mi área en los próximos 2 meses.',
         pasosAccion:
-          'Buscar oportunidades en Mi Tec o con LiFE esta semana; Inscribirme al proyecto; Dedicar 3 horas semanales al servicio; Documentar la experiencia para mi CV.'
+          'Investigar eventos relevantes esta semana; Registrarme en 3 eventos; Preparar elevator pitch personal; Intercambiar contactos con al menos 5 profesionales; Seguir en redes sociales.'
+      },
+      {
+        id: 'ENF_SOC02',
+        dimension: 'Ocupacional',
+        categoria: 'servicio_social',
+        metaSmarter:
+          'Buscar oportunidades en Mi Tec o con SSC del Campus y participar como voluntario/a o líder en 1 proyecto de Servicio Social o de impacto social durante este periodo académico.',
+        pasosAccion:
+          'Buscar oportunidades en Mi Tec o con SSC del Campus esta semana; Inscribirme al proyecto; Dedicar 3 horas semanales al servicio; Documentar la experiencia para mi CV/Portafolio de experiencias.'
       },
       {
         id: 'ENF_FIS01_LON',
@@ -734,6 +761,15 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
           'Implementar un "bloqueo de desconexión" de dispositivos de 30 minutos diarios, 5 días a la semana, para reducir la fatiga digital por un mes.',
         pasosAccion:
           'Establecer una hora fija (ej. 7:00 pm) para el bloqueo; Definir una actividad alternativa (leer, caminar, estirar); Registrar mi nivel de energía al inicio y final del mes.'
+      },
+      {
+        id: 'ENF_EMO03',
+        dimension: 'Emocional',
+        categoria: 'emocional',
+        metaSmarter:
+          'Desarrollar estrategias de manejo de estrés académico específicas para la etapa de enfoque y preparación de Semestre Tec en 4 semanas.',
+        pasosAccion:
+          'Identificar principales fuentes de estrés académico; Aprender 3 técnicas de relajación (respiración, meditación, ejercicio); Crear plan de contingencia para momentos de alta presión; Practicar técnicas durante 2 semanas consecutivas.'
       },
       {
         id: 'ENF_FIN01_LON',
@@ -1279,6 +1315,33 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
           'Crear plan financiero post-graduación con presupuesto de 6 meses en 4 semanas.',
         pasosAccion:
           'Calcular gastos mensuales; Establecer fondo de emergencia; Investigar opciones de inversión; Crear plan de ahorro.'
+      },
+      {
+        id: 'GRA_SOC01',
+        dimension: 'Social',
+        categoria: 'social',
+        metaSmarter:
+          'Mantener y fortalecer mi red profesional de 20 contactos relevantes durante los primeros 3 meses post-graduación.',
+        pasosAccion:
+          'Actualizar contactos en LinkedIn; Enviar mensajes de agradecimiento a mentores; Programar 2 coffee chats mensuales; Participar en 1 evento de networking profesional.'
+      },
+      {
+        id: 'GRA_FIS01',
+        dimension: 'Física',
+        categoria: 'fisica',
+        metaSmarter:
+          'Establecer rutina de bienestar físico que mantenga mi salud durante la transición profesional en 6 semanas.',
+        pasosAccion:
+          'Mantener 30 min de ejercicio 3 veces por semana; Establecer horario de sueño consistente; Preparar comidas saludables para la semana; Incluir 10 min de meditación diaria.'
+      },
+      {
+        id: 'GRA_ESP01',
+        dimension: 'Espiritual',
+        categoria: 'espiritual',
+        metaSmarter:
+          'Reflexionar sobre mi propósito y valores profesionales para definir mi legado post-graduación en 4 semanas.',
+        pasosAccion:
+          'Escribir carta a mi yo futuro; Definir 3 valores profesionales clave; Crear misión personal; Establecer 1 meta de impacto social para el primer año.'
       },
       {
         id: 'GRA_EMO01',
