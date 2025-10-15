@@ -13,6 +13,7 @@ import { Suspense } from "react";
 import { StudentProfileCard } from "@/components/student-profile-card";
 import { ProfileHeroCard } from "@/components/profile-hero-card";
 import { DashboardBlocker } from "@/components/dashboard-blocker";
+import { PurposeSummaryCard } from "@/components/purpose-summary-card";
 import type { StudentProfile } from '@/lib/types';
 
 export default function DashboardPage() {
@@ -128,6 +129,39 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{avgProgress}%</div>
                 <p className="text-xs text-muted-foreground">En todas tus metas</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sección de Propósito de Vida */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <PurposeSummaryCard />
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <FilePlus2 className="h-5 w-5 mr-2" />
+                  Acciones Rápidas
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button asChild variant="outline" className="w-full justify-start">
+                  <Link href="/goal-bank">
+                    <ListTodo className="h-4 w-4 mr-2" />
+                    Generar Nueva Meta
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full justify-start">
+                  <Link href="/goals/new">
+                    <FilePlus2 className="h-4 w-4 mr-2" />
+                    Crear Meta Personalizada
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full justify-start">
+                  <Link href="/goals">
+                    <ArrowRight className="h-4 w-4 mr-2" />
+                    Ver Todas las Metas
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           </div>
