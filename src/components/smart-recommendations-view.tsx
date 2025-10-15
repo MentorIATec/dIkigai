@@ -32,6 +32,17 @@ export function SmartRecommendationsView({
 
   const { priorityGoal, complementaryGoal, longitudinalGoals, otherRecommendations } = recommendations;
 
+  // 🔍 DEBUG: Log de las recomendaciones recibidas
+  console.log('🎯 DEBUG SmartRecommendationsView - RECOMENDACIONES RECIBIDAS:', {
+    hasPriorityGoal: !!priorityGoal,
+    hasComplementaryGoal: !!complementaryGoal,
+    priorityGoalId: priorityGoal?.id,
+    complementaryGoalId: complementaryGoal?.id,
+    priorityGoalBadge: priorityGoal?.badge,
+    complementaryGoalBadge: complementaryGoal?.badge,
+    stage
+  });
+
   // Detectar si son recomendaciones complementarias (puntajes altos)
   const isComplementaryMode = priorityGoal && 
     priorityGoal.badge === 'Complementaria' && 

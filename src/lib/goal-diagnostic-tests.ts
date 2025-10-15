@@ -193,51 +193,72 @@ export const goalDiagnosticTests: StageDiagnosticTest[] = stageDiagnosticBankSch
         ],
       },
       {
-        key: 'meta_exatec',
-        title: '2️⃣ Pensando en mi primer año como EXATEC, ¿cuál es mi meta principal?',
+        key: 'tipo_meta_post_graduacion',
+        title: '2️⃣ ¿Qué tipo de meta profesional tengo más clara para mi primer año como EXATEC?',
         options: [
-          '📈 Consolidarme en un empleo que me apasione.',
-          '🎓 Adquirir certificaciones o especializarme en mi área.',
-          '💡 Emprender o hacer crecer mi negocio.',
-          '📚 Aplicar a un posgrado.',
-          '❓ Aún lo estoy definiendo.',
+          '💼 Consolidarme en un empleo que me apasione.',
+          '🎓 Aplicar a un posgrado en el extranjero.',
+          '🚀 Emprender o hacer crecer mi negocio.',
+          '📜 Adquirir certificaciones profesionales.',
+          '🔍 Aún estoy explorando mis opciones.',
         ],
         focusAreas: [
           {
             dimension: 'Ocupacional',
-            categoria: 'ocupacional',
-            label: 'Definición de metas profesionales post-graduación',
+            categoria: 'tipo_meta_post_graduacion',
+            label: 'Especificación de tipo de meta profesional',
           },
         ],
       },
       {
-        key: 'balance_vida',
-        title:
-          '3️⃣ Más allá de lo profesional, ¿cómo me siento con mi balance de vida en esta etapa de transición?',
+        key: 'preparacion_financiera',
+        title: '3️⃣ ¿Qué tan preparado/a estoy financieramente para la transición post-graduación?',
         options: [
-          '✨ Con energía y equilibrio entre mis metas.',
-          '🧘 Enfocado/a principalmente en mi carrera.',
-          '😩 Un poco abrumado/a, me cuesta encontrar balance.',
-          '🤔 Inseguro/a, no he pensado en mis metas personales.',
+          '💰 Tengo un plan financiero sólido y ahorros.',
+          '💳 Tengo algunos ahorros pero necesito más planificación.',
+          '📊 Tengo poco ahorro, necesito crear un presupuesto.',
+          '😅 No he pensado en mi situación financiera post-graduación.',
+        ],
+        focusAreas: [
+          {
+            dimension: 'Financiera',
+            categoria: 'preparacion_financiera',
+            label: 'Preparación financiera para la transición',
+          },
+        ],
+      },
+      {
+        key: 'red_profesional',
+        title: '4️⃣ ¿Cómo evalúas tu red profesional actual?',
+        options: [
+          '🔗 Tengo una red sólida y activa en LinkedIn.',
+          '👥 Tengo contactos pero necesito expandir mi red.',
+          '🤷 Tengo pocos contactos profesionales relevantes.',
+          '📱 No he desarrollado mi red profesional aún.',
+        ],
+        focusAreas: [
+          {
+            dimension: 'Social',
+            categoria: 'red_profesional',
+            label: 'Desarrollo y mantenimiento de red profesional',
+          },
+        ],
+      },
+      {
+        key: 'bienestar_integral',
+        title: '5️⃣ ¿En qué dimensión del bienestar sientes que necesitas más apoyo durante esta transición?',
+        options: [
+          '💪 Bienestar físico (ejercicio, salud).',
+          '🧘 Bienestar emocional (estrés, ansiedad).',
+          '✨ Bienestar espiritual (propósito, valores).',
+          '🤝 Bienestar social (relaciones, comunidad).',
+          '⚖️ Me siento equilibrado/a en todas las dimensiones.',
         ],
         focusAreas: [
           {
             dimension: 'Emocional',
-            categoria: 'emocional',
-            label: 'Gestión emocional y balance de vida',
-          },
-        ],
-      },
-      {
-        key: 'preparacion_profesional',
-        title:
-          '4️⃣ En una escala del 1 al 5, ¿qué tan preparado/a se siente el/la estudiante para los retos del mundo profesional (entrevistas, negociaciones, adaptación)?',
-        options: ['1', '2', '3', '4', '5'],
-        focusAreas: [
-          {
-            dimension: 'Ocupacional',
-            categoria: 'ocupacional',
-            label: 'Preparación integral para reclutamiento y entrevistas',
+            categoria: 'bienestar_integral',
+            label: 'Bienestar integral durante la transición',
           },
         ],
       },

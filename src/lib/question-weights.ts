@@ -108,6 +108,12 @@ export const QUESTION_WEIGHTS: Record<SemesterStage, StageQuestionConfig> = {
       weight: 0.4,
       urgencyThreshold: 2,
       label: 'certificación de idioma para intercambio'
+    },
+    mentoria: {
+      dimension: 'Social',
+      weight: 0.3,
+      urgencyThreshold: 3,
+      label: 'desarrollo de liderazgo y mentoría'
     }
   },
 
@@ -121,23 +127,77 @@ export const QUESTION_WEIGHTS: Record<SemesterStage, StageQuestionConfig> = {
       urgencyThreshold: 2,
       label: 'situación profesional actual'
     },
-    meta_exatec: {
+    posgrado: {
       dimension: 'Ocupacional',
+      weight: 0.4,
+      urgencyThreshold: 3,
+      label: 'exploración de posgrados y becas'
+    },
+    presupuesto_egresado: {
+      dimension: 'Ocupacional',
+      weight: 0.3,
+      urgencyThreshold: 3,
+      label: 'planeación financiera post-graduación'
+    },
+    certificacion_profesional: {
+      dimension: 'Intelectual',
+      weight: 0.4,
+      urgencyThreshold: 3,
+      label: 'certificaciones profesionales'
+    },
+    desarrollo_continuo: {
+      dimension: 'Intelectual',
+      weight: 0.3,
+      urgencyThreshold: 3,
+      label: 'actualización profesional continua'
+    },
+    servicio_social: {
+      dimension: 'Ocupacional',
+      weight: 0.3,
+      urgencyThreshold: 3,
+      label: 'completar horas de servicio social'
+    },
+    bienestar_fisico: {
+      dimension: 'Física',
+      weight: 0.3,
+      urgencyThreshold: 3,
+      label: 'mantenimiento de bienestar físico'
+    },
+    eventos_tec: {
+      dimension: 'Social',
+      weight: 0.2,
+      urgencyThreshold: 3,
+      label: 'participación en eventos institucionales'
+    },
+    transicion_profesional: {
+      dimension: 'Emocional',
+      weight: 0.4,
+      urgencyThreshold: 2,
+      label: 'manejo emocional de la transición'
+    },
+    tipo_meta_post_graduacion: {
+      dimension: 'Ocupacional',
+      weight: 0.8,
+      urgencyThreshold: 3,
+      label: 'definición de tipo de meta profesional post-graduación'
+    },
+    preparacion_financiera: {
+      dimension: 'Financiera',
       weight: 0.7,
       urgencyThreshold: 3,
-      label: 'meta para tu primer año como EXATEC'
+      label: 'preparación financiera para la transición'
     },
-    balance_vida: {
-      dimension: 'Emocional',
+    red_profesional: {
+      dimension: 'Social',
       weight: 0.6,
-      urgencyThreshold: 2,
-      label: 'balance de vida en esta transición'
-    },
-    preparacion_profesional: {
-      dimension: 'Ocupacional',
-      weight: 0.5,
       urgencyThreshold: 3,
-      label: 'preparación para retos profesionales'
+      label: 'desarrollo y mantenimiento de red profesional'
+    },
+    bienestar_integral: {
+      dimension: 'Emocional',
+      weight: 0.5,
+      urgencyThreshold: 2,
+      label: 'bienestar integral durante la transición'
     }
   },
 
@@ -168,6 +228,30 @@ export const QUESTION_WEIGHTS: Record<SemesterStage, StageQuestionConfig> = {
       weight: 0.5, // COMPLEMENTARIA: Preparación para entrevistas y negociaciones
       urgencyThreshold: 3,
       label: 'preparación para retos profesionales'
+    },
+    proyecto_cv: {
+      dimension: 'Ocupacional',
+      weight: 0.4, // COMPLEMENTARIA: Proyectos de alto impacto para CV
+      urgencyThreshold: 3,
+      label: 'desarrollo de proyectos de alto impacto'
+    },
+    certificacion_profesional: {
+      dimension: 'Intelectual',
+      weight: 0.3, // COMPLEMENTARIA: Certificaciones profesionales
+      urgencyThreshold: 3,
+      label: 'certificaciones profesionales'
+    },
+    premio_life: {
+      dimension: 'Espiritual',
+      weight: 0.3, // COMPLEMENTARIA: Documentar trayectoria para premios
+      urgencyThreshold: 3,
+      label: 'documentar trayectoria para reconocimientos'
+    },
+    networking_profesional: {
+      dimension: 'Social',
+      weight: 0.4, // COMPLEMENTARIA: Networking profesional
+      urgencyThreshold: 3,
+      label: 'desarrollo de red profesional'
     }
   },
 

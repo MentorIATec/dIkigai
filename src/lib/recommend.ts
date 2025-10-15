@@ -301,7 +301,7 @@ function findComplementaryGoal(params: {
         dimension: goal.dimension,
         reason: `Meta complementaria de dimensión ${dimension}`
       });
-      return { goal, question: { key: goal.categoria, score: 2, weight: 1 } }; // Pseudo-question
+      return { goal, question: { key: goal.categoria, score: 2, weight: 1, label: `desarrollo en ${dimension.toLowerCase()}` } }; // Pseudo-question
     }
   }
 
@@ -315,7 +315,7 @@ function findComplementaryGoal(params: {
       dimension: fallbackGoal.dimension,
       reason: 'Meta aleatoria complementaria'
     });
-    return { goal: fallbackGoal, question: { key: fallbackGoal.categoria, score: 2, weight: 1 } };
+    return { goal: fallbackGoal, question: { key: fallbackGoal.categoria, score: 2, weight: 1, label: `desarrollo en ${fallbackGoal.dimension.toLowerCase()}` } };
   }
 
   console.log('❌ TODAS LAS ESTRATEGIAS FALLARON - No se encontró meta complementaria');
@@ -407,6 +407,35 @@ function generateComplementaryRecommendations(params: {
 }
 
 /**
+ * Genera una razón específica basada en la respuesta del usuario
+ */
+function generateSpecificReason(question: DimensionScore['questions'][0], dimension: string): string {
+  const lowScoreReasons: { [key: string]: string } = {
+    'preparacion_financiera': 'Tu preparación financiera necesita atención',
+    'tipo_meta_post_graduacion': 'Tu claridad profesional necesita desarrollo',
+    'red_profesional': 'Tu red profesional necesita fortalecimiento',
+    'bienestar_integral': 'Tu bienestar integral necesita cuidado',
+    'situacion_profesional': 'Tu situación profesional necesita definición'
+  };
+
+  const highScoreReasons: { [key: string]: string } = {
+    'preparacion_financiera': 'Fortalece tu planificación financiera',
+    'tipo_meta_post_graduacion': 'Consolida tu visión profesional',
+    'red_profesional': 'Amplía tu red profesional',
+    'bienestar_integral': 'Mantén tu bienestar integral',
+    'situacion_profesional': 'Optimiza tu situación profesional'
+  };
+
+  if (question.score <= 2) {
+    return lowScoreReasons[question.key] || `Tu ${question.label.toLowerCase()} necesita atención`;
+  } else if (question.score >= 4) {
+    return highScoreReasons[question.key] || `Fortalece tu ${question.label.toLowerCase()}`;
+  } else {
+    return `Mejora tu ${question.label.toLowerCase()}`;
+  }
+}
+
+/**
  * Genera recomendaciones inteligentes basadas en el diagnóstico
  */
 export function generateSmartRecommendations(
@@ -481,13 +510,15 @@ export function generateSmartRecommendations(
   // 4. VERIFICAR SI ES URGENTE
   const isUrgent = isQuestionUrgent(stage, priorityQuestion.key, priorityQuestion.score);
 
-  // 5. SELECCIONAR META PRIORITARIA
+  // 5. SELECCIONAR META PRIORITARIA (mejorar para ser más específica)
   const priorityGoalData = findBestMatch({
     dimension: priorityDimension.dimension,
     categoria: priorityQuestion.key,
     stage,
     excludeLongitudinal: true,
-    excludeIds: selectedGoalIds
+    excludeIds: selectedGoalIds,
+    // Priorizar metas más específicas sobre genéricas
+    preferredCategories: [priorityQuestion.key, 'certificacion_profesional', 'preparacion_financiera', 'transicion_profesional']
   });
 
   const priorityGoal: RecommendedGoal | null = priorityGoalData
@@ -495,7 +526,7 @@ export function generateSmartRecommendations(
         id: priorityGoalData.id,
         goal: priorityGoalData,
         score: priorityQuestion.score,
-        reason: `Tu ${priorityQuestion.label} necesita atención`,
+        reason: generateSpecificReason(priorityQuestion, priorityDimension.dimension),
         badge: isUrgent ? 'Urgente' : 'Prioritaria',
         isUrgent
       }
@@ -525,7 +556,7 @@ export function generateSmartRecommendations(
         id: complementaryData.goal.id,
         goal: complementaryData.goal,
         score: complementaryData.question.score,
-        reason: `Fortalece tu ${complementaryData.question.label}`,
+        reason: generateSpecificReason(complementaryData.question, complementaryData.goal.dimension),
         badge: 'Complementaria'
       }
     : null;

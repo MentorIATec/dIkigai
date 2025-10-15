@@ -811,6 +811,33 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
         metaSmarter: 'Asistir semanalmente a Punto Blanco para mindfulness y reflexión.',
         pasosAccion:
           'Ubicar Punto Blanco en campus; Revisar horario de actividades; Apartar 1 hora semanal fija; Llevar diario de reflexiones.'
+      },
+      {
+        id: 'ENF_OCP05',
+        dimension: 'Ocupacional',
+        categoria: 'servicio_social',
+        metaSmarter:
+          'Completar 100 horas de Servicio Social Comunitario este semestre.',
+        pasosAccion:
+          'Calcular horas faltantes en Mi Tec; Buscar proyectos disponibles 2do/3er periodo; Inscribirse antes del cierre de convocatoria; Comprometerse con horario fijo semanal.'
+      },
+      {
+        id: 'ENF_SOC05',
+        dimension: 'Social',
+        categoria: 'mentoria',
+        metaSmarter:
+          'Ser mentor/a voluntario/a para estudiantes de primeros semestres.',
+        pasosAccion:
+          'Contactar a mi mentor/a actual; Preguntar sobre oportunidades de mentoría (programa Peer, por ejemplo); Definir horas semanales para apoyo; Crear plan de acompañamiento.'
+      },
+      {
+        id: 'ENF_INT05',
+        dimension: 'Intelectual',
+        categoria: 'idioma',
+        metaSmarter:
+          'Alcanzar nivel B2 en francés/alemán para intercambio europeo.',
+        pasosAccion:
+          'Inscribirse a curso intensivo; Practicar 1 hora diaria con apps; Sesiones conversación 2x semana; Ver contenido en idioma target.'
       }
     ]
   },
@@ -849,20 +876,20 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
       {
         id: 'ESP_OCP04_NEW',
         dimension: 'Ocupacional',
-        categoria: 'ocupacional',
+        categoria: 'posgrado',
         metaSmarter:
-          'Establecer una fecha de finalización y entregar el 95% del proyecto de titulación o Semestre Tec en el plazo de 8 semanas.',
+          'Buscar opciones de posgrados en el extranjero y aplicar a becas disponibles.',
         pasosAccion:
-          'Revisar el cronograma oficial y establecer fechas límite internas; Reunirme con mi asesor/a semanalmente; Dedicar 10 horas semanales al proyecto; Entregar un borrador completo del 95%.'
+          'Acudir al próximo EmpleaTec; Indagar por mi cuenta con profesores/socios formadores en mi área; Investigar 5 universidades extranjeras; Preparar documentos de aplicación.'
       },
       {
         id: 'ESP_OCP05_ORIG',
         dimension: 'Ocupacional',
-        categoria: 'ocupacional',
+        categoria: 'presupuesto_egresado',
         metaSmarter:
-          'Diseñar propuesta de Semestre Tec alineada a mi especialización y validarla en 3 semanas.',
+          'Planear un nuevo presupuesto como recién egresado en 4 semanas.',
         pasosAccion:
-          'Investigar 3 opciones de concentración; Entrevistar a 2 exalumnos/as; Crear un plan de estudios preliminar; Validar con el/la coordinador/a.'
+          'Calcular gastos mensuales estimados post-graduación; Investigar salarios promedio en mi área; Crear plan de ahorro para transición; Establecer fondo de emergencia de 3 meses.'
       },
       {
         id: 'ESP_OCP06_ORIG',
@@ -876,19 +903,19 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
       {
         id: 'ESP_INT01_ORIG',
         dimension: 'Intelectual',
-        categoria: 'intelectual',
+        categoria: 'certificacion_profesional',
         metaSmarter:
-          'Obtener puntaje alto en el examen TOEFL o IELTS para intercambio o posgrado en 6 semanas.',
+          'Completar una certificación profesional relevante para mi área en 8 semanas.',
         pasosAccion:
-          'Registrar fecha de examen; Tomar diagnóstico gratuito; Estudiar 2 horas diarias; Practicar con simulacros semanales.'
+          'Identificar certificación clave para mi carrera; Inscribirme al programa; Dedicar 5 horas semanales al estudio; Completar examen final.'
       },
       {
         id: 'ESP_INT02_ORIG',
         dimension: 'Intelectual',
-        categoria: 'intelectual',
-        metaSmarter: 'Alcanzar nivel B2 en francés/alemán para intercambio europeo.',
+        categoria: 'desarrollo_continuo',
+        metaSmarter: 'Mantener actualización continua en mi área profesional.',
         pasosAccion:
-          'Inscribirse a curso intensivo; Practicar 1 hora diaria con apps; Sesiones conversación 2x semana; Ver contenido en idioma target.'
+          'Suscribirme a 3 newsletters de mi industria; Completar 1 curso online por mes; Asistir a 2 webinars profesionales; Crear resumen mensual de tendencias.'
       },
       {
         id: 'ESP_INT03_ORIG',
@@ -995,6 +1022,15 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
           'Buscar cursos en plataformas como la CONDUSEF o Coursera; Inscribirme y completar el primer módulo esta semana; Aplicar un consejo aprendido inmediatamente.'
       },
       {
+        id: 'ESP_FIN05_NEW',
+        dimension: 'Financiera',
+        categoria: 'preparacion_financiera',
+        metaSmarter:
+          'Crear mi plan financiero post-graduación con presupuesto de egresado en 6 semanas.',
+        pasosAccion:
+          'Investigar costos de vida en mi ciudad objetivo; Calcular mis gastos básicos mensuales; Establecer meta de ahorro para los primeros 3 meses; Crear fondo de emergencia de 3 meses de gastos.'
+      },
+      {
         id: 'ESP_ESP01_ORIG',
         dimension: 'Espiritual',
         categoria: 'espiritual',
@@ -1004,12 +1040,45 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
           'Revisar requisitos de Premio LiFE esta semana; Crear carpeta digital con evidencias; Documentar actividades de voluntariado/a; Recopilar cartas de recomendación; Redactar ensayo de aplicación.'
       },
       {
-        id: 'ESP_ESP02_ORIG',
+        id: 'ESP_ESP02_NEW',
         dimension: 'Espiritual',
-        categoria: 'espiritual',
+        categoria: 'bienestar_integral',
+        metaSmarter:
+          'Reflexionar sobre mi propósito y valores para la transición post-graduación en 4 semanas.',
+        pasosAccion:
+          'Completar el test de valores en Mi Tec; Escribir mi declaración de propósito personal; Identificar cómo mi carrera se alinea con mis valores; Crear plan de acción para vivir mi propósito.'
+      },
+      {
+        id: 'ESP_ESP02_ORIG',
+        dimension: 'Ocupacional',
+        categoria: 'servicio_social',
         metaSmarter: 'Completar 100 horas de Servicio Social Comunitario este semestre.',
         pasosAccion:
           'Calcular horas faltantes en Mi Tec; Buscar proyectos disponibles 2do/3er periodo; Inscribirse antes del cierre de convocatoria; Comprometerse con horario fijo semanal.'
+      },
+      {
+        id: 'ESP_FIS01_NEW',
+        dimension: 'Física',
+        categoria: 'bienestar_fisico',
+        metaSmarter: 'Buscar nuevos gimnasios por mi zona y mantener rutina de ejercicio.',
+        pasosAccion:
+          'Investigar 3 gimnasios cercanos a mi ubicación; Comparar precios y servicios; Hacer trial de 1 semana en cada uno; Establecer rutina de 3 veces por semana.'
+      },
+      {
+        id: 'ESP_SOC01_NEW',
+        dimension: 'Social',
+        categoria: 'eventos_tec',
+        metaSmarter: 'Participar en los eventos de Por Siempre Tec para disfrutar mi último semestre.',
+        pasosAccion:
+          'Revisar calendario de eventos Por Siempre Tec; Inscribirme a 3 eventos que me interesen; Asistir con compañeros de generación; Documentar experiencias para el recuerdo.'
+      },
+      {
+        id: 'ESP_EMO01_NEW',
+        dimension: 'Emocional',
+        categoria: 'transicion_profesional',
+        metaSmarter: 'Acudir a consejería para ayudarme a lidiar con las emociones de la transición a mi vida profesional.',
+        pasosAccion:
+          'Agendar cita con consejería estudiantil; Preparar lista de preocupaciones sobre la transición; Asistir a 4 sesiones mensuales; Aplicar estrategias de manejo emocional.'
       }
     ]
   },
@@ -1276,9 +1345,9 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
         dimension: 'Ocupacional',
         categoria: 'carrera',
         metaSmarter:
-          'Completar exitosamente la defensa de tesis o proyecto final en el plazo establecido.',
+          'Optimizar mi perfil profesional para la búsqueda de empleo en 6 semanas.',
         pasosAccion:
-          'Revisar cronograma oficial; Establecer fechas límite internas; Reunirse semanalmente con asesor/a; Entregar borrador completo 2 semanas antes de la defensa.'
+          'Actualizar CV con logros recientes; Optimizar perfil LinkedIn; Preparar portfolio de proyectos; Practicar entrevistas técnicas.'
       },
       {
         id: 'GRA_OCP02',
@@ -1299,15 +1368,6 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
           'Identificar profesionales clave; Conectar en LinkedIn; Asistir a 3 eventos de networking; Mantener comunicación regular.'
       },
       {
-        id: 'GRA_INT01',
-        dimension: 'Intelectual',
-        categoria: 'academico',
-        metaSmarter:
-          'Completar certificación profesional relevante para la industria en 8 semanas.',
-        pasosAccion:
-          'Identificar certificación clave; Inscribirse al programa; Dedicar 5 horas semanales; Completar examen final.'
-      },
-      {
         id: 'GRA_FIN01',
         dimension: 'Financiera',
         categoria: 'financiera',
@@ -1315,15 +1375,6 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
           'Crear plan financiero post-graduación con presupuesto de 6 meses en 4 semanas.',
         pasosAccion:
           'Calcular gastos mensuales; Establecer fondo de emergencia; Investigar opciones de inversión; Crear plan de ahorro.'
-      },
-      {
-        id: 'GRA_SOC01',
-        dimension: 'Social',
-        categoria: 'social',
-        metaSmarter:
-          'Mantener y fortalecer mi red profesional de 20 contactos relevantes durante los primeros 3 meses post-graduación.',
-        pasosAccion:
-          'Actualizar contactos en LinkedIn; Enviar mensajes de agradecimiento a mentores; Programar 2 coffee chats mensuales; Participar en 1 evento de networking profesional.'
       },
       {
         id: 'GRA_FIS01',
@@ -1335,7 +1386,7 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
           'Mantener 30 min de ejercicio 3 veces por semana; Establecer horario de sueño consistente; Preparar comidas saludables para la semana; Incluir 10 min de meditación diaria.'
       },
       {
-        id: 'GRA_ESP01',
+        id: 'GRA_ESP02',
         dimension: 'Espiritual',
         categoria: 'espiritual',
         metaSmarter:
@@ -1351,6 +1402,42 @@ const metasCuradasData: CuratedGoalStage[] = curatedGoalStagesSchema.parse([
           'Desarrollar estrategias de manejo de estrés para la transición profesional en 6 semanas.',
         pasosAccion:
           'Identificar fuentes de estrés; Aprender técnicas de relajación; Practicar mindfulness diario; Crear rutina de autocuidado.'
+      },
+      {
+        id: 'GRA_OCP04',
+        dimension: 'Ocupacional',
+        categoria: 'proyecto_cv',
+        metaSmarter:
+          'Diseñar 1 proyecto de alto impacto para mi CV.',
+        pasosAccion:
+          'Identificar problema de industria; Crear propuesta de solución; Buscar la persona mentora para feedback; Presentar proyecto final.'
+      },
+      {
+        id: 'GRA_INT02',
+        dimension: 'Intelectual',
+        categoria: 'certificacion_profesional',
+        metaSmarter:
+          'Completar certificación profesional relevante para la industria en 8 semanas.',
+        pasosAccion:
+          'Identificar certificación clave; Inscribirse al programa; Dedicar 5 horas semanales; Completar examen final.'
+      },
+      {
+        id: 'GRA_ESP03',
+        dimension: 'Espiritual',
+        categoria: 'premio_life',
+        metaSmarter:
+          'Documentar mi trayectoria para el Premio LIFE, completando el ensayo de aplicación en 6 semanas.',
+        pasosAccion:
+          'Revisar requisitos de Premio LIFE esta semana; Crear carpeta digital con evidencias; Documentar actividades de voluntariado; Recopilar cartas de recomendación; Redactar ensayo de aplicación.'
+      },
+      {
+        id: 'GRA_SOC02',
+        dimension: 'Social',
+        categoria: 'networking_profesional',
+        metaSmarter:
+          'Mantener y fortalecer mi red profesional de 20 contactos relevantes durante los primeros 3 meses post-graduación.',
+        pasosAccion:
+          'Actualizar contactos en LinkedIn; Enviar mensajes de agradecimiento a mentores; Programar 2 coffee chats mensuales; Participar en 1 evento de networking profesional.'
       }
     ]
   }

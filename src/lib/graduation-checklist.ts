@@ -43,33 +43,45 @@ export const GRADUATION_CHECKLIST: GraduationChecklist = {
       ]
     },
     {
-      key: 'meta_exatec',
-      text: '¿Qué tan claro tengo mi meta para mi primer año como EXATEC?',
+      key: 'tipo_meta_post_graduacion',
+      text: '¿Qué tipo de meta profesional tengo más clara para mi primer año como EXATEC?',
       options: [
-        { value: 1, label: 'Tengo un plan muy específico y detallado.', emoji: '🎯' },
-        { value: 2, label: 'Tengo una idea general pero necesito más detalles.', emoji: '💡' },
-        { value: 3, label: 'Tengo algunas ideas pero no están muy claras.', emoji: '🤔' },
-        { value: 4, label: 'No tengo claro qué quiero hacer después de graduarme.', emoji: '❓' }
+        { value: 1, label: 'Consolidarme en un empleo que me apasione.', emoji: '💼' },
+        { value: 2, label: 'Aplicar a un posgrado en el extranjero.', emoji: '🎓' },
+        { value: 3, label: 'Emprender o hacer crecer mi negocio.', emoji: '🚀' },
+        { value: 4, label: 'Adquirir certificaciones profesionales.', emoji: '📜' },
+        { value: 5, label: 'Aún estoy explorando mis opciones.', emoji: '🔍' }
       ]
     },
     {
-      key: 'balance_vida',
-      text: '¿Cómo manejo el balance de vida en esta transición?',
+      key: 'preparacion_financiera',
+      text: '¿Qué tan preparado/a estoy financieramente para la transición post-graduación?',
       options: [
-        { value: 1, label: 'Manejo muy bien el balance vida-trabajo-estudio.', emoji: '⚖️' },
-        { value: 2, label: 'Tengo un balance aceptable pero puedo mejorar.', emoji: '👍' },
-        { value: 3, label: 'Se me dificulta mantener un balance adecuado.', emoji: '😰' },
-        { value: 4, label: 'No logro balancear mis responsabilidades.', emoji: '😵' }
+        { value: 1, label: 'Tengo un plan financiero sólido y ahorros.', emoji: '💰' },
+        { value: 2, label: 'Tengo algunos ahorros pero necesito más planificación.', emoji: '💳' },
+        { value: 3, label: 'Tengo poco ahorro, necesito crear un presupuesto.', emoji: '📊' },
+        { value: 4, label: 'No he pensado en mi situación financiera post-graduación.', emoji: '😅' }
       ]
     },
     {
-      key: 'preparacion_profesional',
-      text: '¿Qué tan preparado/a estoy para retos profesionales?',
+      key: 'red_profesional',
+      text: '¿Cómo evalúas tu red profesional actual?',
       options: [
-        { value: 1, label: 'Me siento muy preparado/a para cualquier reto.', emoji: '💪' },
-        { value: 2, label: 'Me siento preparado/a para la mayoría de retos.', emoji: '👍' },
-        { value: 3, label: 'Me siento preparado/a para algunos retos básicos.', emoji: '🤷' },
-        { value: 4, label: 'No me siento preparado/a para retos profesionales.', emoji: '😅' }
+        { value: 1, label: 'Tengo una red sólida y activa en LinkedIn.', emoji: '🔗' },
+        { value: 2, label: 'Tengo contactos pero necesito expandir mi red.', emoji: '👥' },
+        { value: 3, label: 'Tengo pocos contactos profesionales relevantes.', emoji: '🤷' },
+        { value: 4, label: 'No he desarrollado mi red profesional aún.', emoji: '📱' }
+      ]
+    },
+    {
+      key: 'bienestar_integral',
+      text: '¿En qué dimensión del bienestar sientes que necesitas más apoyo durante esta transición?',
+      options: [
+        { value: 1, label: 'Bienestar físico (ejercicio, salud).', emoji: '💪' },
+        { value: 2, label: 'Bienestar emocional (estrés, ansiedad).', emoji: '🧘' },
+        { value: 3, label: 'Bienestar espiritual (propósito, valores).', emoji: '✨' },
+        { value: 4, label: 'Bienestar social (relaciones, comunidad).', emoji: '🤝' },
+        { value: 5, label: 'Me siento equilibrado/a en todas las dimensiones.', emoji: '⚖️' }
       ]
     }
   ]

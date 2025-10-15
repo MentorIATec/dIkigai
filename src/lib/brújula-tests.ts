@@ -129,41 +129,60 @@ export const BRUJULA_TESTS = {
         ],
       },
       {
-        key: "meta_exatec",
+        key: "tipo_meta_post_graduacion",
         title:
-          "2️⃣ Pensando en mi primer año como EXATEC, ¿cuál es mi meta principal?",
+          "2️⃣ ¿Qué tipo de meta profesional tengo más clara para mi primer año post-graduación?",
         options: [
-          "📈 Consolidarme en un empleo que me apasione.",
-          "🎓 Adquirir certificaciones o especializarme en mi área.",
-          "💡 Emprender o hacer crecer mi negocio.",
-          "📚 Aplicar a un posgrado.",
-          "❓ Aún lo estoy definiendo.",
+          "💼 Consolidarme en un empleo estable en mi área.",
+          "🎓 Obtener certificaciones profesionales específicas.",
+          "💡 Crecer mi emprendimiento o negocio propio.",
+          "📚 Aplicar a posgrados o especializaciones.",
+          "🌍 Explorar oportunidades internacionales.",
         ],
       },
       {
-        key: "balance_vida",
+        key: "preparacion_financiera",
         title:
-          "3️⃣ Más allá de lo profesional, ¿cómo me siento con mi balance de vida en esta etapa de transición?",
+          "3️⃣ ¿Qué tan preparado/a estoy financieramente para la transición post-graduación?",
         options: [
-          "✨ Con energía y equilibrio entre mis metas.",
-          "🧘 Enfocado/a principalmente en mi carrera.",
-          "😩 Un poco abrumado/a, me cuesta encontrar balance.",
-          "🤔 Inseguro/a, no he pensado en mis metas personales.",
+          "💰 Tengo ahorros y un plan financiero claro.",
+          "📊 Tengo algunos ahorros, pero necesito planificar mejor.",
+          "💸 Estoy justo/a, necesito estrategias para generar ingresos.",
+          "😰 Me preocupa mi situación financiera post-graduación.",
+          "❓ No he pensado en mi situación financiera.",
         ],
       },
       {
-        key: "preparacion_profesional",
+        key: "red_profesional",
         title:
-          "4️⃣ En una escala del 1 al 5, ¿qué tan preparado/a me siento para los retos del mundo profesional (entrevistas, negociaciones, adaptación)?",
-        options: ["1", "2", "3", "4", "5"],
+          "4️⃣ ¿Cómo evalúas tu red profesional actual?",
+        options: [
+          "🤝 Tengo una red sólida y activa en mi área.",
+          "👥 Tengo contactos, pero necesito fortalecerla.",
+          "🔗 Estoy construyendo mi red profesional activamente.",
+          "📱 Tengo pocos contactos relevantes en mi área.",
+          "😔 No tengo una red profesional desarrollada.",
+        ],
+      },
+      {
+        key: "bienestar_integral",
+        title:
+          "5️⃣ ¿En qué dimensión del bienestar sientes que necesitas más apoyo durante esta transición?",
+        options: [
+          "🧘 Bienestar emocional y manejo de estrés.",
+          "💪 Salud física y rutinas de autocuidado.",
+          "🤝 Relaciones personales y apoyo social.",
+          "🎯 Claridad de propósito y valores personales.",
+          "✨ Balance integral de todas las dimensiones.",
+        ],
       },
     ],
   },
   graduacion: {
     stageLabel: "Test Graduación",
-    title: "Brújula de Cambio de Etapa",
+    title: "Checklist de Graduación",
     description:
-      "Completa este diagnóstico para prepararte para tu siguiente etapa académica.",
+      "Valida tu preparación profesional, metas de primer año como EXATEC y balance de vida para una transición exitosa.",
     questions: [
       {
         key: "situacion_profesional",
@@ -177,33 +196,52 @@ export const BRUJULA_TESTS = {
         ],
       },
       {
-        key: "meta_exatec",
+        key: "tipo_meta_post_graduacion",
         title:
-          "2️⃣ Pensando en mi primer año como EXATEC, ¿cuál es mi meta principal?",
+          "2️⃣ ¿Qué tipo de meta profesional tengo más clara para mi primer año post-graduación?",
         options: [
-          "📈 Consolidarme en un empleo que me apasione.",
-          "🎓 Adquirir certificaciones o especializarme en mi área.",
-          "💡 Emprender o hacer crecer mi negocio.",
-          "📚 Aplicar a un posgrado.",
-          "❓ Aún lo estoy definiendo.",
+          "💼 Consolidarme en un empleo estable en mi área.",
+          "🎓 Obtener certificaciones profesionales específicas.",
+          "💡 Crecer mi emprendimiento o negocio propio.",
+          "📚 Aplicar a posgrados o especializaciones.",
+          "🌍 Explorar oportunidades internacionales.",
         ],
       },
       {
-        key: "balance_vida",
+        key: "preparacion_financiera",
         title:
-          "3️⃣ Más allá de lo profesional, ¿cómo me siento con mi balance de vida en esta etapa de transición?",
+          "3️⃣ ¿Qué tan preparado/a estoy financieramente para la transición post-graduación?",
         options: [
-          "✨ Con energía y equilibrio entre mis metas.",
-          "🧘 Enfocado/a principalmente en mi carrera.",
-          "😩 Un poco abrumado/a, me cuesta encontrar balance.",
-          "🤔 Inseguro/a, no he pensado en mis metas personales.",
+          "💰 Tengo ahorros y un plan financiero claro.",
+          "📊 Tengo algunos ahorros, pero necesito planificar mejor.",
+          "💸 Estoy justo/a, necesito estrategias para generar ingresos.",
+          "😰 Me preocupa mi situación financiera post-graduación.",
+          "❓ No he pensado en mi situación financiera.",
         ],
       },
       {
-        key: "preparacion_profesional",
+        key: "red_profesional",
         title:
-          "4️⃣ En una escala del 1 al 5, ¿qué tan preparado/a me siento para los retos del mundo profesional (entrevistas, negociaciones, adaptación)?",
-        options: ["1", "2", "3", "4", "5"],
+          "4️⃣ ¿Cómo evalúas tu red profesional actual?",
+        options: [
+          "🤝 Tengo una red sólida y activa en mi área.",
+          "👥 Tengo contactos, pero necesito fortalecerla.",
+          "🔗 Estoy construyendo mi red profesional activamente.",
+          "📱 Tengo pocos contactos relevantes en mi área.",
+          "😔 No tengo una red profesional desarrollada.",
+        ],
+      },
+      {
+        key: "bienestar_integral",
+        title:
+          "5️⃣ ¿En qué dimensión del bienestar sientes que necesitas más apoyo durante esta transición?",
+        options: [
+          "🧘 Bienestar emocional y manejo de estrés.",
+          "💪 Salud física y rutinas de autocuidado.",
+          "🤝 Relaciones personales y apoyo social.",
+          "🎯 Claridad de propósito y valores personales.",
+          "✨ Balance integral de todas las dimensiones.",
+        ],
       },
     ],
   },
