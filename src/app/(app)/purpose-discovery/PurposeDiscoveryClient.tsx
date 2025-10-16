@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { PurposeDiscoveryTest } from '@/components/purpose-discovery-test';
 import { PurposeInsightsView } from '@/components/purpose-insights-view';
+import { PurposeQuestionSelectorProgressive } from '@/components/purpose-question-selector-progressive';
 import { 
   type PurposeAnswer, 
   type PurposeProfile,
@@ -29,12 +30,13 @@ import {
 } from '@/lib/purpose-discovery';
 import { useToast } from '@/hooks/use-toast';
 
-type ViewState = 'intro' | 'test' | 'results';
+type ViewState = 'intro' | 'selector' | 'test' | 'results';
 
 export function PurposeDiscoveryClient() {
   const [currentView, setCurrentView] = useState<ViewState>('intro');
   const [purposeProfile, setPurposeProfile] = useState<PurposeProfile | null>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedQuestions, setSelectedQuestions] = useState<any[]>([]);
   const { toast } = useToast();
 
   // Cargar perfil existente al montar
@@ -57,6 +59,15 @@ export function PurposeDiscoveryClient() {
     } catch (error) {
       console.error('Error loading purpose profile:', error);
     }
+  };
+
+  const handleQuestionsSelected = (questions: any[]) => {
+    setSelectedQuestions(questions);
+    setCurrentView('test');
+  };
+
+  const handleBackToSelector = () => {
+    setCurrentView('selector');
   };
 
   const savePurposeProfile = async (answers: PurposeAnswer[], progress: number, stage: string) => {
@@ -142,12 +153,22 @@ export function PurposeDiscoveryClient() {
     setCurrentView('intro');
   };
 
+  if (currentView === 'selector') {
+    return (
+      <PurposeQuestionSelectorProgressive
+        onQuestionsSelected={handleQuestionsSelected}
+        onBack={() => setCurrentView('intro')}
+      />
+    );
+  }
+
   if (currentView === 'test') {
     return (
       <PurposeDiscoveryTest
         onComplete={handleTestComplete}
-        onBack={() => setCurrentView('intro')}
+        onBack={handleBackToSelector}
         existingAnswers={purposeProfile?.answers || []}
+        selectedQuestions={selectedQuestions}
       />
     );
   }
@@ -179,11 +200,11 @@ export function PurposeDiscoveryClient() {
           
           <div className="space-y-4">
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Descubrimiento del Propósito
+              Descubre tu Ikigai
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Un viaje guiado de autoconocimiento que te ayudará a descubrir tu propósito de vida 
-              a través de preguntas reflexivas y insights personalizados.
+              Un viaje guiado basado en el concepto japonés del Ikigai - tu "razón de ser" - 
+              que conecta lo que amas, lo que el mundo necesita, aquello por lo que te pagarían y en lo que eres bueno.
             </p>
           </div>
 
@@ -207,49 +228,60 @@ export function PurposeDiscoveryClient() {
           )}
         </div>
 
-        {/* Características principales */}
-        <div className="grid md:grid-cols-3 gap-6">
-          <Card className="text-center">
+        {/* Las 4 dimensiones del Ikigai */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="text-center border-red-200 bg-red-50">
             <CardHeader>
               <div className="flex justify-center mb-4">
                 <Heart className="h-12 w-12 text-red-500" />
               </div>
-              <CardTitle className="text-lg">Reflexión Profunda</CardTitle>
+              <CardTitle className="text-lg text-red-800">🔥 Pasión</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-base">
-                Preguntas cuidadosamente diseñadas para evocar autoconocimiento genuino 
-                y descubrir lo que realmente te motiva.
+              <CardDescription className="text-base text-red-700">
+                Lo que amas hacer y te hace sentir vivo y energizado.
               </CardDescription>
             </CardContent>
           </Card>
 
-          <Card className="text-center">
+          <Card className="text-center border-green-200 bg-green-50">
             <CardHeader>
               <div className="flex justify-center mb-4">
-                <Lightbulb className="h-12 w-12 text-yellow-500" />
+                <Target className="h-12 w-12 text-green-500" />
               </div>
-              <CardTitle className="text-lg">Insights Personalizados</CardTitle>
+              <CardTitle className="text-lg text-green-800">🌍 Misión</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-base">
-                Análisis inteligente de tus respuestas para generar insights únicos 
-                y pasos de acción específicos para tu crecimiento.
+              <CardDescription className="text-base text-green-700">
+                Lo que el mundo necesita y te motiva a crear impacto positivo.
               </CardDescription>
             </CardContent>
           </Card>
 
-          <Card className="text-center">
+          <Card className="text-center border-blue-200 bg-blue-50">
             <CardHeader>
               <div className="flex justify-center mb-4">
-                <Target className="h-12 w-12 text-blue-500" />
+                <Lightbulb className="h-12 w-12 text-blue-500" />
               </div>
-              <CardTitle className="text-lg">Propósito Claro</CardTitle>
+              <CardTitle className="text-lg text-blue-800">💼 Vocación</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-base">
-                Desarrolla una declaración de propósito personalizada que te guíe 
-                en tus decisiones y metas futuras.
+              <CardDescription className="text-base text-blue-700">
+                Aquello por lo que te pudieran pagar y tu trabajo ideal.
+              </CardDescription>
+            </CardContent>
+          </Card>
+
+          <Card className="text-center border-purple-200 bg-purple-50">
+            <CardHeader>
+              <div className="flex justify-center mb-4">
+                <Star className="h-12 w-12 text-purple-500" />
+              </div>
+              <CardTitle className="text-lg text-purple-800">⭐ Profesión</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-base text-purple-700">
+                En lo que eres bueno y donde otros reconocen tu expertise.
               </CardDescription>
             </CardContent>
           </Card>
@@ -267,49 +299,49 @@ export function PurposeDiscoveryClient() {
             <div className="grid md:grid-cols-4 gap-6">
               <div className="text-center space-y-3">
                 <div className="flex justify-center">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="font-bold text-blue-600">1</span>
+                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                    <span className="text-xl">🔥</span>
                   </div>
                 </div>
-                <h3 className="font-semibold">Explora</h3>
+                <h3 className="font-semibold">Pasión</h3>
                 <p className="text-sm text-muted-foreground">
-                  Responde preguntas reflexivas sobre tus valores, pasiones y visión
+                  Descubre lo que amas hacer y te energiza
                 </p>
               </div>
               
               <div className="text-center space-y-3">
                 <div className="flex justify-center">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="font-bold text-green-600">2</span>
+                    <span className="text-xl">🌍</span>
                   </div>
                 </div>
-                <h3 className="font-semibold">Descubre</h3>
+                <h3 className="font-semibold">Misión</h3>
                 <p className="text-sm text-muted-foreground">
-                  Recibe insights personalizados basados en tus respuestas
+                  Identifica cómo quieres impactar al mundo
                 </p>
               </div>
               
               <div className="text-center space-y-3">
                 <div className="flex justify-center">
-                  <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <span className="font-bold text-yellow-600">3</span>
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-xl">💼</span>
                   </div>
                 </div>
-                <h3 className="font-semibold">Define</h3>
+                <h3 className="font-semibold">Vocación</h3>
                 <p className="text-sm text-muted-foreground">
-                  Crea tu declaración de propósito personalizada
+                  Define tu trabajo ideal y ambiente profesional
                 </p>
               </div>
               
               <div className="text-center space-y-3">
                 <div className="flex justify-center">
                   <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                    <span className="font-bold text-purple-600">4</span>
+                    <span className="text-xl">⭐</span>
                   </div>
                 </div>
-                <h3 className="font-semibold">Actúa</h3>
+                <h3 className="font-semibold">Profesión</h3>
                 <p className="text-sm text-muted-foreground">
-                  Recibe pasos concretos para vivir tu propósito
+                  Reconoce tus fortalezas y áreas de expertise
                 </p>
               </div>
             </div>
@@ -321,14 +353,14 @@ export function PurposeDiscoveryClient() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <div className="text-2xl font-bold text-blue-600">{PURPOSE_QUESTIONS.length}</div>
-              <div className="text-sm text-muted-foreground">Preguntas Curadas</div>
+              <div className="text-sm text-muted-foreground">Preguntas Ikigai</div>
             </CardContent>
           </Card>
           
           <Card className="text-center">
             <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-green-600">8</div>
-              <div className="text-sm text-muted-foreground">Categorías</div>
+              <div className="text-2xl font-bold text-green-600">4</div>
+              <div className="text-sm text-muted-foreground">Dimensiones</div>
             </CardContent>
           </Card>
           
@@ -352,21 +384,21 @@ export function PurposeDiscoveryClient() {
           <CardContent className="pt-8">
             <div className="text-center space-y-6">
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold">¿Listo para Descubrir Tu Propósito?</h2>
+                <h2 className="text-2xl font-bold">¿Listo para Descubrir Tu Ikigai?</h2>
                 <p className="text-muted-foreground max-w-xl mx-auto">
-                  Comienza tu viaje de autoconocimiento ahora. No hay respuestas correctas o incorrectas, 
-                  solo tu verdad más profunda esperando ser descubierta.
+                  Comienza tu viaje hacia encontrar tu "razón de ser". Conecta lo que amas, 
+                  lo que el mundo necesita, aquello por lo que te pagarían y en lo que eres bueno.
                 </p>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  onClick={() => setCurrentView('test')}
+                  onClick={() => setCurrentView('selector')}
                   className="flex items-center space-x-2"
                 >
                   <Play className="h-5 w-5" />
-                  <span>Iniciar Test</span>
+                  <span>Descubrir mi Ikigai</span>
                 </Button>
                 
                 {purposeProfile && purposeProfile.answers.length > 0 && (

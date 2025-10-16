@@ -25,8 +25,10 @@ import {
   type PurposeQuestion, 
   type PurposeAnswer,
   getRandomQuestions,
+  getQuestionsByCategory,
   calculateProgress,
-  determineStage
+  determineStage,
+  type PurposeCategory
 } from '@/lib/purpose-discovery';
 import { cn } from '@/lib/utils';
 
@@ -34,80 +36,21 @@ interface PurposeDiscoveryTestProps {
   onComplete: (answers: PurposeAnswer[], progress: number, stage: string) => void;
   onBack: () => void;
   existingAnswers?: PurposeAnswer[];
+  selectedQuestions?: any[];
 }
 
-interface GamificationState {
-  currentStreak: number;
+interface InspirationState {
   totalQuestionsAnswered: number;
   categoriesExplored: Set<string>;
-  achievements: Achievement[];
-  currentLevel: number;
-  xp: number;
+  currentDepth: 'surface' | 'deep' | 'profound';
+  insights: string[];
 }
-
-interface Achievement {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  unlocked: boolean;
-  unlockedAt?: Date;
-}
-
-const ACHIEVEMENTS: Achievement[] = [
-  {
-    id: 'first_step',
-    title: 'Primer Paso',
-    description: 'Completaste tu primera pregunta de propósito',
-    icon: <Star className="h-4 w-4" />,
-    unlocked: false
-  },
-  {
-    id: 'deep_thinker',
-    title: 'Pensador Profundo',
-    description: 'Respondiste 5 preguntas reflexivas',
-    icon: <Lightbulb className="h-4 w-4" />,
-    unlocked: false
-  },
-  {
-    id: 'explorer',
-    title: 'Explorador',
-    description: 'Exploraste 3 categorías diferentes',
-    icon: <Compass className="h-4 w-4" />,
-    unlocked: false
-  },
-  {
-    id: 'authentic',
-    title: 'Auténtico',
-    description: 'Completaste la sección de autoconocimiento',
-    icon: <Heart className="h-4 w-4" />,
-    unlocked: false
-  },
-  {
-    id: 'visionary',
-    title: 'Visionario',
-    description: 'Definiste tu visión de futuro',
-    icon: <Target className="h-4 w-4" />,
-    unlocked: false
-  },
-  {
-    id: 'purpose_master',
-    title: 'Maestro del Propósito',
-    description: 'Completaste el test completo',
-    icon: <Trophy className="h-4 w-4" />,
-    unlocked: false
-  }
-];
 
 const CATEGORY_EMOJIS = {
-  autoconocimiento: '🔍',
-  valores: '💎',
-  pasiones: '🔥',
-  talentes: '⭐',
-  impacto: '🌍',
-  vision_futura: '🚀',
-  obstaculos: '⚡',
-  recursos: '🛠️'
+  pasion: '🔥',      // Lo que amas
+  mision: '🌍',      // Lo que el mundo necesita  
+  vocacion: '💼',    // Aquello por lo que te pudieran pagar
+  profesion: '⭐'     // En lo que eres bueno
 };
 
 const DIFFICULTY_COLORS = {
@@ -116,118 +59,94 @@ const DIFFICULTY_COLORS = {
   hard: 'bg-red-100 text-red-800'
 };
 
-export function PurposeDiscoveryTest({ onComplete, onBack, existingAnswers = [] }: PurposeDiscoveryTestProps) {
+const DEPTH_LABELS = {
+  easy: '🟢 Fácil',
+  intermediate: '🟡 Intermedia',
+  challenging: '🔴 Introspectiva'
+};
+
+export function PurposeDiscoveryTest({ onComplete, onBack, existingAnswers = [], selectedQuestions = [] }: PurposeDiscoveryTestProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<PurposeAnswer[]>(existingAnswers);
   const [currentResponse, setCurrentResponse] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showAchievements, setShowAchievements] = useState(false);
-  const [gamification, setGamification] = useState<GamificationState>({
-    currentStreak: 0,
+  const [inspirationState, setInspirationState] = useState<InspirationState>({
     totalQuestionsAnswered: existingAnswers.length,
     categoriesExplored: new Set(existingAnswers.map(a => a.category)),
-    achievements: ACHIEVEMENTS,
-    currentLevel: 1,
-    xp: existingAnswers.length * 10
+    currentDepth: 'surface',
+    insights: []
   });
 
-  // Seleccionar preguntas de manera inteligente
-  const [selectedQuestions] = useState(() => {
+  // Usar preguntas seleccionadas o seleccionar automáticamente
+  const [questionsToAnswer] = useState(() => {
+    if (selectedQuestions.length > 0) {
+      return selectedQuestions;
+    }
+    
+    // Fallback: selección automática si no hay preguntas seleccionadas
     if (existingAnswers.length === 0) {
-      // Primera vez: empezar con preguntas fáciles de autoconocimiento
-      return getRandomQuestions(8, []).sort((a, b) => {
-        if (a.category === 'autoconocimiento' && b.category !== 'autoconocimiento') return -1;
-        if (a.difficulty === 'easy' && b.difficulty !== 'easy') return -1;
-        return 0;
+      const ikigaiOrder = ['pasion', 'mision', 'vocacion', 'profesion'];
+      const questions: PurposeQuestion[] = [];
+      
+      ikigaiOrder.forEach(category => {
+        const categoryQuestions = getQuestionsByCategory(category as PurposeCategory);
+        questions.push(...categoryQuestions.slice(0, 2));
       });
+      
+      return questions;
     } else {
-      // Continuar: llenar categorías faltantes
       const answeredCategories = new Set(existingAnswers.map(a => a.category));
-      const unansweredCategories = PURPOSE_QUESTIONS.filter(q => !answeredCategories.has(q.category));
-      return [...unansweredCategories.slice(0, 5), ...getRandomQuestions(3, existingAnswers.map(a => a.questionId))];
+      const ikigaiOrder = ['pasion', 'mision', 'vocacion', 'profesion'];
+      const questions: PurposeQuestion[] = [];
+      
+      ikigaiOrder.forEach(category => {
+        if (!answeredCategories.has(category)) {
+          const categoryQuestions = getQuestionsByCategory(category as PurposeCategory);
+          questions.push(...categoryQuestions.slice(0, 1));
+        }
+      });
+      
+      return questions;
     }
   });
 
-  const currentQuestion = selectedQuestions[currentQuestionIndex];
+  const currentQuestion = questionsToAnswer[currentQuestionIndex];
   const progress = calculateProgress(answers);
   const stage = determineStage(answers, progress);
 
-  // Efectos de gamificación
+  // Actualizar estado de inspiración
   useEffect(() => {
-    checkAchievements();
+    setInspirationState(prev => ({
+      ...prev,
+      totalQuestionsAnswered: answers.length,
+      categoriesExplored: new Set(answers.map(a => a.category)),
+      currentDepth: determineCurrentDepth(answers)
+    }));
   }, [answers]);
 
-  const checkAchievements = () => {
-    setGamification(prev => {
-      const newAchievements = [...prev.achievements];
-      
-      // Primer paso
-      if (prev.totalQuestionsAnswered >= 1 && !newAchievements[0].unlocked) {
-        newAchievements[0] = { ...newAchievements[0], unlocked: true, unlockedAt: new Date() };
-        setShowAchievements(true);
-      }
-      
-      // Pensador profundo
-      if (prev.totalQuestionsAnswered >= 5 && !newAchievements[1].unlocked) {
-        newAchievements[1] = { ...newAchievements[1], unlocked: true, unlockedAt: new Date() };
-        setShowAchievements(true);
-      }
-      
-      // Explorador
-      if (prev.categoriesExplored.size >= 3 && !newAchievements[2].unlocked) {
-        newAchievements[2] = { ...newAchievements[2], unlocked: true, unlockedAt: new Date() };
-        setShowAchievements(true);
-      }
-      
-      // Auténtico
-      if (answers.some(a => a.category === 'autoconocimiento') && !newAchievements[3].unlocked) {
-        newAchievements[3] = { ...newAchievements[3], unlocked: true, unlockedAt: new Date() };
-        setShowAchievements(true);
-      }
-      
-      // Visionario
-      if (answers.some(a => a.category === 'vision_futura') && !newAchievements[4].unlocked) {
-        newAchievements[4] = { ...newAchievements[4], unlocked: true, unlockedAt: new Date() };
-        setShowAchievements(true);
-      }
-      
-      // Maestro del propósito
-      if (progress >= 80 && !newAchievements[5].unlocked) {
-        newAchievements[5] = { ...newAchievements[5], unlocked: true, unlockedAt: new Date() };
-        setShowAchievements(true);
-      }
-
-      return {
-        ...prev,
-        achievements: newAchievements,
-        currentLevel: Math.floor((prev.xp + (answers.length - prev.totalQuestionsAnswered) * 10) / 50) + 1,
-        xp: prev.xp + (answers.length - prev.totalQuestionsAnswered) * 10
-      };
-    });
+  const determineCurrentDepth = (answers: PurposeAnswer[]): 'surface' | 'deep' | 'profound' => {
+    if (answers.length < 3) return 'surface';
+    if (answers.length < 7) return 'deep';
+    return 'profound';
   };
 
   const handleAnswerSubmit = () => {
     if (!currentResponse.trim()) return;
 
-    const newAnswer: PurposeAnswer = {
-      questionId: currentQuestion.id,
-      response: currentResponse.trim(),
-      timestamp: new Date(),
-      category: currentQuestion.category,
-      type: currentQuestion.type,
-      difficulty: currentQuestion.difficulty
-    };
+      const newAnswer: PurposeAnswer = {
+        questionId: currentQuestion.id,
+        response: currentResponse.trim(),
+        timestamp: new Date(),
+        category: currentQuestion.category,
+        type: currentQuestion.type,
+        difficulty: currentQuestion.difficulty,
+        depth: currentQuestion.depth,
+        wordCount: currentResponse.trim().split(/\s+/).length
+      };
 
     const newAnswers = [...answers, newAnswer];
     setAnswers(newAnswers);
     setCurrentResponse('');
-
-    setGamification(prev => ({
-      ...prev,
-      totalQuestionsAnswered: newAnswers.length,
-      categoriesExplored: new Set(newAnswers.map(a => a.category)),
-      currentStreak: prev.currentStreak + 1
-    }));
 
     if (currentQuestionIndex < selectedQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -260,23 +179,61 @@ export function PurposeDiscoveryTest({ onComplete, onBack, existingAnswers = [] 
     return CATEGORY_EMOJIS[category as keyof typeof CATEGORY_EMOJIS] || '📝';
   };
 
-  const getMotivationalMessage = () => {
-    const messages = [
-      "¡Excelente reflexión! Cada respuesta te acerca más a tu propósito.",
-      "Tu autenticidad brilla en cada palabra. Continúa así.",
-      "Estás descubriendo aspectos increíbles de ti mismo.",
-      "La claridad viene con la reflexión. ¡Sigue adelante!",
-      "Cada pregunta es una semilla de autoconocimiento."
-    ];
-    return messages[Math.floor(Math.random() * messages.length)];
-  };
 
   const getCurrentPrompt = () => {
     if (!currentQuestion) return '';
-    return currentQuestion.prompts[Math.floor(Math.random() * currentQuestion.prompts.length)];
+    return currentQuestion.basePrompt;
   };
 
-  if (currentQuestionIndex >= selectedQuestions.length) {
+  const getCurrentExamples = () => {
+    if (!currentQuestion) return [];
+    return currentQuestion.examples || [];
+  };
+
+  const getReflectionLevel = (length: number): string => {
+    if (length < 50) return 'Explorando';
+    if (length < 150) return 'Profundizando';
+    if (length < 300) return 'Excelente';
+    return 'Extraordinario';
+  };
+
+  const getMotivationalMessage = (length: number): string | null => {
+    if (length < 20) return null;
+    if (length < 50) return '¡Buen comienzo! Sigue desarrollando tus ideas...';
+    if (length < 100) return '¡Excelente! Cada detalle enriquece tu reflexión.';
+    if (length < 150) return '¡Muy bien! Tu reflexión está tomando forma claramente.';
+    if (length < 200) return '¡Fantástico! Estás construyendo una reflexión muy sólida.';
+    if (length < 300) return '¡Increíble! Tu profundidad de reflexión es notable.';
+    return '¡Extraordinario! Tu nivel de introspección es excepcional.';
+  };
+
+  const getPlaceholderExamples = (category: string) => {
+    const currentExamples = getCurrentExamples();
+    if (currentExamples.length > 0) {
+      return currentExamples.join(', ') + '...';
+    }
+    
+    // Fallback a ejemplos genéricos por categoría
+    const examples = {
+      pasion: 'Leer sobre tecnología, debatir ideas, crear contenido, organizar eventos, practicar un deporte...',
+      mision: 'La desinformación, el acceso a la educación, la sostenibilidad ambiental, la salud mental...',
+      vocacion: 'Analizar datos, diseñar interfaces, liderar equipos, hablar en público, resolver problemas...',
+      profesion: 'Matemáticas, redacción, organización de ideas, soporte técnico, dar buenos consejos...'
+    };
+    return examples[category as keyof typeof examples] || 'Piensa en ejemplos específicos de tu experiencia...';
+  };
+
+  const getTextareaPlaceholder = (category: string) => {
+    const placeholders = {
+      pasion: 'Describe las actividades que te hacen sentir más vivo y con más energía...',
+      mision: 'Explica los problemas que te gustaría ayudar a resolver y por qué te importan...',
+      vocacion: 'Detalla las habilidades que quieres desarrollar y el ambiente laboral ideal...',
+      profesion: 'Cuenta sobre tus fortalezas y las áreas donde otros te piden ayuda...'
+    };
+    return placeholders[category as keyof typeof placeholders] || 'Escribe tu reflexión aquí...';
+  };
+
+  if (currentQuestionIndex >= questionsToAnswer.length) {
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader className="text-center">
@@ -329,44 +286,31 @@ export function PurposeDiscoveryTest({ onComplete, onBack, existingAnswers = [] 
             </div>
             <div className="flex items-center space-x-2">
               <Badge variant="outline" className="text-xs">
-                Nivel {gamification.currentLevel}
+                {inspirationState.currentDepth === 'surface' ? 'Explorando' : 
+                 inspirationState.currentDepth === 'deep' ? 'Profundizando' : 'Revelando'}
               </Badge>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowAchievements(!showAchievements)}
-              >
-                <Trophy className="h-4 w-4" />
-                {showAchievements ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />}
-              </Button>
             </div>
           </div>
           
-          <Progress value={(currentQuestionIndex + 1) / selectedQuestions.length * 100} className="mt-2" />
-          <div className="flex justify-between text-xs text-muted-foreground mt-1">
-            <span>Pregunta {currentQuestionIndex + 1} de {selectedQuestions.length}</span>
-            <span>{Math.round((currentQuestionIndex + 1) / selectedQuestions.length * 100)}%</span>
-          </div>
+                <Progress value={(currentQuestionIndex + 1) / questionsToAnswer.length * 100} className="mt-2" />
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <span>Pregunta {currentQuestionIndex + 1} de {questionsToAnswer.length}</span>
+                  <span>{Math.round((currentQuestionIndex + 1) / questionsToAnswer.length * 100)}%</span>
+                </div>
         </CardHeader>
       </Card>
 
-      {/* Logros desbloqueados */}
-      {showAchievements && (
-        <Card className="border-yellow-200 bg-yellow-50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center">
-              <Sparkles className="h-4 w-4 mr-2 text-yellow-600" />
-              Logros Desbloqueados
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="grid grid-cols-2 gap-2">
-              {gamification.achievements.filter(a => a.unlocked).map(achievement => (
-                <div key={achievement.id} className="flex items-center space-x-2 text-xs">
-                  {achievement.icon}
-                  <span className="font-medium">{achievement.title}</span>
-                </div>
-              ))}
+      {/* Estado de inspiración */}
+      {inspirationState.currentDepth !== 'surface' && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="pt-4">
+            <div className="flex items-center space-x-2 text-sm">
+              <Lightbulb className="h-4 w-4 text-blue-600" />
+              <span className="text-blue-800">
+                {inspirationState.currentDepth === 'deep' 
+                  ? 'Estás profundizando en temas importantes' 
+                  : 'Descubriendo conexiones profundas en tus respuestas'}
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -379,13 +323,9 @@ export function PurposeDiscoveryTest({ onComplete, onBack, existingAnswers = [] 
             <div className="flex items-center space-x-2">
               <span className="text-2xl">{getCategoryIcon(currentQuestion.category)}</span>
               <Badge className={cn("text-xs", DIFFICULTY_COLORS[currentQuestion.difficulty])}>
-                {currentQuestion.difficulty === 'easy' ? 'Fácil' : 
-                 currentQuestion.difficulty === 'medium' ? 'Medio' : 'Difícil'}
+                {DEPTH_LABELS[currentQuestion.depth]}
               </Badge>
             </div>
-            <Badge variant="outline" className="text-xs">
-              ~{currentQuestion.estimatedTime} min
-            </Badge>
           </div>
           
           <CardTitle className="text-xl leading-relaxed">
@@ -410,13 +350,29 @@ export function PurposeDiscoveryTest({ onComplete, onBack, existingAnswers = [] 
             </div>
           </div>
 
+          {/* Placeholder con ejemplos */}
+          <div className="bg-muted/30 p-3 rounded-lg">
+            <p className="text-xs text-muted-foreground mb-2 flex items-center space-x-1">
+              <Lightbulb className="h-3 w-3" />
+              <span>Ejemplos para inspirarte:</span>
+            </p>
+            <div className="space-y-1">
+              {getCurrentExamples().map((example, index) => (
+                <div key={index} className="flex items-start space-x-2">
+                  <div className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full mt-1.5 flex-shrink-0"></div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{example}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Área de respuesta */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Tu respuesta:</label>
             <Textarea
               value={currentResponse}
               onChange={(e) => setCurrentResponse(e.target.value)}
-              placeholder="Escribe tu reflexión aquí... No hay respuestas correctas o incorrectas, solo tu verdad."
+              placeholder={getTextareaPlaceholder(currentQuestion.category)}
               className="min-h-[120px] resize-none"
             />
             <p className="text-xs text-muted-foreground">
@@ -424,15 +380,56 @@ export function PurposeDiscoveryTest({ onComplete, onBack, existingAnswers = [] 
             </p>
           </div>
 
-          {/* Mensaje motivacional */}
-          {currentResponse.length > 50 && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <div className="flex items-center space-x-2">
-                <Heart className="h-4 w-4 text-green-600" />
-                <p className="text-sm text-green-800">{getMotivationalMessage()}</p>
+        {/* Indicador de profundidad de reflexión */}
+        {currentResponse.length > 0 && (
+          <div className="space-y-3">
+            {/* Barra de progreso de reflexión */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Profundidad de reflexión</span>
+                <span>{getReflectionLevel(currentResponse.length)}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className={cn(
+                    "h-2 rounded-full transition-all duration-300",
+                    currentResponse.length < 50 ? "bg-yellow-400" :
+                    currentResponse.length < 150 ? "bg-blue-500" :
+                    currentResponse.length < 300 ? "bg-green-500" : "bg-purple-500"
+                  )}
+                  style={{ width: `${Math.min((currentResponse.length / 300) * 100, 100)}%` }}
+                />
               </div>
             </div>
-          )}
+
+            {/* Mensajes motivacionales contextuales */}
+            {getMotivationalMessage(currentResponse.length) && (
+              <div className={cn(
+                "border rounded-lg p-3 transition-all duration-300",
+                currentResponse.length < 50 ? "bg-yellow-50 border-yellow-200" :
+                currentResponse.length < 150 ? "bg-blue-50 border-blue-200" :
+                currentResponse.length < 300 ? "bg-green-50 border-green-200" : "bg-purple-50 border-purple-200"
+              )}>
+                <div className="flex items-center space-x-2">
+                  <Heart className={cn(
+                    "h-4 w-4",
+                    currentResponse.length < 50 ? "text-yellow-600" :
+                    currentResponse.length < 150 ? "text-blue-600" :
+                    currentResponse.length < 300 ? "text-green-600" : "text-purple-600"
+                  )} />
+                  <p className={cn(
+                    "text-sm",
+                    currentResponse.length < 50 ? "text-yellow-800" :
+                    currentResponse.length < 150 ? "text-blue-800" :
+                    currentResponse.length < 300 ? "text-green-800" : "text-purple-800"
+                  )}>
+                    {getMotivationalMessage(currentResponse.length)}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
           {/* Controles */}
           <div className="flex justify-between pt-4">
@@ -469,21 +466,21 @@ export function PurposeDiscoveryTest({ onComplete, onBack, existingAnswers = [] 
         </CardContent>
       </Card>
 
-      {/* Estadísticas rápidas */}
+      {/* Estadísticas de inspiración */}
       <Card className="bg-muted/30">
         <CardContent className="pt-4">
           <div className="flex justify-between text-sm">
             <div className="flex items-center space-x-1">
               <BookOpen className="h-4 w-4 text-muted-foreground" />
-              <span>{gamification.totalQuestionsAnswered} respuestas</span>
+              <span>{inspirationState.totalQuestionsAnswered} reflexiones</span>
             </div>
             <div className="flex items-center space-x-1">
               <Target className="h-4 w-4 text-muted-foreground" />
-              <span>{gamification.categoriesExplored.size} categorías</span>
+              <span>{inspirationState.categoriesExplored.size} áreas exploradas</span>
             </div>
             <div className="flex items-center space-x-1">
-              <Star className="h-4 w-4 text-muted-foreground" />
-              <span>{progress}% progreso</span>
+              <Compass className="h-4 w-4 text-muted-foreground" />
+              <span>{progress}% completado</span>
             </div>
           </div>
         </CardContent>

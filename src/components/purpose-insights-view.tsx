@@ -47,14 +47,10 @@ interface PurposeStatement {
 }
 
 const CATEGORY_EMOJIS = {
-  autoconocimiento: '🔍',
-  valores: '💎',
-  pasiones: '🔥',
-  talentes: '⭐',
-  impacto: '🌍',
-  vision_futura: '🚀',
-  obstaculos: '⚡',
-  recursos: '🛠️'
+  pasion: '🔥',      // Lo que amas
+  mision: '🌍',      // Lo que el mundo necesita  
+  vocacion: '💼',    // Aquello por lo que te pudieran pagar
+  profesion: '⭐'     // En lo que eres bueno
 };
 
 const STAGE_DESCRIPTIONS = {
@@ -121,29 +117,63 @@ export function PurposeInsightsView({ answers, progress, stage, onRestart, onSav
 
   const keyThemes = extractKeyThemes(answers);
 
-  // Generar declaración de propósito sugerida
+  // Generar declaración de propósito basada en Ikigai
   const generatePurposeStatement = (): string => {
-    const passionAnswers = answers.filter(a => a.category === 'pasiones');
-    const valueAnswers = answers.filter(a => a.category === 'valores');
-    const impactAnswers = answers.filter(a => a.category === 'impacto');
+    const passionAnswers = answers.filter(a => a.category === 'pasion');
+    const missionAnswers = answers.filter(a => a.category === 'mision');
+    const vocationAnswers = answers.filter(a => a.category === 'vocacion');
+    const professionAnswers = answers.filter(a => a.category === 'profesion');
     
-    let statement = "Mi propósito es ";
+    // Extraer temas clave de cada dimensión del Ikigai
+    const passionThemes = extractThemesFromAnswers(passionAnswers);
+    const missionThemes = extractThemesFromAnswers(missionAnswers);
+    const vocationThemes = extractThemesFromAnswers(vocationAnswers);
+    const professionThemes = extractThemesFromAnswers(professionAnswers);
     
-    if (passionAnswers.length > 0) {
-      const passionWords = passionAnswers[0].response.split(' ').slice(0, 3).join(' ');
-      statement += `usar mi pasión por ${passionWords} `;
+    let statement = "Mi propósito (Ikigai) es ";
+    
+    // Construir la declaración basada en las 4 dimensiones
+    if (passionThemes.length > 0 && missionThemes.length > 0) {
+      statement += `usar mi pasión por ${passionThemes[0]} `;
+      statement += `para ${missionThemes[0]} `;
+      
+      if (vocationThemes.length > 0 && professionThemes.length > 0) {
+        statement += `a través de mi habilidad en ${professionThemes[0]}, `;
+        statement += `creando valor profesional en ${vocationThemes[0]}.`;
+      } else {
+        statement += `y contribuir a un mundo mejor.`;
+      }
+    } else {
+      // Fallback si no hay suficientes respuestas
+      statement += "descubrir cómo mis pasiones y habilidades pueden contribuir al mundo.";
     }
     
-    if (valueAnswers.length > 0) {
-      statement += "para crear un impacto positivo ";
-    }
+    return statement;
+  };
+
+  // Función helper para extraer temas de respuestas específicas
+  const extractThemesFromAnswers = (specificAnswers: PurposeAnswer[]): string[] => {
+    if (specificAnswers.length === 0) return [];
     
-    if (impactAnswers.length > 0) {
-      const impactWords = impactAnswers[0].response.split(' ').slice(0, 4).join(' ');
-      statement += `que ayude a ${impactWords}`;
-    }
+    const allText = specificAnswers.map(a => a.response).join(' ');
+    const words = allText.toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .split(/\s+/)
+      .filter(word => 
+        word.length > 4 && 
+        !['que', 'para', 'como', 'donde', 'cuando', 'porque', 'desde', 'hasta', 'sobre', 'bajo', 'entre', 'hacia', 'tengo', 'quiero', 'puedo', 'debo', 'necesito'].includes(word)
+      );
     
-    return statement + " y contribuir a un mundo mejor.";
+    // Contar frecuencia de palabras
+    const wordCount = new Map<string, number>();
+    words.forEach(word => {
+      wordCount.set(word, (wordCount.get(word) || 0) + 1);
+    });
+    
+    return Array.from(wordCount.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([word]) => word);
   };
 
   const handleSavePurpose = () => {

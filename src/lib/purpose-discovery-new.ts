@@ -97,14 +97,14 @@ export const PURPOSE_QUESTIONS: PurposeQuestion[] = [
   },
   {
     id: 'pasion_challenging',
-    title: 'Estados de concentración profunda',
-    description: 'Situaciones donde pierdes la noción del tiempo',
+    title: 'Tu energía natural',
+    description: 'Descubre cuándo fluyes naturalmente',
     category: 'pasion',
     type: 'reflection',
     difficulty: 'hard',
     estimatedTime: 15,
     depth: 'challenging',
-    basePrompt: '¿Hay alguna actividad o tema que te absorbe tanto que cuando lo practicas sientes que el tiempo vuela? Describe esa experiencia y qué la hace especial para ti.',
+    basePrompt: '¿Cuándo has sentido que tu energía fluía naturalmente hacia algo específico? ¿Qué era y por qué te conectaba tanto?',
     examples: [
       'Momentos de creatividad espontánea, conexión profunda con una actividad, estados de "flow"',
       'Experiencias de aprendizaje intenso, momentos de inspiración, conexión con propósito',
@@ -473,3 +473,4 @@ export function getProgressByCategory(answers: PurposeAnswer[]): Record<PurposeC
   
   return progress;
 }
+
