@@ -16,7 +16,8 @@ import {
   Trophy,
   Sparkles,
   Users,
-  Clock
+  Clock,
+  Briefcase
 } from 'lucide-react';
 import { PurposeDiscoveryTest } from '@/components/purpose-discovery-test';
 import { PurposeInsightsView } from '@/components/purpose-insights-view';
@@ -203,8 +204,7 @@ export function PurposeDiscoveryClient() {
               Descubre tu Ikigai
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Un viaje guiado basado en el concepto japonés del Ikigai - tu "razón de ser" - 
-              que conecta lo que amas, lo que el mundo necesita, aquello por lo que te pagarían y en lo que eres bueno.
+              Descubre tu razón de ser a través de 4 dimensiones fundamentales
             </p>
           </div>
 
@@ -230,162 +230,122 @@ export function PurposeDiscoveryClient() {
 
         {/* Las 4 dimensiones del Ikigai */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="text-center border-red-200 bg-red-50">
-            <CardHeader>
-              <div className="flex justify-center mb-4">
-                <Heart className="h-12 w-12 text-red-500" />
+          <Card className="text-center border-red-200 bg-gradient-to-br from-red-50 to-red-100 hover:shadow-lg transition-all duration-300">
+            <CardHeader className="pb-3">
+              <div className="flex justify-center mb-3">
+                <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
+                  <Heart className="h-8 w-8 text-white" />
+                </div>
               </div>
               <CardTitle className="text-lg text-red-800">🔥 Pasión</CardTitle>
             </CardHeader>
-            <CardContent>
-              <CardDescription className="text-base text-red-700">
-                Lo que amas hacer y te hace sentir vivo y energizado.
+            <CardContent className="pt-0">
+              <CardDescription className="text-sm text-red-700">
+                Lo que amas hacer y te energiza
               </CardDescription>
             </CardContent>
           </Card>
 
-          <Card className="text-center border-green-200 bg-green-50">
-            <CardHeader>
-              <div className="flex justify-center mb-4">
-                <Target className="h-12 w-12 text-green-500" />
+          <Card className="text-center border-green-200 bg-gradient-to-br from-green-50 to-green-100 hover:shadow-lg transition-all duration-300">
+            <CardHeader className="pb-3">
+              <div className="flex justify-center mb-3">
+                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
+                  <Target className="h-8 w-8 text-white" />
+                </div>
               </div>
               <CardTitle className="text-lg text-green-800">🌍 Misión</CardTitle>
             </CardHeader>
-            <CardContent>
-              <CardDescription className="text-base text-green-700">
-                Lo que el mundo necesita y te motiva a crear impacto positivo.
+            <CardContent className="pt-0">
+              <CardDescription className="text-sm text-green-700">
+                Lo que el mundo necesita de ti
               </CardDescription>
             </CardContent>
           </Card>
 
-          <Card className="text-center border-blue-200 bg-blue-50">
-            <CardHeader>
-              <div className="flex justify-center mb-4">
-                <Lightbulb className="h-12 w-12 text-blue-500" />
+          <Card className="text-center border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-lg transition-all duration-300">
+            <CardHeader className="pb-3">
+              <div className="flex justify-center mb-3">
+                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
+                  <Briefcase className="h-8 w-8 text-white" />
+                </div>
               </div>
               <CardTitle className="text-lg text-blue-800">💼 Vocación</CardTitle>
             </CardHeader>
-            <CardContent>
-              <CardDescription className="text-base text-blue-700">
-                Aquello por lo que te pudieran pagar y tu trabajo ideal.
+            <CardContent className="pt-0">
+              <CardDescription className="text-sm text-blue-700">
+                Aquello por lo que te pagarían
               </CardDescription>
             </CardContent>
           </Card>
 
-          <Card className="text-center border-purple-200 bg-purple-50">
-            <CardHeader>
-              <div className="flex justify-center mb-4">
-                <Star className="h-12 w-12 text-purple-500" />
+          <Card className="text-center border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-lg transition-all duration-300">
+            <CardHeader className="pb-3">
+              <div className="flex justify-center mb-3">
+                <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center">
+                  <Star className="h-8 w-8 text-white" />
+                </div>
               </div>
               <CardTitle className="text-lg text-purple-800">⭐ Profesión</CardTitle>
             </CardHeader>
-            <CardContent>
-              <CardDescription className="text-base text-purple-700">
-                En lo que eres bueno y donde otros reconocen tu expertise.
+            <CardContent className="pt-0">
+              <CardDescription className="text-sm text-purple-700">
+                En lo que destacas y aportas valor
               </CardDescription>
             </CardContent>
           </Card>
         </div>
 
-        {/* Proceso paso a paso */}
-        <Card>
+        {/* Beneficios del Test */}
+        <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <BookOpen className="h-5 w-5 mr-2" />
-              Cómo Funciona
-            </CardTitle>
+            <CardTitle className="text-center text-xl">¿Por qué hacer este test?</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               <div className="text-center space-y-3">
-                <div className="flex justify-center">
-                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                    <span className="text-xl">🔥</span>
-                  </div>
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto">
+                  <Lightbulb className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="font-semibold">Pasión</h3>
+                <h3 className="font-semibold text-lg">Autoconocimiento</h3>
                 <p className="text-sm text-muted-foreground">
-                  Descubre lo que amas hacer y te energiza
+                  Conecta con tus verdaderas motivaciones
                 </p>
               </div>
               
               <div className="text-center space-y-3">
-                <div className="flex justify-center">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-xl">🌍</span>
-                  </div>
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto">
+                  <Target className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="font-semibold">Misión</h3>
+                <h3 className="font-semibold text-lg">Claridad de Propósito</h3>
                 <p className="text-sm text-muted-foreground">
-                  Identifica cómo quieres impactar al mundo
+                  Define tu contribución al mundo
                 </p>
               </div>
               
               <div className="text-center space-y-3">
-                <div className="flex justify-center">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-xl">💼</span>
-                  </div>
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
+                  <Star className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="font-semibold">Vocación</h3>
+                <h3 className="font-semibold text-lg">Toma de Decisiones</h3>
                 <p className="text-sm text-muted-foreground">
-                  Define tu trabajo ideal y ambiente profesional
-                </p>
-              </div>
-              
-              <div className="text-center space-y-3">
-                <div className="flex justify-center">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                    <span className="text-xl">⭐</span>
-                  </div>
-                </div>
-                <h3 className="font-semibold">Profesión</h3>
-                <p className="text-sm text-muted-foreground">
-                  Reconoce tus fortalezas y áreas de expertise
+                  Alinea tus decisiones con tu propósito
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Estadísticas */}
-        <div className="grid md:grid-cols-4 gap-4">
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-blue-600">{PURPOSE_QUESTIONS.length}</div>
-              <div className="text-sm text-muted-foreground">Preguntas Ikigai</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-green-600">4</div>
-              <div className="text-sm text-muted-foreground">Dimensiones</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-yellow-600">15-20</div>
-              <div className="text-sm text-muted-foreground">Minutos</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-purple-600">100%</div>
-              <div className="text-sm text-muted-foreground">Gratuito</div>
-            </CardContent>
-          </Card>
-        </div>
 
-        {/* Call to Action */}
+
+        {/* Call to Action simplificado */}
         <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
           <CardContent className="pt-8">
             <div className="text-center space-y-6">
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold">¿Listo para Descubrir Tu Ikigai?</h2>
-                <p className="text-muted-foreground max-w-xl mx-auto">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  ¿Listo para Descubrir Tu Ikigai?
+                </h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
                   Comienza tu viaje hacia encontrar tu "razón de ser". Conecta lo que amas, 
                   lo que el mundo necesita, aquello por lo que te pagarían y en lo que eres bueno.
                 </p>
@@ -395,10 +355,10 @@ export function PurposeDiscoveryClient() {
                 <Button 
                   size="lg" 
                   onClick={() => setCurrentView('selector')}
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg"
                 >
                   <Play className="h-5 w-5" />
-                  <span>Descubrir mi Ikigai</span>
+                  <span>Comenzar mi viaje de autoconocimiento</span>
                 </Button>
                 
                 {purposeProfile && purposeProfile.answers.length > 0 && (
@@ -406,7 +366,7 @@ export function PurposeDiscoveryClient() {
                     size="lg" 
                     variant="outline"
                     onClick={() => setCurrentView('results')}
-                    className="flex items-center space-x-2"
+                    className="flex items-center space-x-2 border-2 px-8 py-3 text-lg"
                   >
                     <ArrowRight className="h-5 w-5" />
                     <span>Ver Mis Resultados</span>
@@ -414,18 +374,10 @@ export function PurposeDiscoveryClient() {
                 )}
               </div>
               
-              <div className="flex items-center justify-center space-x-6 text-sm text-muted-foreground">
-                <div className="flex items-center space-x-1">
+              <div className="flex items-center justify-center text-sm text-muted-foreground">
+                <div className="flex items-center space-x-2">
                   <Clock className="h-4 w-4" />
                   <span>15-20 minutos</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Users className="h-4 w-4" />
-                  <span>Completamente privado</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Star className="h-4 w-4" />
-                  <span>Sin costo</span>
                 </div>
               </div>
             </div>

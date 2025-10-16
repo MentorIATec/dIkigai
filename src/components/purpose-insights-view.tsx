@@ -29,6 +29,10 @@ import {
   calculateProgress,
   determineStage
 } from '@/lib/purpose-discovery';
+import { IkigaiVisualization } from './ikigai-visualization';
+import { SophisticatedInsights } from './sophisticated-insights';
+import { MentorInsights } from './mentor-insights';
+import { SocializationFeatures } from './socialization-features';
 
 interface PurposeInsightsViewProps {
   answers: PurposeAnswer[];
@@ -84,6 +88,7 @@ export function PurposeInsightsView({ answers, progress, stage, onRestart, onSav
   const [selectedInsight, setSelectedInsight] = useState<PurposeInsight | null>(null);
   const [purposeStatement, setPurposeStatement] = useState('');
   const [isEditingStatement, setIsEditingStatement] = useState(false);
+  const [activeTab, setActiveTab] = useState<'overview' | 'ikigai' | 'insights' | 'mentor' | 'social'>('overview');
 
   const insights = generateInsights(answers);
   const stageInfo = STAGE_DESCRIPTIONS[stage as keyof typeof STAGE_DESCRIPTIONS];
@@ -211,7 +216,7 @@ export function PurposeInsightsView({ answers, progress, stage, onRestart, onSav
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-6xl mx-auto space-y-6">
       {/* Header con resumen */}
       <Card className="bg-gradient-to-r from-blue-50 to-purple-50">
         <CardHeader className="text-center">
@@ -223,7 +228,7 @@ export function PurposeInsightsView({ answers, progress, stage, onRestart, onSav
           </div>
           <CardTitle className="text-2xl">¡Tu Propósito Está Tomando Forma!</CardTitle>
           <CardDescription className="text-base">
-            Has completado un viaje profundo de autoconocimiento. Aquí están tus insights.
+            Has completado un viaje profundo de autoconocimiento. Explora tus insights desde diferentes perspectivas.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -242,175 +247,245 @@ export function PurposeInsightsView({ answers, progress, stage, onRestart, onSav
         </CardContent>
       </Card>
 
-      {/* Estadísticas por categoría */}
+      {/* Navegación por pestañas */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <BookOpen className="h-5 w-5 mr-2" />
-            Exploración por Categorías
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Object.entries(categoryStats).map(([category, count]) => (
-              <div key={category} className="text-center p-3 bg-muted/30 rounded-lg">
-                <div className="text-2xl mb-1">
-                  {CATEGORY_EMOJIS[category as keyof typeof CATEGORY_EMOJIS]}
-                </div>
-                <div className="text-sm font-medium capitalize">
-                  {category.replace('_', ' ')}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {count} respuesta{count !== 1 ? 's' : ''}
-                </div>
-              </div>
-            ))}
+        <CardContent className="pt-6">
+          <div className="flex flex-wrap gap-2 justify-center">
+            <Button
+              variant={activeTab === 'overview' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('overview')}
+              className="flex items-center space-x-2"
+            >
+              <BookOpen className="h-4 w-4" />
+              <span>Resumen</span>
+            </Button>
+            <Button
+              variant={activeTab === 'ikigai' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('ikigai')}
+              className="flex items-center space-x-2"
+            >
+              <Target className="h-4 w-4" />
+              <span>Diagrama Ikigai</span>
+            </Button>
+            <Button
+              variant={activeTab === 'insights' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('insights')}
+              className="flex items-center space-x-2"
+            >
+              <Lightbulb className="h-4 w-4" />
+              <span>Insights Avanzados</span>
+            </Button>
+            <Button
+              variant={activeTab === 'mentor' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('mentor')}
+              className="flex items-center space-x-2"
+            >
+              <Heart className="h-4 w-4" />
+              <span>Para Mentores</span>
+            </Button>
+            <Button
+              variant={activeTab === 'social' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('social')}
+              className="flex items-center space-x-2"
+            >
+              <Share2 className="h-4 w-4" />
+              <span>Compartir</span>
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Declaración de propósito */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Target className="h-5 w-5 mr-2" />
-            Mi Declaración de Propósito
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {!isEditingStatement ? (
-            <div>
-              {purposeStatement ? (
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border-l-4 border-green-400">
-                  <p className="text-lg font-medium leading-relaxed">{purposeStatement}</p>
+      {/* Contenido según pestaña activa */}
+      {activeTab === 'overview' && (
+        <>
+          {/* Estadísticas por categoría */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <BookOpen className="h-5 w-5 mr-2" />
+                Exploración por Categorías
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {Object.entries(categoryStats).map(([category, count]) => (
+                  <div key={category} className="text-center p-3 bg-muted/30 rounded-lg">
+                    <div className="text-2xl mb-1">
+                      {CATEGORY_EMOJIS[category as keyof typeof CATEGORY_EMOJIS]}
+                    </div>
+                    <div className="text-sm font-medium capitalize">
+                      {category.replace('_', ' ')}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {count} respuesta{count !== 1 ? 's' : ''}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Declaración de propósito */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Target className="h-5 w-5 mr-2" />
+                Mi Declaración de Propósito
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!isEditingStatement ? (
+                <div>
+                  {purposeStatement ? (
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border-l-4 border-green-400">
+                      <p className="text-lg font-medium leading-relaxed">{purposeStatement}</p>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>Tu declaración de propósito aparecerá aquí</p>
+                    </div>
+                  )}
+                  <div className="flex justify-center space-x-2 mt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (!purposeStatement) {
+                          setPurposeStatement(generatePurposeStatement());
+                        }
+                        setIsEditingStatement(true);
+                      }}
+                    >
+                      {purposeStatement ? 'Editar' : 'Crear'} Declaración
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <textarea
+                    value={purposeStatement}
+                    onChange={(e) => setPurposeStatement(e.target.value)}
+                    className="w-full p-4 border rounded-lg min-h-[100px] resize-none"
+                    placeholder="Escribe tu declaración de propósito aquí..."
+                  />
+                  <div className="flex justify-center space-x-2">
+                    <Button variant="outline" onClick={() => setIsEditingStatement(false)}>
+                      Cancelar
+                    </Button>
+                    <Button onClick={handleSavePurpose} disabled={!purposeStatement.trim()}>
+                      Guardar
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Insights básicos */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Lightbulb className="h-5 w-5 mr-2" />
+                Insights Descubiertos
+              </CardTitle>
+              <CardDescription>
+                Basado en tus respuestas, hemos identificado patrones y oportunidades
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {insights.length > 0 ? (
+                <div className="space-y-4">
+                  {insights.map((insight) => (
+                    <Card 
+                      key={insight.id} 
+                      className={`cursor-pointer transition-all hover:shadow-md ${
+                        selectedInsight?.id === insight.id ? 'ring-2 ring-primary' : ''
+                      }`}
+                      onClick={() => setSelectedInsight(selectedInsight?.id === insight.id ? null : insight)}
+                    >
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg flex items-center">
+                            <Star className="h-5 w-5 mr-2 text-yellow-500" />
+                            {insight.title}
+                          </CardTitle>
+                          <Badge variant="outline" className="text-xs">
+                            {insight.category}
+                          </Badge>
+                        </div>
+                        <CardDescription className="text-base">
+                          {insight.description}
+                        </CardDescription>
+                      </CardHeader>
+                      {selectedInsight?.id === insight.id && insight.actionableSteps && (
+                        <CardContent className="pt-0">
+                          <Separator className="mb-4" />
+                          <div>
+                            <h4 className="font-semibold mb-3 flex items-center">
+                              <Zap className="h-4 w-4 mr-2" />
+                              Pasos Sugeridos
+                            </h4>
+                            <ul className="space-y-2">
+                              {insight.actionableSteps.map((step, index) => (
+                                <li key={index} className="flex items-start space-x-2">
+                                  <ArrowRight className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                                  <span className="text-sm">{step}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </CardContent>
+                      )}
+                    </Card>
+                  ))}
                 </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Tu declaración de propósito aparecerá aquí</p>
+                  <Lightbulb className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Continúa explorando para descubrir más insights</p>
                 </div>
               )}
-              <div className="flex justify-center space-x-2 mt-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    if (!purposeStatement) {
-                      setPurposeStatement(generatePurposeStatement());
-                    }
-                    setIsEditingStatement(true);
-                  }}
-                >
-                  {purposeStatement ? 'Editar' : 'Crear'} Declaración
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <textarea
-                value={purposeStatement}
-                onChange={(e) => setPurposeStatement(e.target.value)}
-                className="w-full p-4 border rounded-lg min-h-[100px] resize-none"
-                placeholder="Escribe tu declaración de propósito aquí..."
-              />
-              <div className="flex justify-center space-x-2">
-                <Button variant="outline" onClick={() => setIsEditingStatement(false)}>
-                  Cancelar
-                </Button>
-                <Button onClick={handleSavePurpose} disabled={!purposeStatement.trim()}>
-                  Guardar
-                </Button>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
 
-      {/* Insights generados */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Lightbulb className="h-5 w-5 mr-2" />
-            Insights Descubiertos
-          </CardTitle>
-          <CardDescription>
-            Basado en tus respuestas, hemos identificado patrones y oportunidades
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {insights.length > 0 ? (
-            <div className="space-y-4">
-              {insights.map((insight) => (
-                <Card 
-                  key={insight.id} 
-                  className={`cursor-pointer transition-all hover:shadow-md ${
-                    selectedInsight?.id === insight.id ? 'ring-2 ring-primary' : ''
-                  }`}
-                  onClick={() => setSelectedInsight(selectedInsight?.id === insight.id ? null : insight)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg flex items-center">
-                        <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                        {insight.title}
-                      </CardTitle>
-                      <Badge variant="outline" className="text-xs">
-                        {insight.category}
-                      </Badge>
-                    </div>
-                    <CardDescription className="text-base">
-                      {insight.description}
-                    </CardDescription>
-                  </CardHeader>
-                  {selectedInsight?.id === insight.id && insight.actionableSteps && (
-                    <CardContent className="pt-0">
-                      <Separator className="mb-4" />
-                      <div>
-                        <h4 className="font-semibold mb-3 flex items-center">
-                          <Zap className="h-4 w-4 mr-2" />
-                          Pasos Sugeridos
-                        </h4>
-                        <ul className="space-y-2">
-                          {insight.actionableSteps.map((step, index) => (
-                            <li key={index} className="flex items-start space-x-2">
-                              <ArrowRight className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                              <span className="text-sm">{step}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </CardContent>
-                  )}
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              <Lightbulb className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Continúa explorando para descubrir más insights</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          {/* Temas clave */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Heart className="h-5 w-5 mr-2" />
+                Temas Clave en Tus Respuestas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {keyThemes.map((theme, index) => (
+                  <Badge key={index} variant="secondary" className="text-sm">
+                    {theme}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
 
-      {/* Temas clave */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Heart className="h-5 w-5 mr-2" />
-            Temas Clave en Tus Respuestas
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {keyThemes.map((theme, index) => (
-              <Badge key={index} variant="secondary" className="text-sm">
-                {theme}
-              </Badge>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {activeTab === 'ikigai' && (
+        <IkigaiVisualization answers={answers} />
+      )}
+
+      {activeTab === 'insights' && (
+        <SophisticatedInsights answers={answers} />
+      )}
+
+      {activeTab === 'mentor' && (
+        <MentorInsights answers={answers} />
+      )}
+
+      {activeTab === 'social' && (
+        <SocializationFeatures answers={answers} purposeStatement={purposeStatement} />
+      )}
+
 
       {/* Acciones */}
       <Card>
