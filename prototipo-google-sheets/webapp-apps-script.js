@@ -18,37 +18,30 @@ const GOALS_SHEET = 'Base de Datos Metas';
 // Dimensiones disponibles
 const DIMENSIONS = {
   'Intelectual': {
-    emoji: '🧠',
     description: 'Desarrollo académico y habilidades de estudio',
     color: '#4285f4'
   },
   'Ocupacional': {
-    emoji: '💼',
     description: 'Claridad vocacional y preparación profesional',
     color: '#34a853'
   },
   'Emocional': {
-    emoji: '❤️',
     description: 'Bienestar emocional y adaptación universitaria',
     color: '#ea4335'
   },
   'Social': {
-    emoji: '👥',
     description: 'Relaciones interpersonales y vida social',
     color: '#fbbc04'
   },
   'Física': {
-    emoji: '💪',
     description: 'Salud física y bienestar corporal',
     color: '#ff6d01'
   },
   'Espiritual': {
-    emoji: '🙏',
     description: 'Propósito de vida y valores personales',
     color: '#9c27b0'
   },
   'Financiera': {
-    emoji: '💰',
     description: 'Gestión de recursos económicos y planificación financiera',
     color: '#00bcd4'
   }
@@ -64,8 +57,8 @@ const GOALS_DATABASE = {
       steps: 'Identificar horarios de mayor productividad, crear espacios de estudio libres de distracciones, implementar técnica Pomodoro (25 min estudio + 5 min descanso), revisar y ajustar semanalmente.',
       priority: 'high',
       categoria: 'habitos_estudio',
-      tips: '💡 Tip: Los primeros 3 meses son clave para establecer hábitos sólidos. Sé consistente aunque sea difícil al inicio.',
-      mentorCommitment: 'Te acompañaré con recordatorios semanales y tips personalizados para mantener tu rutina.'
+      tips: 'Tip: Tú eres quien decide cuándo y cómo estudiar. Experimenta con diferentes horarios y técnicas hasta encontrar lo que funciona mejor para ti.',
+      mentorCommitment: 'Estoy disponible para darte consejos sobre técnicas de estudio cuando me consultes, pero la consistencia depende de tu autodisciplina.'
     },
     {
       id: 'PRIM_INT02',
@@ -74,7 +67,7 @@ const GOALS_DATABASE = {
       steps: 'Practicar lectura activa con subrayado estratégico, crear mapas conceptuales, participar en discusiones de clase, aplicar técnicas de síntesis y resumen.',
       priority: 'high',
       categoria: 'habitos_estudio',
-      tips: '📚 Tip: La lectura universitaria es diferente. No necesitas memorizar todo, sino entender conceptos clave y conexiones.',
+      tips: 'Tip: La lectura universitaria es diferente. No necesitas memorizar todo, sino entender conceptos clave y conexiones.',
       mentorCommitment: 'Te compartiré recursos de técnicas de lectura y te ayudaré a practicar con textos reales de tu carrera.'
     },
     {
@@ -84,7 +77,7 @@ const GOALS_DATABASE = {
       steps: 'Inscribirse a cursos de idiomas del TEC, practicar 30 minutos diarios con apps, ver series en el idioma objetivo, buscar intercambios de conversación.',
       priority: 'medium',
       categoria: 'desarrollo_academico',
-      tips: '🌍 Tip: El dominio de idiomas abre puertas a intercambios, becas y mejores oportunidades laborales.',
+      tips: 'Tip: El dominio de idiomas abre puertas a intercambios, becas y mejores oportunidades laborales.',
       mentorCommitment: 'Te conectaré con recursos de idiomas del TEC y te ayudaré a encontrar compañeros de práctica.'
     },
     {
@@ -94,7 +87,7 @@ const GOALS_DATABASE = {
       steps: 'Participar activamente en debates de clase, cuestionar información y fuentes, practicar análisis de casos, desarrollar argumentos fundamentados.',
       priority: 'medium',
       categoria: 'desarrollo_academico',
-      tips: '🧠 Tip: El pensamiento crítico se desarrolla con práctica. No tengas miedo de hacer preguntas en clase.',
+      tips: 'Tip: El pensamiento crítico se desarrolla con práctica. No tengas miedo de hacer preguntas en clase.',
       mentorCommitment: 'Te guiaré en ejercicios de pensamiento crítico y te ayudaré a desarrollar argumentos sólidos.'
     }
   ],
@@ -106,7 +99,7 @@ const GOALS_DATABASE = {
       steps: 'Entrevistar a 3 profesionales del área, investigar perfiles de egreso en Mi Tec, asistir a charlas de carrera, crear mapa de opciones profesionales, explorar especializaciones disponibles.',
       priority: 'high',
       categoria: 'claridad_vocacional',
-      tips: '🎯 Tip: No necesitas decidir todo ahora, pero sí explorar para tomar mejores decisiones en 2° y 3° semestre.',
+      tips: 'Tip: No necesitas decidir todo ahora, pero sí explorar para tomar mejores decisiones en 2° y 3° semestre.',
       mentorCommitment: 'Te conectaré con profesionales de tu área y te ayudaré a organizar entrevistas informativas.'
     },
     {
@@ -116,7 +109,7 @@ const GOALS_DATABASE = {
       steps: 'Identificar profesores inspiradores, buscar programas de mentoría del TEC, conectar con exalumnos, establecer relaciones con profesionales del área.',
       priority: 'high',
       categoria: 'mentoria',
-      tips: '🤝 Tip: Un buen mentor puede acelerar tu crecimiento y abrirte puertas. No tengas miedo de pedir ayuda.',
+      tips: 'Tip: Un buen mentor puede acelerar tu crecimiento y abrirte puertas. No tengas miedo de pedir ayuda.',
       mentorCommitment: 'Te ayudaré a identificar mentores potenciales y te guiaré en cómo establecer estas relaciones.'
     },
     {
@@ -126,7 +119,7 @@ const GOALS_DATABASE = {
       steps: 'Crear perfil básico en LinkedIn, definir objetivos profesionales, participar en eventos de networking del TEC, desarrollar elevator pitch personal.',
       priority: 'medium',
       categoria: 'desarrollo_profesional',
-      tips: '💼 Tip: Es mejor empezar temprano con tu presencia profesional. Los empleadores buscan candidatos con perfil completo.',
+      tips: 'Tip: Es mejor empezar temprano con tu presencia profesional. Los empleadores buscan candidatos con perfil completo.',
       mentorCommitment: 'Te ayudaré a crear un perfil profesional atractivo y te daré feedback sobre tu elevator pitch.'
     },
     {
@@ -136,7 +129,7 @@ const GOALS_DATABASE = {
       steps: 'Hacer inventario de habilidades actuales, identificar gaps de conocimiento, buscar oportunidades de desarrollo, practicar habilidades en proyectos académicos.',
       priority: 'medium',
       categoria: 'desarrollo_profesional',
-      tips: '🔍 Tip: La autoconciencia sobre tus habilidades es clave para el desarrollo profesional. Sé honesto contigo mismo.',
+      tips: 'Tip: La autoconciencia sobre tus habilidades es clave para el desarrollo profesional. Sé honesto contigo mismo.',
       mentorCommitment: 'Te ayudaré a hacer un análisis honesto de tus habilidades y crear un plan de desarrollo personalizado.'
     }
   ],
@@ -148,8 +141,8 @@ const GOALS_DATABASE = {
       steps: 'Identificar fuentes de estrés, practicar técnicas de respiración y relajación, establecer rutinas de autocuidado, buscar apoyo en consejería estudiantil cuando sea necesario.',
       priority: 'high',
       categoria: 'gestion_estres',
-      tips: '😌 Tip: El estrés es normal en la universidad. Lo importante es tener herramientas para manejarlo de manera saludable.',
-      mentorCommitment: 'Te compartiré técnicas de manejo de estrés y estaré disponible para escucharte cuando lo necesites.'
+      tips: 'Tip: El estrés es parte de la vida universitaria. Identifica tus señales de estrés y desarrolla estrategias de afrontamiento que funcionen para ti.',
+      mentorCommitment: 'Estoy aquí para escucharte y orientarte cuando me busques, y te ayudaré a desarrollar habilidades para manejar el estrés.'
     },
     {
       id: 'PRIM_EMO02',
@@ -158,7 +151,7 @@ const GOALS_DATABASE = {
       steps: 'Reconocer y validar emociones de cambio, mantener contacto regular con familia, crear nuevas rutinas, buscar espacios de pertenencia en el campus.',
       priority: 'high',
       categoria: 'adaptacion_emocional',
-      tips: '🏠 Tip: Es normal extrañar casa y sentirse abrumado. La adaptación toma tiempo, sé paciente contigo mismo.',
+      tips: 'Tip: Es normal extrañar casa y sentirse abrumado. La adaptación toma tiempo, sé paciente contigo mismo.',
       mentorCommitment: 'Te acompañaré en el proceso de adaptación y te ayudaré a crear estrategias para sentirte más cómodo en el campus.'
     },
     {
@@ -168,7 +161,7 @@ const GOALS_DATABASE = {
       steps: 'Practicar autoconciencia emocional diaria, desarrollar empatía con compañeros, mejorar comunicación asertiva, gestionar conflictos constructivamente.',
       priority: 'medium',
       categoria: 'desarrollo_emocional',
-      tips: '💭 Tip: La inteligencia emocional es tan importante como la académica. Te ayudará en todas las áreas de tu vida.',
+      tips: 'Tip: La inteligencia emocional es tan importante como la académica. Te ayudará en todas las áreas de tu vida.',
       mentorCommitment: 'Te guiaré en ejercicios de autoconocimiento y te ayudaré a desarrollar habilidades emocionales.'
     },
     {
@@ -178,7 +171,7 @@ const GOALS_DATABASE = {
       steps: 'Aprender de errores y fracasos, mantener perspectiva positiva, buscar apoyo cuando sea necesario, celebrar pequeños logros, practicar gratitud.',
       priority: 'medium',
       categoria: 'resiliencia',
-      tips: '🌱 Tip: La resiliencia se construye con práctica. Cada desafío superado te hace más fuerte.',
+      tips: 'Tip: La resiliencia se construye con práctica. Cada desafío superado te hace más fuerte.',
       mentorCommitment: 'Te ayudaré a desarrollar una mentalidad de crecimiento y te recordaré tus logros cuando te sientas desanimado.'
     }
   ],
@@ -190,8 +183,8 @@ const GOALS_DATABASE = {
       steps: 'Participar en actividades de integración, unirse a clubes estudiantiles, asistir a eventos sociales del campus, ser proactivo en conocer compañeros de clase.',
       priority: 'high',
       categoria: 'integracion_social',
-      tips: '👥 Tip: Todos están en la misma situación. No tengas miedo de iniciar conversaciones y ser tú mismo.',
-      mentorCommitment: 'Te ayudaré a identificar actividades sociales que coincidan con tus intereses y te acompañaré en el proceso de integración.'
+      tips: 'Tip: Las relaciones sociales son tu responsabilidad. Toma la iniciativa de acercarte a otros, participar en actividades y construir tu red social.',
+      mentorCommitment: 'Te facilitaré información sobre actividades y recursos cuando me consultes, pero la integración social depende de tu iniciativa personal.'
     },
     {
       id: 'PRIM_SOC02',
@@ -200,7 +193,7 @@ const GOALS_DATABASE = {
       steps: 'Explorar clubes y organizaciones disponibles, asistir a reuniones informativas, elegir 1-2 grupos que te interesen, participar activamente en actividades.',
       priority: 'high',
       categoria: 'participacion_estudiantil',
-      tips: '🎯 Tip: Los grupos estudiantiles son excelentes para hacer amigos, desarrollar liderazgo y enriquecer tu experiencia universitaria.',
+      tips: 'Tip: Los grupos estudiantiles son excelentes para hacer amigos, desarrollar liderazgo y enriquecer tu experiencia universitaria.',
       mentorCommitment: 'Te ayudaré a encontrar grupos que coincidan con tus intereses y te guiaré en cómo participar efectivamente.'
     },
     {
@@ -210,7 +203,7 @@ const GOALS_DATABASE = {
       steps: 'Establecer horarios regulares para llamar a familia, planificar visitas a casa, mantener contacto con amigos de preparatoria, crear nuevos rituales de conexión.',
       priority: 'medium',
       categoria: 'mantenimiento_relaciones',
-      tips: '💙 Tip: Es importante mantener tus raíces mientras construyes nuevas relaciones. El equilibrio es clave.',
+      tips: 'Tip: Es importante mantener tus raíces mientras construyes nuevas relaciones. El equilibrio es clave.',
       mentorCommitment: 'Te ayudaré a encontrar el equilibrio entre nuevas y viejas relaciones, y te apoyaré en momentos de nostalgia.'
     },
     {
@@ -220,7 +213,7 @@ const GOALS_DATABASE = {
       steps: 'Practicar presentaciones orales, participar en debates de clase, mejorar comunicación escrita, desarrollar escucha activa, practicar networking en eventos.',
       priority: 'medium',
       categoria: 'desarrollo_social',
-      tips: '🗣️ Tip: Las habilidades de comunicación son fundamentales para el éxito académico y profesional. Practica regularmente.',
+      tips: 'Tip: Las habilidades de comunicación son fundamentales para el éxito académico y profesional. Practica regularmente.',
       mentorCommitment: 'Te daré oportunidades para practicar comunicación y te ayudaré a desarrollar confianza en situaciones sociales.'
     }
   ],
@@ -232,8 +225,8 @@ const GOALS_DATABASE = {
       steps: 'Encontrar actividad física que disfrutes (gimnasio, deportes, yoga, caminar), establecer horarios fijos 3-4 veces por semana, comenzar gradualmente, monitorear progreso y energía.',
       priority: 'high',
       categoria: 'ejercicio_fisico',
-      tips: '💪 Tip: El ejercicio no solo es bueno para tu cuerpo, también mejora tu concentración, reduce estrés y te da más energía para estudiar.',
-      mentorCommitment: 'Te ayudaré a encontrar actividades físicas que se adapten a tu horario y te motivaré a mantener la consistencia.'
+      tips: 'Tip: Tu salud física es importante para tu bienestar general. Encuentra actividades que disfrutes y crea una rutina de ejercicio que se adapte a tu estilo de vida.',
+      mentorCommitment: 'Te compartiré recursos e ideas cuando me consultes, y te motivaré a encontrar actividades que disfrutes.'
     },
     {
       id: 'PRIM_FIS02',
@@ -242,8 +235,8 @@ const GOALS_DATABASE = {
       steps: 'Establecer horario de sueño consistente (7-8 horas), crear rutina pre-sueño relajante, optimizar ambiente de dormitorio, limitar pantallas 1 hora antes de dormir.',
       priority: 'high',
       categoria: 'descanso_sueño',
-      tips: '😴 Tip: El sueño es fundamental para la memoria y el aprendizaje. Un buen descanso mejora significativamente tu rendimiento académico.',
-      mentorCommitment: 'Te ayudaré a crear una rutina de sueño saludable y te recordaré la importancia del descanso para tu éxito académico.'
+      tips: 'Tip: El sueño es fundamental para la memoria y el aprendizaje. Un buen descanso mejora significativamente tu rendimiento académico.',
+      mentorCommitment: 'Te facilitaré recursos para crear una rutina de sueño saludable y te ayudaré a entender la importancia del descanso para tu éxito académico.'
     },
     {
       id: 'PRIM_FIS03',
@@ -252,8 +245,8 @@ const GOALS_DATABASE = {
       steps: 'Planificar comidas semanalmente, incluir frutas y verduras en cada comida, mantenerse hidratado (8 vasos de agua), evitar excesos de cafeína y comida chatarra.',
       priority: 'medium',
       categoria: 'alimentacion_saludable',
-      tips: '🥗 Tip: Una buena alimentación es combustible para tu cerebro. Comer bien te ayuda a concentrarte mejor y tener más energía.',
-      mentorCommitment: 'Te compartiré tips de alimentación saludable para estudiantes y te ayudaré a planificar comidas nutritivas.'
+      tips: 'Tip: Una buena alimentación es combustible para tu cerebro. Comer bien te ayuda a concentrarte mejor y tener más energía.',
+      mentorCommitment: 'Te facilitaré recursos de alimentación saludable para estudiantes y te ayudaré a desarrollar habilidades para planificar comidas nutritivas.'
     },
     {
       id: 'PRIM_FIS04',
@@ -262,8 +255,8 @@ const GOALS_DATABASE = {
       steps: 'Identificar patrones de energía personal, programar actividades exigentes en horarios de mayor energía, incluir descansos regulares, aprender a decir no cuando sea necesario.',
       priority: 'medium',
       categoria: 'gestion_energia',
-      tips: '⚡ Tip: La gestión de energía es más importante que la gestión de tiempo. Aprende a trabajar con tus ritmos naturales.',
-      mentorCommitment: 'Te ayudaré a identificar tus patrones de energía y crear un horario que maximice tu productividad y bienestar.'
+      tips: 'Tip: La gestión de energía es más importante que la gestión de tiempo. Aprende a trabajar con tus ritmos naturales.',
+      mentorCommitment: 'Te facilitaré herramientas para identificar tus patrones de energía y te ayudaré a desarrollar estrategias para crear un horario que maximice tu productividad y bienestar.'
     }
   ],
   'Espiritual': [
@@ -274,8 +267,8 @@ const GOALS_DATABASE = {
       steps: 'Comenzar con 5-10 minutos diarios de meditación, usar apps como Headspace o Calm, practicar respiración consciente, crear espacio tranquilo para la práctica.',
       priority: 'high',
       categoria: 'meditacion_mindfulness',
-      tips: '🧘 Tip: La meditación no es solo relajación, es entrenamiento mental que mejora tu concentración y reduce el estrés académico.',
-      mentorCommitment: 'Te guiaré en técnicas de meditación para principiantes y te ayudaré a crear una práctica sostenible.'
+      tips: 'Tip: La meditación no es solo relajación, es entrenamiento mental que mejora tu concentración y reduce el estrés académico.',
+      mentorCommitment: 'Te facilitaré recursos y técnicas de meditación para principiantes y te ayudaré a desarrollar una práctica sostenible.'
     },
     {
       id: 'PRIM_ESP02',
@@ -284,8 +277,8 @@ const GOALS_DATABASE = {
       steps: 'Practicar reflexión diaria o semanal, identificar valores fundamentales, definir visión personal, alinear acciones académicas con valores, escribir sobre propósito personal.',
       priority: 'medium',
       categoria: 'proposito_vida',
-      tips: '🎯 Tip: Conocer tu propósito te ayuda a tomar mejores decisiones y mantener motivación durante los desafíos universitarios.',
-      mentorCommitment: 'Te ayudaré a explorar tus valores y propósito a través de ejercicios de reflexión y conversaciones profundas.'
+      tips: 'Tip: Conocer tu propósito te ayuda a tomar mejores decisiones y mantener motivación durante los desafíos universitarios.',
+      mentorCommitment: 'Te facilitaré ejercicios de reflexión y te acompañaré en conversaciones profundas para explorar tus valores y propósito.'
     },
     {
       id: 'PRIM_ESP03',
@@ -294,7 +287,7 @@ const GOALS_DATABASE = {
       steps: 'Mantener diario de gratitud, expresar agradecimiento a otros, practicar mindfulness, reflexionar sobre bendiciones diarias, celebrar pequeños logros.',
       priority: 'medium',
       categoria: 'gratitud_perspectiva',
-      tips: '🙏 Tip: La gratitud cambia tu perspectiva y te ayuda a ver oportunidades donde otros ven problemas.',
+      tips: 'Tip: La gratitud cambia tu perspectiva y te ayuda a ver oportunidades donde otros ven problemas.',
       mentorCommitment: 'Te recordaré practicar gratitud y te ayudaré a desarrollar una perspectiva más positiva ante los desafíos.'
     },
     {
@@ -304,7 +297,7 @@ const GOALS_DATABASE = {
       steps: 'Identificar espacios verdes en el campus, hacer caminatas regulares, practicar actividades al aire libre, crear rituales de conexión con la naturaleza.',
       priority: 'low',
       categoria: 'conexion_naturaleza',
-      tips: '🌿 Tip: La naturaleza tiene un poder restaurador. Incluso 15 minutos al aire libre pueden recargar tu energía mental.',
+      tips: 'Tip: La naturaleza tiene un poder restaurador. Incluso 15 minutos al aire libre pueden recargar tu energía mental.',
       mentorCommitment: 'Te ayudaré a identificar espacios de paz en el campus y te motivaré a incluir tiempo en la naturaleza en tu rutina.'
     }
   ],
@@ -316,8 +309,8 @@ const GOALS_DATABASE = {
       steps: 'Identificar ingresos (becas, familia, trabajo), categorizar gastos por prioridad (académicos, vivienda, alimentación, transporte), establecer límites de gasto, revisar y ajustar mensualmente.',
       priority: 'high',
       categoria: 'presupuesto_gastos',
-      tips: '💰 Tip: Un presupuesto universitario te da control sobre tu dinero y reduce el estrés financiero. Es tu herramienta de libertad financiera.',
-      mentorCommitment: 'Te ayudaré a crear tu primer presupuesto universitario y te enseñaré a mantenerlo actualizado.'
+      tips: 'Tip: Tú eres quien mejor conoce tus ingresos y gastos. Toma la iniciativa de registrar todo y ajustar tu presupuesto según tus necesidades reales.',
+      mentorCommitment: 'Estoy disponible para orientarte cuando tengas dudas sobre tu presupuesto o necesites estrategias para optimizar tus finanzas.'
     },
     {
       id: 'PRIM_FIN02',
@@ -326,8 +319,8 @@ const GOALS_DATABASE = {
       steps: 'Tomar curso de finanzas personales del TEC, leer libros sobre educación financiera, practicar con simuladores financieros, buscar asesoría en el departamento financiero.',
       priority: 'high',
       categoria: 'educacion_financiera',
-      tips: '📚 Tip: La educación financiera es una inversión en tu futuro. Te ayudará a tomar mejores decisiones económicas toda la vida.',
-      mentorCommitment: 'Te compartiré recursos de educación financiera y te ayudaré a entender conceptos básicos de finanzas personales.'
+      tips: 'Tip: La educación financiera es una inversión en tu futuro. Busca activamente recursos, cursos y oportunidades para aprender sobre finanzas personales.',
+      mentorCommitment: 'Te facilitaré recursos y herramientas cuando me solicites apoyo, y te guiaré en tu proceso de aprendizaje.'
     },
     {
       id: 'PRIM_FIN03',
@@ -336,8 +329,8 @@ const GOALS_DATABASE = {
       steps: 'Establecer meta de ahorro mensual (aunque sea pequeña), automatizar transferencias de ahorro, evitar gastos innecesarios, buscar formas de generar ingresos adicionales (tutorías, trabajos de medio tiempo).',
       priority: 'medium',
       categoria: 'ahorro_planificacion',
-      tips: '🏦 Tip: El ahorro es un hábito que se construye. Incluso ahorrar $100 pesos mensuales suma $1,200 al año.',
-      mentorCommitment: 'Te ayudaré a establecer metas de ahorro realistas y te motivaré a mantener la disciplina financiera.'
+      tips: 'Tip: El ahorro es tu decisión personal. Define tus propias metas de ahorro y encuentra tu motivación interna para mantener la disciplina.',
+      mentorCommitment: 'Estoy aquí para ayudarte a definir estrategias de ahorro cuando me consultes, pero la constancia depende de tu compromiso personal.'
     },
     {
       id: 'PRIM_FIN04',
@@ -346,7 +339,7 @@ const GOALS_DATABASE = {
       steps: 'Investigar todas las becas disponibles, entender términos de créditos estudiantiles, optimizar uso de recursos del TEC, buscar oportunidades de financiamiento adicional.',
       priority: 'medium',
       categoria: 'recursos_financieros',
-      tips: '🎓 Tip: Conocer todos los recursos financieros disponibles puede hacer la diferencia en tu experiencia universitaria.',
+      tips: 'Tip: Conocer todos los recursos financieros disponibles puede hacer la diferencia en tu experiencia universitaria.',
       mentorCommitment: 'Te ayudaré a identificar y acceder a todos los recursos financieros disponibles para estudiantes.'
     }
   ]
@@ -770,7 +763,7 @@ function verifySheetsSetup() {
 function sendRecommendationsEmail(student, recommendations) {
   try {
     const email = `${student.matricula}@tec.mx`;
-    const subject = `🎯 Tus Metas Personalizadas IBI - ${student.nombre}`;
+    const subject = `Tus Metas Personalizadas IBI - ${student.nombre}`;
     
     // Generar contenido HTML del correo
     const htmlContent = generateEmailHTML(student, recommendations);
@@ -814,19 +807,19 @@ function generateEmailHTML(student, recommendations) {
       <div class="recommendation-card ${priorityClass}">
         <div class="recommendation-header">
           <span class="priority-badge">${priorityText}</span>
-          <span class="dimension-badge">${rec.dimension} ${DIMENSIONS[rec.dimension].emoji}</span>
+          <span class="dimension-badge">${rec.dimension}</span>
         </div>
         <h3>${rec.goal.title}</h3>
         <p class="description">${rec.goal.description}</p>
         <div class="steps">
-          <h4>📋 Pasos de Acción:</h4>
+          <h4>Pasos de Acción:</h4>
           <p>${rec.goal.steps}</p>
         </div>
         <div class="tip">
           <strong>${rec.goal.tips}</strong>
         </div>
         <div class="mentor-commitment">
-          <h4>🤝 Mi compromiso contigo:</h4>
+          <h4>Mi compromiso contigo:</h4>
           <p>${rec.goal.mentorCommitment}</p>
         </div>
       </div>
@@ -857,7 +850,7 @@ function generateEmailHTML(student, recommendations) {
           box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .header {
-          background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+          background: #4285f4;
           color: white;
           padding: 25px;
           border-radius: 10px;
@@ -886,15 +879,15 @@ function generateEmailHTML(student, recommendations) {
         }
         .recommendation-card.priority-high {
           border-color: #ea4335;
-          background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+          background: #fff5f5;
         }
         .recommendation-card.priority-medium {
           border-color: #fbbc04;
-          background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
+          background: #fffbf0;
         }
         .recommendation-card.priority-low {
           border-color: #34a853;
-          background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
+          background: #f0fff4;
         }
         .recommendation-header {
           display: flex;
@@ -970,6 +963,11 @@ function generateEmailHTML(student, recommendations) {
         .tutorial-link:hover {
           background: #3367d6;
         }
+        /* Mejorar contraste para Outlook */
+        .tutorial-link {
+          background: #1a73e8 !important;
+          color: #ffffff !important;
+        }
         .footer {
           margin-top: 30px;
           padding-top: 20px;
@@ -1010,63 +1008,55 @@ function generateEmailHTML(student, recommendations) {
     <body>
       <div class="container">
         <div class="header">
-          <h1>🎯 Tus Metas Personalizadas IBI</h1>
+          <h1>Tus Metas Personalizadas IBI</h1>
           <p>Recomendaciones basadas en tus dimensiones prioritarias</p>
         </div>
         
         <div class="greeting">
-          ¡Hola <strong>${student.nombre}</strong>! 👋
+          ¡Hola <strong>${student.nombre}</strong>!
         </div>
         
         <p>Me da mucho gusto que hayas completado la selección de tus dimensiones prioritarias del bienestar integral. Basándome en tus respuestas, he preparado <strong>3 metas personalizadas</strong> que te ayudarán a crecer en las áreas que más te interesan.</p>
         
-        <p>Cada meta incluye pasos específicos de acción, tips de éxito y mi compromiso de acompañarte en el proceso. ¡Estoy emocionada de ser parte de tu crecimiento universitario! 🌟</p>
+        <p>Cada meta incluye pasos específicos de acción, tips de éxito y mi compromiso de acompañarte en el proceso. ¡Estoy emocionada de ser parte de tu crecimiento universitario!</p>
         
         ${recommendationsHTML}
         
         <div class="next-steps">
-          <h3>🚀 Próximos Pasos</h3>
+          <h3>Próximos Pasos</h3>
           <p><strong>1. Personaliza tus metas:</strong> Puedes modificar, agregar o quitar pasos según tus necesidades específicas.</p>
           <p><strong>2. Guárdalas en Mi Tec:</strong> Sube tus metas a MiVidaTec para hacer seguimiento de tu progreso.</p>
           <p><strong>3. ¡Comienza a trabajar en ellas!</strong> Recuerda que el progreso se construye paso a paso.</p>
           
           <a href="${tutorialLink}" class="tutorial-link" target="_blank">
-            📖 Ver Tutorial: Cómo guardar metas en Mi Tec
+            Ver Tutorial: Cómo guardar metas en Mi Tec
           </a>
         </div>
         
-        <div class="follow-up">
-          <h4>📧 ¿No recibiste este correo?</h4>
-          <p>Si no encuentras este correo en tu bandeja de entrada, verifica:</p>
-          <ul>
-            <li>Tu carpeta de spam o correo no deseado</li>
-            <li>Que tu matrícula esté correcta: <strong>${student.matricula}@tec.mx</strong></li>
-            <li>Si necesitas que reenvíe el correo, responde a este mensaje</li>
-          </ul>
-        </div>
         
-        <div class="signature">
-          <h4>Con cariño y compromiso,</h4>
-          <p><strong>Tu mentora Karen</strong> 💙</p>
-          <p>Estoy aquí para acompañarte en tu proceso de crecimiento universitario. No dudes en contactarme si tienes preguntas, necesitas apoyo o quieres compartir tus logros.</p>
-          
-          <h4>🤝 Mi compromiso contigo:</h4>
-          <ul>
-            <li>📅 <strong>Seguimiento semanal:</strong> Te enviaré tips y recordatorios para mantenerte motivado</li>
-            <li>💬 <strong>Disponibilidad:</strong> Estaré disponible para responder tus dudas y darte apoyo</li>
-            <li>🎉 <strong>Celebración de logros:</strong> Reconoceré y celebraré tus avances y logros</li>
-            <li>📚 <strong>Recursos personalizados:</strong> Te compartiré recursos específicos para tus metas</li>
-            <li>🤗 <strong>Apoyo emocional:</strong> Estaré aquí para escucharte en momentos difíciles</li>
-          </ul>
-          
-          <h4>💪 Tu compromiso:</h4>
-          <ul>
-            <li>🎯 <strong>Dedicación:</strong> Trabajar consistentemente en tus metas</li>
-            <li>📝 <strong>Reflexión:</strong> Evaluar tu progreso y ajustar cuando sea necesario</li>
-            <li>🤝 <strong>Comunicación:</strong> Mantenerme informada de tus avances y desafíos</li>
-            <li>🌟 <strong>Persistencia:</strong> No rendirte ante los obstáculos</li>
-          </ul>
-        </div>
+                <div class="signature">
+                  <h4>Con cariño y compromiso,</h4>
+                  <p><strong>Tu mentora Karen</strong></p>
+                  <p>Estoy aquí para acompañarte en tu proceso de crecimiento universitario. No dudes en contactarme si tienes preguntas, necesitas apoyo o quieres compartir tus logros.</p>
+                  
+                  <h4>Mi compromiso contigo:</h4>
+                  <ul>
+                    <li><strong>Disponibilidad:</strong> Estaré aquí cuando me necesites para darte orientación y apoyo</li>
+                    <li><strong>Celebración:</strong> Reconoceré y celebraré cada uno de tus avances y logros</li>
+                    <li><strong>Recursos:</strong> Te facilitaré herramientas y recursos cuando los solicites</li>
+                    <li><strong>Escucha:</strong> Estaré aquí para escucharte en momentos difíciles</li>
+                    <li><strong>Autonomía:</strong> Te ayudaré a desarrollar tu independencia y confianza</li>
+                  </ul>
+                  
+                  <h4>Tu compromiso:</h4>
+                  <ul>
+                    <li><strong>Iniciativa:</strong> Tú decides cuándo y cómo avanzar en tus metas</li>
+                    <li><strong>Reflexión:</strong> Evalúa tu progreso y ajusta cuando sea necesario</li>
+                    <li><strong>Comunicación:</strong> Comparte conmigo tus avances y desafíos cuando lo desees</li>
+                    <li><strong>Persistencia:</strong> Mantén tu motivación ante los obstáculos</li>
+                    <li><strong>Autonomía:</strong> Desarrolla tu capacidad de tomar decisiones y acciones propias</li>
+                  </ul>
+                </div>
         
         <div class="footer">
           <p>Este correo fue generado automáticamente por el sistema dIkigai</p>

@@ -590,118 +590,320 @@
             }
         };
 
-        // Base de datos de metas (simplificada para el prototipo)
+        // Base de datos de metas (completa con 4 metas por dimensión)
         const GOALS_DATABASE = {
             'Intelectual': [
                 {
-                    id: 'INT_001',
+                    id: 'PRIM_INT01',
                     title: 'Establecer rutina de estudio efectiva',
-                    description: 'Crear un horario de estudio que incluya técnicas de aprendizaje activo y espacios de concentración.',
-                    steps: 'Identificar horarios de mayor productividad, crear espacios de estudio libres de distracciones, implementar técnica Pomodoro, revisar y ajustar semanalmente.',
-                    priority: 'high'
+                    description: 'Crear un horario de estudio que incluya técnicas de aprendizaje activo y espacios de concentración para adaptarte al ritmo universitario.',
+                    steps: 'Identificar horarios de mayor productividad, crear espacios de estudio libres de distracciones, implementar técnica Pomodoro (25 min estudio + 5 min descanso), revisar y ajustar semanalmente.',
+                    priority: 'high',
+                    categoria: 'habitos_estudio',
+                    tips: 'Tip: La consistencia es más importante que la intensidad. Mejor 2 horas diarias constantes que 8 horas un día.',
+                    mentorCommitment: 'Te ayudaré a crear un horario de estudio que se adapte a tu estilo de aprendizaje y te facilitaré técnicas de estudio efectivas.'
                 },
                 {
-                    id: 'INT_002',
-                    title: 'Desarrollar habilidades de lectura crítica',
-                    description: 'Mejorar la comprensión y análisis de textos académicos para optimizar el aprendizaje.',
-                    steps: 'Practicar técnicas de lectura activa, tomar notas estructuradas, participar en discusiones académicas, aplicar técnicas de síntesis.',
-                    priority: 'medium'
+                    id: 'PRIM_INT02',
+                    title: 'Dominar técnicas de lectura universitaria',
+                    description: 'Desarrollar habilidades de lectura crítica y análisis para textos académicos más complejos que en preparatoria.',
+                    steps: 'Practicar lectura activa con subrayado estratégico, crear mapas conceptuales, participar en discusiones de clase, aplicar técnicas de síntesis y resumen.',
+                    priority: 'high',
+                    categoria: 'habitos_estudio',
+                    tips: 'Tip: La lectura universitaria es diferente. No necesitas memorizar todo, sino entender conceptos clave y conexiones.',
+                    mentorCommitment: 'Te compartiré recursos de técnicas de lectura y te ayudaré a practicar con textos reales de tu carrera.'
+                },
+                {
+                    id: 'PRIM_INT03',
+                    title: 'Aprender un nuevo idioma o mejorar el inglés',
+                    description: 'Desarrollar competencias lingüísticas que abran oportunidades académicas y profesionales.',
+                    steps: 'Tomar curso de idioma en el TEC, practicar conversación con nativos, consumir contenido en el idioma objetivo, establecer metas de progreso mensuales.',
+                    priority: 'medium',
+                    categoria: 'desarrollo_linguistico',
+                    tips: 'Tip: Los idiomas son una inversión a largo plazo. La práctica diaria, aunque sea 15 minutos, es más efectiva que sesiones largas esporádicas.',
+                    mentorCommitment: 'Te ayudaré a encontrar recursos de idiomas y te conectaré con oportunidades de práctica conversacional.'
+                },
+                {
+                    id: 'PRIM_INT03',
+                    title: 'Buscar apoyos educativos en Tec Services',
+                    description: 'Identificar y utilizar recursos educativos disponibles en Tec Services que se ajusten a tu perfil de aprendizaje.',
+                    steps: 'Explorar servicios de tutoría disponibles, identificar tu estilo de aprendizaje, solicitar apoyo en materias difíciles, participar en sesiones de estudio grupal.',
+                    priority: 'high',
+                    categoria: 'apoyos_educativos',
+                    tips: 'Tip: Tec Services tiene muchos recursos gratuitos. No esperes a tener problemas para utilizarlos.',
+                    mentorCommitment: 'Te ayudaré a identificar los recursos más adecuados para tu perfil y te guiaré en cómo aprovecharlos.'
+                },
+                {
+                    id: 'PRIM_INT04',
+                    title: 'Cuidar mi promedio y rendimiento académico',
+                    description: 'Mantener un promedio académico sólido y desarrollar estrategias para mejorar el rendimiento en todas las materias.',
+                    steps: 'Establecer metas de calificación por materia, revisar progreso semanalmente, identificar materias que requieren más atención, buscar ayuda temprano cuando sea necesario.',
+                    priority: 'high',
+                    categoria: 'rendimiento_academico',
+                    tips: 'Tip: Un buen promedio te abre muchas puertas. Es mejor mantenerlo desde el principio que recuperarlo después.',
+                    mentorCommitment: 'Te ayudaré a establecer metas realistas de calificación y te apoyaré cuando necesites mejorar en alguna materia.'
                 }
             ],
             'Ocupacional': [
                 {
-                    id: 'OCC_001',
-                    title: 'Explorar opciones de carrera',
-                    description: 'Investigar diferentes trayectorias profesionales relacionadas con tu área de estudio.',
-                    steps: 'Entrevistar a 3 profesionales del área, investigar perfiles de egreso, asistir a charlas de carrera, crear mapa de opciones profesionales.',
-                    priority: 'high'
+                    id: 'PRIM_OCC01',
+                    title: 'Explorar opciones de carrera y especialización',
+                    description: 'Investigar diferentes trayectorias profesionales y especializaciones dentro de tu área de estudio para tomar decisiones informadas.',
+                    steps: 'Entrevistar a 3 profesionales del área, investigar perfiles de egreso en Mi Tec, asistir a charlas de carrera, crear mapa de opciones profesionales, explorar especializaciones disponibles.',
+                    priority: 'high',
+                    categoria: 'claridad_vocacional',
+                    tips: 'Tip: No necesitas decidir todo ahora, pero sí explorar para tomar mejores decisiones en 2° y 3° semestre.',
+                    mentorCommitment: 'Te conectaré con profesionales de tu área y te ayudaré a organizar entrevistas informativas.'
                 },
                 {
-                    id: 'OCC_002',
-                    title: 'Desarrollar perfil profesional',
-                    description: 'Crear presencia profesional en redes sociales y plataformas de networking.',
-                    steps: 'Optimizar perfil de LinkedIn, crear portafolio digital, participar en eventos de networking, desarrollar elevator pitch.',
-                    priority: 'medium'
+                    id: 'PRIM_OCC02',
+                    title: 'Buscar mentoría académica y profesional',
+                    description: 'Encontrar mentores que te guíen en tu desarrollo académico y profesional durante la universidad.',
+                    steps: 'Identificar profesores inspiradores, buscar programas de mentoría del TEC, conectar con exalumnos, establecer relaciones con profesionales del área.',
+                    priority: 'high',
+                    categoria: 'mentoria',
+                    tips: 'Tip: Un buen mentor puede acelerar tu crecimiento y abrirte puertas. No tengas miedo de pedir ayuda.',
+                    mentorCommitment: 'Te ayudaré a identificar mentores potenciales y te guiaré en cómo establecer estas relaciones.'
+                },
+                {
+                    id: 'PRIM_OCC03',
+                    title: 'Desarrollar perfil profesional básico',
+                    description: 'Crear presencia profesional inicial en plataformas digitales y desarrollar habilidades de networking.',
+                    steps: 'Crear perfil profesional en LinkedIn, desarrollar elevator pitch personal, participar en eventos de networking del TEC, crear portafolio básico de proyectos.',
+                    priority: 'medium',
+                    categoria: 'perfil_profesional',
+                    tips: 'Tip: Tu perfil profesional es tu carta de presentación. Invierte tiempo en hacerlo auténtico y atractivo.',
+                    mentorCommitment: 'Te ayudaré a crear un perfil profesional atractivo y te guiaré en estrategias de networking efectivas.'
+                },
+                {
+                    id: 'PRIM_OCC03',
+                    title: 'Asesorarme con el área de becas',
+                    description: 'Buscar orientación en el área de becas para optimizar oportunidades de financiamiento y apoyo económico.',
+                    steps: 'Agendar cita con asesor de becas, revisar todas las opciones disponibles, cumplir con requisitos y fechas límite, mantener comunicación regular con el área.',
+                    priority: 'high',
+                    categoria: 'asesoria_becas',
+                    tips: 'Tip: El área de becas puede ayudarte a encontrar opciones que no conocías. Es mejor consultar temprano.',
+                    mentorCommitment: 'Te ayudaré a preparar tu consulta con el área de becas y te guiaré en cómo aprovechar al máximo la asesoría.'
+                },
+                {
+                    id: 'PRIM_OCC04',
+                    title: 'Explorar oportunidades de experiencia práctica',
+                    description: 'Identificar y participar en actividades que te den experiencia práctica en tu área de interés.',
+                    steps: 'Buscar proyectos de investigación, participar en competencias estudiantiles, explorar programas de verano, conectar con empresas para proyectos académicos.',
+                    priority: 'medium',
+                    categoria: 'experiencia_practica',
+                    tips: 'Tip: La experiencia práctica complementa perfectamente tu formación académica. No esperes a graduarte para empezar.',
+                    mentorCommitment: 'Te ayudaré a identificar oportunidades de experiencia práctica y te guiaré en cómo aprovecharlas.'
                 }
             ],
             'Emocional': [
                 {
-                    id: 'EMO_001',
-                    title: 'Establecer rutina de bienestar emocional',
-                    description: 'Crear hábitos diarios que promuevan el equilibrio emocional y la gestión del estrés.',
-                    steps: 'Practicar mindfulness 10 minutos diarios, mantener diario de emociones, establecer límites saludables, buscar apoyo cuando sea necesario.',
-                    priority: 'high'
+                    id: 'PRIM_EMO01',
+                    title: 'Manejar el estrés y la ansiedad universitaria',
+                    description: 'Desarrollar estrategias efectivas para gestionar el estrés académico y la ansiedad que puede generar la vida universitaria.',
+                    steps: 'Identificar fuentes de estrés, practicar técnicas de respiración y relajación, establecer rutinas de autocuidado, buscar apoyo en consejería estudiantil cuando sea necesario.',
+                    priority: 'high',
+                    categoria: 'gestion_estres',
+                    tips: 'Tip: El estrés es normal en la universidad. La clave está en desarrollar herramientas para manejarlo de manera saludable.',
+                    mentorCommitment: 'Te ayudaré a identificar tus fuentes de estrés y te facilitaré técnicas de manejo que funcionen para ti.'
                 },
                 {
-                    id: 'EMO_002',
-                    title: 'Desarrollar inteligencia emocional',
-                    description: 'Mejorar la capacidad de reconocer, entender y gestionar las propias emociones.',
-                    steps: 'Practicar autoconciencia emocional, desarrollar empatía, mejorar comunicación asertiva, gestionar conflictos constructivamente.',
-                    priority: 'medium'
+                    id: 'PRIM_EMO02',
+                    title: 'Acudir a Consejería Emocional',
+                    description: 'Buscar apoyo profesional en consejería estudiantil para hablar sobre tu bienestar emocional y recibir orientación especializada.',
+                    steps: 'Agendar cita en consejería estudiantil, preparar temas a discutir, asistir a sesiones regulares, aplicar recomendaciones del consejero.',
+                    priority: 'high',
+                    categoria: 'consejeria_emocional',
+                    tips: 'Tip: La consejería es un recurso profesional disponible para todos los estudiantes. No hay nada de malo en buscar ayuda.',
+                    mentorCommitment: 'Te ayudaré a entender el proceso de consejería y te acompañaré en el proceso si lo necesitas.'
+                },
+                {
+                    id: 'PRIM_EMO03',
+                    title: 'Regular estrés con talleres de resiliencia',
+                    description: 'Participar en talleres de consejería para adquirir herramientas de resiliencia y manejo del estrés.',
+                    steps: 'Inscribirse en talleres de resiliencia, asistir regularmente, practicar técnicas aprendidas, aplicar estrategias en situaciones reales.',
+                    priority: 'medium',
+                    categoria: 'talleres_resiliencia',
+                    tips: 'Tip: Los talleres te dan herramientas prácticas que puedes usar inmediatamente en tu vida universitaria.',
+                    mentorCommitment: 'Te ayudaré a identificar talleres relevantes y te motivaré a aplicar las técnicas aprendidas.'
+                },
+                {
+                    id: 'PRIM_EMO04',
+                    title: 'Desarrollar inteligencia emocional y autoconocimiento',
+                    description: 'Mejorar la capacidad de reconocer, entender y gestionar las propias emociones y las de otros.',
+                    steps: 'Practicar autoconciencia emocional diaria, desarrollar empatía hacia compañeros, mejorar comunicación asertiva, gestionar conflictos de manera constructiva.',
+                    priority: 'medium',
+                    categoria: 'inteligencia_emocional',
+                    tips: 'Tip: La inteligencia emocional es tan importante como la académica. Te ayudará en todas las áreas de tu vida.',
+                    mentorCommitment: 'Te facilitaré ejercicios de autoconocimiento y te ayudaré a desarrollar habilidades emocionales clave.'
                 }
             ],
             'Social': [
                 {
-                    id: 'SOC_001',
-                    title: 'Construir red de apoyo social',
-                    description: 'Establecer relaciones significativas con compañeros, profesores y mentores.',
-                    steps: 'Participar en actividades grupales, unirse a clubes estudiantiles, mantener contacto regular con familia, buscar mentores académicos.',
-                    priority: 'high'
+                    id: 'PRIM_SOC01',
+                    title: 'Unirse a un grupo estudiantil o club',
+                    description: 'Participar activamente en una organización estudiantil que coincida con tus intereses y valores.',
+                    steps: 'Explorar clubes y organizaciones disponibles, asistir a reuniones informativas, elegir 1-2 grupos que te interesen, participar activamente en actividades.',
+                    priority: 'high',
+                    categoria: 'participacion_estudiantil',
+                    tips: 'Tip: Los grupos estudiantiles son excelentes para hacer amigos, desarrollar liderazgo y enriquecer tu experiencia universitaria.',
+                    mentorCommitment: 'Te ayudaré a encontrar grupos que coincidan con tus intereses y te guiaré en cómo participar efectivamente.'
                 },
                 {
-                    id: 'SOC_002',
-                    title: 'Desarrollar habilidades de comunicación',
-                    description: 'Mejorar la capacidad de expresarse efectivamente en diferentes contextos.',
-                    steps: 'Practicar presentaciones orales, participar en debates, mejorar comunicación escrita, desarrollar escucha activa.',
-                    priority: 'medium'
+                    id: 'PRIM_SOC02',
+                    title: 'Asistir a eventos de integración del campus',
+                    description: 'Participar en actividades de integración y eventos sociales para conocer gente nueva y adaptarte al campus.',
+                    steps: 'Revisar calendario de eventos del campus, seleccionar 3 eventos de tu interés, agendar fechas en tu calendario, conocer al menos 1 persona nueva en cada evento.',
+                    priority: 'high',
+                    categoria: 'integracion_campus',
+                    tips: 'Tip: Los eventos de integración son perfectos para conocer gente nueva y sentirte parte de la comunidad universitaria.',
+                    mentorCommitment: 'Te ayudaré a identificar eventos interesantes y te motivaré a participar activamente.'
+                },
+                {
+                    id: 'PRIM_SOC03',
+                    title: 'Mantener conexión con familia y amigos de casa',
+                    description: 'Equilibrar nuevas relaciones universitarias con el mantenimiento de vínculos importantes de casa.',
+                    steps: 'Establecer horarios regulares para llamar a familia, planificar visitas a casa, mantener contacto con amigos de preparatoria, crear nuevos rituales de conexión.',
+                    priority: 'medium',
+                    categoria: 'mantenimiento_relaciones',
+                    tips: 'Tip: Es importante mantener tus raíces mientras construyes nuevas relaciones. El equilibrio es clave.',
+                    mentorCommitment: 'Te ayudaré a encontrar el equilibrio entre nuevas y viejas relaciones, y te apoyaré en momentos de nostalgia.'
+                },
+                {
+                    id: 'PRIM_SOC04',
+                    title: 'Conocer compañeros y profesores del grupo',
+                    description: 'Establecer relaciones iniciales con compañeros de tu grupo y profesores durante las primeras semanas.',
+                    steps: 'Presentarte a compañeros en las primeras clases, intercambiar contactos con 3 compañeros, saludar y presentarte a tus profesores, crear grupo de WhatsApp con compañeros del grupo.',
+                    priority: 'medium',
+                    categoria: 'relaciones_grupo',
+                    tips: 'Tip: Las primeras semanas son clave para establecer conexiones. No esperes a que otros tomen la iniciativa.',
+                    mentorCommitment: 'Te ayudaré a desarrollar estrategias para iniciar conversaciones y te motivaré a ser proactivo en conocer a tu grupo.'
                 }
             ],
             'Física': [
                 {
-                    id: 'FIS_001',
-                    title: 'Establecer rutina de ejercicio regular',
-                    description: 'Crear hábitos de actividad física que promuevan la salud y el bienestar.',
-                    steps: 'Encontrar actividad física que disfrutes, establecer horarios fijos, comenzar gradualmente, monitorear progreso.',
-                    priority: 'high'
+                    id: 'PRIM_FIS01',
+                    title: 'Establecer rutina de ejercicio y actividad física',
+                    description: 'Crear hábitos de actividad física que promuevan la salud, reduzcan el estrés y mejoren el rendimiento académico.',
+                    steps: 'Encontrar actividad física que disfrutes (gimnasio, deportes, yoga, caminar), establecer horarios fijos 3-4 veces por semana, comenzar gradualmente, monitorear progreso y energía.',
+                    priority: 'high',
+                    categoria: 'ejercicio_fisico',
+                    tips: 'Tip: El ejercicio no solo es bueno para tu cuerpo, también mejora tu concentración, reduce estrés y te da más energía para estudiar.',
+                    mentorCommitment: 'Te facilitaré recursos para encontrar actividades físicas que se adapten a tu horario y te ayudaré a desarrollar estrategias para mantener la consistencia.'
                 },
                 {
-                    id: 'FIS_002',
-                    title: 'Optimizar hábitos de sueño',
-                    description: 'Mejorar la calidad y cantidad de sueño para optimizar el rendimiento académico.',
-                    steps: 'Establecer horario de sueño consistente, crear rutina pre-sueño, optimizar ambiente de dormitorio, limitar pantallas antes de dormir.',
-                    priority: 'medium'
+                    id: 'PRIM_FIS02',
+                    title: 'Acudir a clase Life y probar deporte nuevo',
+                    description: 'Participar en clases Life de acceso abierto y explorar nuevos deportes para diversificar tu actividad física.',
+                    steps: 'Revisar horarios de clases Life disponibles, inscribirse en una clase que te interese, probar al menos 2 deportes nuevos, evaluar cuál disfrutas más.',
+                    priority: 'high',
+                    categoria: 'clases_life_deportes',
+                    tips: 'Tip: Las clases Life son una excelente oportunidad para probar actividades nuevas sin compromiso a largo plazo.',
+                    mentorCommitment: 'Te ayudaré a identificar clases Life interesantes y te motivaré a probar nuevas actividades físicas.'
+                },
+                {
+                    id: 'PRIM_FIS03',
+                    title: 'Optimizar hábitos de sueño y descanso',
+                    description: 'Mejorar la calidad y cantidad de sueño para optimizar el rendimiento académico y la salud general.',
+                    steps: 'Establecer horario de sueño consistente (7-8 horas), crear rutina pre-sueño relajante, optimizar ambiente de dormitorio, limitar pantallas 1 hora antes de dormir.',
+                    priority: 'medium',
+                    categoria: 'descanso_sueño',
+                    tips: 'Tip: El sueño es fundamental para la memoria y el aprendizaje. Un buen descanso mejora significativamente tu rendimiento académico.',
+                    mentorCommitment: 'Te facilitaré recursos para crear una rutina de sueño saludable y te ayudaré a entender la importancia del descanso para tu éxito académico.'
+                },
+                {
+                    id: 'PRIM_FIS04',
+                    title: 'Mantener alimentación balanceada y saludable',
+                    description: 'Desarrollar hábitos alimenticios saludables que apoyen el rendimiento académico y la salud física.',
+                    steps: 'Planificar comidas semanalmente, incluir frutas y verduras en cada comida, mantenerse hidratado (8 vasos de agua), evitar excesos de cafeína y comida chatarra.',
+                    priority: 'medium',
+                    categoria: 'alimentacion_saludable',
+                    tips: 'Tip: Una buena alimentación es combustible para tu cerebro. Comer bien te ayuda a concentrarte mejor y tener más energía.',
+                    mentorCommitment: 'Te facilitaré recursos de alimentación saludable para estudiantes y te ayudaré a desarrollar habilidades para planificar comidas nutritivas.'
                 }
             ],
             'Espiritual': [
                 {
-                    id: 'ESP_001',
-                    title: 'Reflexionar sobre propósito de vida',
-                    description: 'Explorar valores personales y definir metas de vida a largo plazo.',
-                    steps: 'Practicar reflexión diaria, identificar valores fundamentales, definir visión personal, alinear acciones con valores.',
-                    priority: 'high'
+                    id: 'PRIM_ESP01',
+                    title: 'Reflexionar sobre valores y propósito de carrera',
+                    description: 'Explorar valores personales y reflexionar sobre el propósito de estudiar tu carrera durante 10 minutos semanales.',
+                    steps: 'Establecer horario fijo semanal para reflexión (ej. domingos por la noche), crear espacio tranquilo para reflexionar, escribir en diario mis motivaciones para estudiar mi carrera, revisar y ajustar mis reflexiones cada semana.',
+                    priority: 'high',
+                    categoria: 'reflexion_proposito',
+                    tips: 'Tip: Conocer tu propósito te ayuda a tomar mejores decisiones y mantener motivación durante los desafíos universitarios.',
+                    mentorCommitment: 'Te facilitaré ejercicios de reflexión y te acompañaré en conversaciones profundas para explorar tus valores y propósito.'
                 },
                 {
-                    id: 'ESP_002',
-                    title: 'Desarrollar práctica de gratitud',
-                    description: 'Cultivar una actitud de agradecimiento que mejore el bienestar general.',
-                    steps: 'Mantener diario de gratitud, expresar agradecimiento a otros, practicar mindfulness, reflexionar sobre bendiciones diarias.',
-                    priority: 'medium'
+                    id: 'PRIM_ESP02',
+                    title: 'Acudir al espacio Punto Blanco del campus',
+                    description: 'Participar en actividades de reflexión y meditación en el espacio Punto Blanco del campus.',
+                    steps: 'Ubicar Punto Blanco en tu campus, revisar horario de actividades disponibles, seleccionar 2 actividades que te interesen (meditación, reflexión, etc.), asistir y participar activamente, reflexionar sobre la experiencia después de cada actividad.',
+                    priority: 'high',
+                    categoria: 'punto_blanco',
+                    tips: 'Tip: Punto Blanco es un espacio especial para la reflexión y el crecimiento espiritual. Es un recurso único del TEC.',
+                    mentorCommitment: 'Te ayudaré a ubicar Punto Blanco y te motivaré a participar en sus actividades de crecimiento personal.'
+                },
+                {
+                    id: 'PRIM_ESP03',
+                    title: 'Desarrollar práctica de meditación y mindfulness',
+                    description: 'Cultivar una práctica regular de meditación o mindfulness para mejorar el bienestar mental y la concentración.',
+                    steps: 'Comenzar con 5-10 minutos diarios de meditación, usar apps como Headspace o Calm, practicar respiración consciente, crear espacio tranquilo para la práctica.',
+                    priority: 'medium',
+                    categoria: 'meditacion_mindfulness',
+                    tips: 'Tip: La meditación no es solo relajación, es entrenamiento mental que mejora tu concentración y reduce el estrés académico.',
+                    mentorCommitment: 'Te facilitaré recursos y técnicas de meditación para principiantes y te ayudaré a desarrollar una práctica sostenible.'
+                },
+                {
+                    id: 'PRIM_ESP04',
+                    title: 'Cultivar gratitud y perspectiva positiva',
+                    description: 'Desarrollar una actitud de agradecimiento que mejore el bienestar general y la resiliencia.',
+                    steps: 'Mantener diario de gratitud, expresar agradecimiento a otros, practicar mindfulness, reflexionar sobre bendiciones diarias, celebrar pequeños logros.',
+                    priority: 'medium',
+                    categoria: 'gratitud_perspectiva',
+                    tips: 'Tip: La gratitud cambia tu perspectiva y te ayuda a ver oportunidades donde otros ven problemas.',
+                    mentorCommitment: 'Te recordaré practicar gratitud y te ayudaré a desarrollar una perspectiva más positiva ante los desafíos.'
                 }
             ],
             'Financiera': [
                 {
-                    id: 'FIN_001',
-                    title: 'Crear presupuesto universitario',
-                    description: 'Establecer un plan financiero que cubra gastos académicos y personales.',
-                    steps: 'Identificar ingresos y gastos, categorizar gastos por prioridad, establecer límites de gasto, revisar y ajustar mensualmente.',
-                    priority: 'high'
+                    id: 'PRIM_FIN01',
+                    title: 'Crear presupuesto universitario y gestionar gastos',
+                    description: 'Establecer un plan financiero que cubra gastos académicos, personales y de vida universitaria.',
+                    steps: 'Identificar ingresos (becas, familia, trabajo), categorizar gastos por prioridad (académicos, vivienda, alimentación, transporte), establecer límites de gasto, revisar y ajustar mensualmente.',
+                    priority: 'high',
+                    categoria: 'presupuesto_gastos',
+                    tips: 'Tip: Un presupuesto universitario te da control sobre tu dinero y reduce el estrés financiero. Es tu herramienta de libertad financiera.',
+                    mentorCommitment: 'Te ayudaré a crear tu primer presupuesto universitario y te enseñaré a mantenerlo actualizado.'
                 },
                 {
-                    id: 'FIN_002',
-                    title: 'Desarrollar educación financiera',
-                    description: 'Aprender conceptos básicos de finanzas personales y planificación financiera.',
-                    steps: 'Tomar curso de finanzas personales, leer libros sobre educación financiera, practicar con simuladores, buscar asesoría financiera.',
-                    priority: 'medium'
+                    id: 'PRIM_FIN02',
+                    title: 'Evaluar menor carga académica y plan de regularización',
+                    description: 'Considerar inscribir menor carga académica para disminuir costos y crear un plan de regularización con tu Director/a de Entrada y Mentor/a.',
+                    steps: 'Evaluar situación académica actual, consultar con Director/a de Entrada sobre opciones, crear plan de regularización, ajustar carga académica si es necesario.',
+                    priority: 'high',
+                    categoria: 'carga_academica_regularizacion',
+                    tips: 'Tip: A veces es mejor tomar menos materias y aprobarlas bien que sobrecargarse y tener problemas académicos.',
+                    mentorCommitment: 'Te ayudaré a evaluar tu situación académica y te acompañaré en el proceso de regularización si es necesario.'
+                },
+                {
+                    id: 'PRIM_FIN03',
+                    title: 'Disminuir gastos hormiga y optimizar gastos',
+                    description: 'Identificar y reducir gastos pequeños que se acumulan y afectan el presupuesto universitario.',
+                    steps: 'Llevar registro de gastos diarios por una semana, identificar gastos hormiga (café, snacks, apps), establecer límites para estos gastos, buscar alternativas más económicas.',
+                    priority: 'medium',
+                    categoria: 'gastos_hormiga',
+                    tips: 'Tip: Los gastos hormiga pueden sumar mucho al mes. Un café diario puede costarte más de $500 pesos mensuales.',
+                    mentorCommitment: 'Te ayudaré a identificar tus gastos hormiga y te facilitaré estrategias para reducirlos sin sacrificar tu bienestar.'
+                },
+                {
+                    id: 'PRIM_FIN04',
+                    title: 'Aprender servicios financieros del campus',
+                    description: 'Conocer y utilizar los servicios financieros básicos disponibles en el campus como cafetería, fotocopias y transporte.',
+                    steps: 'Investigar servicios disponibles en el campus, probar sistema de pagos de cafetería, conocer opciones de transporte estudiantil, crear lista de servicios y costos.',
+                    priority: 'medium',
+                    categoria: 'servicios_campus',
+                    tips: 'Tip: Conocer los servicios del campus te ayuda a optimizar tu presupuesto y aprovechar mejor los recursos disponibles.',
+                    mentorCommitment: 'Te ayudaré a identificar todos los servicios financieros del campus y te guiaré en cómo utilizarlos eficientemente.'
                 }
             ]
         };
@@ -944,8 +1146,8 @@
                 background: white;
                 border-radius: 15px;
                 padding: 30px;
-                max-width: 700px;
-                max-height: 85vh;
+                max-width: 800px;
+                max-height: 90vh;
                 overflow-y: auto;
                 margin: 20px;
                 box-shadow: 0 20px 40px rgba(0,0,0,0.3);
@@ -953,34 +1155,48 @@
             
             let alternativesHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 style="color: #333; margin: 0;">🎯 Todas las Metas para ${dimension}</h2>
+                    <h2 style="color: #333; margin: 0;">Todas las Metas para ${dimension}</h2>
                     <button onclick="this.closest('.modal').remove()" style="background: #f44336; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 18px;">×</button>
                 </div>
                 <p style="color: #666; margin-bottom: 20px;">Elige una de estas metas para reemplazar la recomendación actual:</p>
             `;
             
             alternatives.forEach((goal, index) => {
-                const isCurrent = index === 0; // La primera meta es la actual
                 alternativesHTML += `
-                    <div style="border: 2px solid ${isCurrent ? '#34a853' : '#e1e5e9'}; border-radius: 10px; padding: 20px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s ease; background: ${isCurrent ? '#f0fff4' : 'white'};" 
+                    <div style="border: 2px solid #e1e5e9; border-radius: 10px; padding: 20px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s ease; background: white;" 
                          onmouseover="this.style.borderColor='#4285f4'; this.style.transform='translateY(-2px)'"
-                         onmouseout="this.style.borderColor='${isCurrent ? '#34a853' : '#e1e5e9'}'; this.style.transform='translateY(0)'"
+                         onmouseout="this.style.borderColor='#e1e5e9'; this.style.transform='translateY(0)'"
                          onclick="selectAlternative('${goal.id}', '${dimension}', ${index})">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <h3 style="color: #333; margin: 0; font-size: 1.1em;">${goal.title}</h3>
-                            ${isCurrent ? '<span style="background: #34a853; color: white; padding: 4px 8px; border-radius: 15px; font-size: 0.8em; font-weight: 600;">Actual</span>' : ''}
-                        </div>
+                        <h3 style="color: #333; margin: 0 0 10px 0; font-size: 1.1em;">${goal.title}</h3>
                         <p style="color: #666; margin: 0 0 15px 0; line-height: 1.4;">${goal.description}</p>
                         <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 0.9em;">
                             <strong>Pasos de acción:</strong><br>
                             ${goal.steps}
                         </div>
-                        <button style="background: ${isCurrent ? '#34a853' : '#4285f4'}; color: white; border: none; padding: 8px 16px; border-radius: 5px; margin-top: 10px; cursor: pointer;">
-                            ${isCurrent ? '✓ Meta Actual' : 'Seleccionar esta meta'}
+                        <button style="background: #4285f4; color: white; border: none; padding: 8px 16px; border-radius: 5px; margin-top: 10px; cursor: pointer;">
+                            Seleccionar esta meta
                         </button>
                     </div>
                 `;
             });
+            
+            // Agregar opción de meta personalizada
+            alternativesHTML += `
+                <div style="border: 2px dashed #4285f4; border-radius: 10px; padding: 20px; margin-bottom: 15px; background: #f8f9ff; cursor: pointer; transition: all 0.3s ease;" 
+                     onmouseover="this.style.borderColor='#1a73e8'; this.style.transform='translateY(-2px)'"
+                     onmouseout="this.style.borderColor='#4285f4'; this.style.transform='translateY(0)'"
+                     onclick="showCustomGoalForm('${dimension}')">
+                    <h3 style="color: #4285f4; margin: 0 0 10px 0; font-size: 1.1em;">✨ Quiero crear mi propia meta</h3>
+                    <p style="color: #666; margin: 0 0 15px 0; line-height: 1.4;">¿Tienes una meta específica en mente que no está en la lista? ¡Créala siguiendo los elementos SMARTER!</p>
+                    <div style="background: #e3f2fd; padding: 10px; border-radius: 5px; font-size: 0.9em;">
+                        <strong>Elementos SMARTER:</strong><br>
+                        <strong>S</strong>pecífica, <strong>M</strong>edible, <strong>A</strong>lcanzable, <strong>R</strong>elevante, <strong>T</strong>iempo definido, <strong>E</strong>valuable, <strong>R</strong>evisable
+                    </div>
+                    <button style="background: #4285f4; color: white; border: none; padding: 8px 16px; border-radius: 5px; margin-top: 10px; cursor: pointer;">
+                        Crear mi meta personalizada
+                    </button>
+                </div>
+            `;
             
             modalContent.innerHTML = alternativesHTML;
             modal.appendChild(modalContent);
@@ -1016,12 +1232,158 @@
             }
             
             // Mostrar confirmación
-            showNotification(`✅ Meta actualizada: "${selectedGoal.title}" para ${dimension}`, 'success');
+            showNotification(`Meta actualizada: "${selectedGoal.title}" para ${dimension}`, 'success');
+        }
+        
+        // Mostrar formulario para meta personalizada
+        function showCustomGoalForm(dimension) {
+            // Cerrar modal actual
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
+            
+            // Crear modal para formulario de meta personalizada
+            const customModal = document.createElement('div');
+            customModal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: 15px;
+                padding: 30px;
+                max-width: 600px;
+                max-height: 90vh;
+                overflow-y: auto;
+                margin: 20px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            `;
+            
+            modalContent.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #333; margin: 0;">Crear Meta Personalizada - ${dimension}</h2>
+                    <button onclick="this.closest('.modal').remove()" style="background: #f44336; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 18px;">×</button>
+                </div>
+                
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="color: #1976d2; margin: 0 0 10px 0;">Crea tu meta personalizada:</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9em;">
+                        Te guiaremos paso a paso para crear una meta clara y alcanzable. Solo necesitamos algunos detalles básicos.
+                    </p>
+                </div>
+                
+                <form id="customGoalForm">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Título de tu meta:</label>
+                        <input type="text" id="customGoalTitle" placeholder="Ej: Aprender a tocar guitarra" style="width: 100%; padding: 10px; border: 2px solid #e1e5e9; border-radius: 5px; font-size: 16px;" required>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">¿Qué quieres lograr exactamente?</label>
+                        <textarea id="customGoalDescription" placeholder="Describe tu meta de manera específica..." style="width: 100%; padding: 10px; border: 2px solid #e1e5e9; border-radius: 5px; font-size: 16px; height: 60px; resize: vertical;" required></textarea>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">¿Cómo lo lograrás? (Pasos principales):</label>
+                        <textarea id="customGoalSteps" placeholder="Lista 2-3 pasos principales que seguirás..." style="width: 100%; padding: 10px; border: 2px solid #e1e5e9; border-radius: 5px; font-size: 16px; height: 80px; resize: vertical;" required></textarea>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">¿Para cuándo quieres lograrlo?</label>
+                        <select id="customGoalDeadline" style="width: 100%; padding: 10px; border: 2px solid #e1e5e9; border-radius: 5px; font-size: 16px;" required>
+                            <option value="">Selecciona un plazo</option>
+                            <option value="1 mes">En 1 mes</option>
+                            <option value="2 meses">En 2 meses</option>
+                            <option value="3 meses">En 3 meses</option>
+                            <option value="6 meses">En 6 meses</option>
+                            <option value="1 año">En 1 año</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">¿Cómo sabrás que lo lograste?</label>
+                        <textarea id="customGoalSuccess" placeholder="Describe cómo medirás tu éxito..." style="width: 100%; padding: 10px; border: 2px solid #e1e5e9; border-radius: 5px; font-size: 16px; height: 60px; resize: vertical;" required></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button type="button" onclick="this.closest('.modal').remove()" style="background: #6c757d; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px;">Cancelar</button>
+                        <button type="submit" style="background: #4285f4; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px;">Crear Meta</button>
+                    </div>
+                </form>
+            `;
+            
+            customModal.appendChild(modalContent);
+            customModal.className = 'modal';
+            document.body.appendChild(customModal);
+            
+            // Manejar envío del formulario
+            const form = modalContent.querySelector('#customGoalForm');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                createCustomGoal(dimension, customModal);
+            });
+            
+            // Cerrar modal al hacer clic fuera
+            customModal.addEventListener('click', (e) => {
+                if (e.target === customModal) {
+                    customModal.remove();
+                }
+            });
+        }
+        
+        // Crear meta personalizada
+        function createCustomGoal(dimension, modal) {
+            const title = document.getElementById('customGoalTitle').value;
+            const description = document.getElementById('customGoalDescription').value;
+            const steps = document.getElementById('customGoalSteps').value;
+            const deadline = document.getElementById('customGoalDeadline').value;
+            const success = document.getElementById('customGoalSuccess').value;
+            
+            // Crear objeto de meta personalizada simplificada
+            const customGoal = {
+                id: `CUSTOM_${dimension.toUpperCase()}_${Date.now()}`,
+                title: title,
+                description: description,
+                steps: steps,
+                priority: 'custom',
+                categoria: 'meta_personalizada',
+                tips: `Tip: Esta es tu meta personalizada. Recuerda revisar tu progreso regularmente y ajustar si es necesario.`,
+                mentorCommitment: `Te ayudaré a mantenerte motivado con esta meta personalizada y te facilitaré recursos específicos que identifiques necesitar.`,
+                deadline: deadline,
+                successIndicators: success,
+                isCustom: true
+            };
+            
+            // Actualizar la tarjeta de recomendación
+            updateRecommendationCard(dimension, customGoal);
+            
+            // Cerrar modal
+            modal.remove();
+            
+            // Mostrar notificación
+            showNotification(`Meta personalizada "${title}" creada para ${dimension}`, 'success');
         }
         
         // Actualizar tarjeta de recomendación
         function updateRecommendationCard(dimension, newGoal) {
             const recommendationsContainer = document.getElementById('recommendations');
+            
+            if (!recommendationsContainer) {
+                console.log('Contenedor de recomendaciones no encontrado');
+                return;
+            }
+            
             const cards = recommendationsContainer.querySelectorAll('.recommendation-card');
             
             // Encontrar la tarjeta correspondiente a la dimensión
@@ -1032,14 +1394,22 @@
                     const titleElement = card.querySelector('.recommendation-title');
                     const descriptionElement = card.querySelector('.recommendation-description');
                     
-                    if (titleElement) titleElement.textContent = newGoal.title;
-                    if (descriptionElement) descriptionElement.textContent = newGoal.description;
+                    if (titleElement) {
+                        titleElement.textContent = newGoal.title;
+                        console.log(`Título actualizado: ${newGoal.title}`);
+                    }
+                    if (descriptionElement) {
+                        descriptionElement.textContent = newGoal.description;
+                        console.log(`Descripción actualizada: ${newGoal.description}`);
+                    }
                     
                     // Actualizar el botón de alternativas para que apunte a la nueva meta
                     const alternativesBtn = card.querySelector('button[onclick*="viewAlternatives"]');
                     if (alternativesBtn) {
                         alternativesBtn.onclick = () => viewAlternatives(dimension);
                     }
+                    
+                    console.log(`Tarjeta actualizada para ${dimension}`);
                 }
             });
         }
@@ -1161,39 +1531,50 @@
         
         // Callback de éxito al guardar
         function onSaveSuccess(response) {
+            // Remover loading inmediatamente
             const loadingDiv = document.querySelector('.loading');
             if (loadingDiv) {
-                loadingDiv.remove();
+                loadingDiv.parentNode.removeChild(loadingDiv);
+            }
+            
+            // También remover cualquier loading que esté en el content
+            const contentLoading = document.querySelector('.content .loading');
+            if (contentLoading) {
+                contentLoading.parentNode.removeChild(contentLoading);
             }
             
             // Mostrar notificación de éxito
-            showNotification('✅ Resultados guardados y correo enviado exitosamente', 'success');
+            showNotification('Resultados guardados y correo enviado exitosamente', 'success');
             
-            // Mostrar mensaje de éxito después de un breve delay
-            setTimeout(() => {
-                showSuccessMessage();
-            }, 1000);
+            // Mostrar mensaje de éxito inmediatamente
+            showSuccessMessage();
         }
         
         // Callback de error al guardar
         function onSaveError(error) {
             console.error('Error al guardar:', error);
+            
+            // Remover loading inmediatamente
             const loadingDiv = document.querySelector('.loading');
             if (loadingDiv) {
-                loadingDiv.remove();
+                loadingDiv.parentNode.removeChild(loadingDiv);
+            }
+            
+            // También remover cualquier loading que esté en el content
+            const contentLoading = document.querySelector('.content .loading');
+            if (contentLoading) {
+                contentLoading.parentNode.removeChild(contentLoading);
             }
             
             // Mostrar notificación de error
-            showNotification('⚠️ Error al conectar con el servidor. Mostrando resumen local.', 'error');
+            showNotification('Error al conectar con el servidor. Mostrando resumen local.', 'error');
             
-            // Mostrar resumen local después de un breve delay
-            setTimeout(() => {
-                showLocalSummary({
-                    student: studentData,
-                    dimensions: selectedDimensions,
-                    recommendations: generateRecommendationsData()
-                });
-            }, 1000);
+            // Mostrar resumen local inmediatamente
+            showLocalSummary({
+                student: studentData,
+                dimensions: selectedDimensions,
+                recommendations: generateRecommendationsData()
+            });
         }
         
         // Mostrar resumen local cuando no se puede conectar con Apps Script
@@ -1201,12 +1582,12 @@
             const summaryDiv = document.createElement('div');
             summaryDiv.innerHTML = `
                 <div class="success-message">
-                    <div class="success-icon">⚠️</div>
+                    <div class="success-icon">⚠</div>
                     <h2>Resultados generados localmente</h2>
                     <p>No se pudo conectar con el servidor, pero aquí tienes tu resumen:</p>
                     
                     <div class="next-steps">
-                        <h3>📋 Tus 3 Metas Personalizadas:</h3>
+                        <h3>Tus 3 Metas Personalizadas:</h3>
                         ${results.recommendations.map((rec, index) => `
                             <div style="background: white; border: 2px solid #e1e5e9; border-radius: 10px; padding: 20px; margin: 15px 0;">
                                 <h4 style="color: #333; margin: 0 0 10px 0;">${rec.goal.title}</h4>
@@ -1220,7 +1601,7 @@
                     </div>
                     
                     <div class="email-help">
-                        <h4>📧 Instrucciones para guardar en Mi Tec:</h4>
+                        <h4>Instrucciones para guardar en Mi Tec:</h4>
                         <ol style="text-align: left; margin: 20px 0;">
                             <li>Accede a <strong>Mi Tec > MiVidaTec</strong></li>
                             <li>Ve a la sección de <strong>Metas</strong></li>
@@ -1232,7 +1613,7 @@
                     </div>
                     
                     <div class="email-help">
-                        <h4>📧 ¿Necesitas el correo con las recomendaciones?</h4>
+                        <h4>¿Necesitas el correo con las recomendaciones?</h4>
                         <p>Si no recibiste el correo automático, puedes solicitarlo:</p>
                         <div class="resend-section">
                             <input type="text" id="resendMatricula" placeholder="Tu matrícula" value="${results.student.matricula}">
@@ -1254,13 +1635,13 @@
             const successDiv = document.createElement('div');
             successDiv.innerHTML = `
                 <div class="success-message">
-                    <div class="success-icon">✅</div>
+                    <div class="success-icon">✓</div>
                     <h2>¡Resultados guardados exitosamente!</h2>
                     <p>Tu correo con las recomendaciones personalizadas ha sido enviado a:</p>
                     <p class="email-address"><strong>${studentData.matricula}@tec.mx</strong></p>
                     
                     <div class="next-steps">
-                        <h3>📋 Resumen de tus 3 Metas Personalizadas:</h3>
+                        <h3>Resumen de tus 3 Metas Personalizadas:</h3>
                         ${recommendations.map((rec, index) => `
                             <div style="background: white; border: 2px solid #e1e5e9; border-radius: 10px; padding: 20px; margin: 15px 0;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -1279,7 +1660,7 @@
                     </div>
                     
                     <div class="next-steps">
-                        <h3>📧 Próximos pasos:</h3>
+                        <h3>Próximos pasos:</h3>
                         <ul>
                             <li>Revisa tu correo electrónico (incluyendo spam)</li>
                             <li>Lee tus 3 metas personalizadas</li>
@@ -1289,7 +1670,7 @@
                     </div>
                     
                     <div class="email-help">
-                        <h4>📖 Tutorial para guardar en Mi Tec:</h4>
+                        <h4>Tutorial para guardar en Mi Tec:</h4>
                         <p>Guía paso a paso para subir tus metas:</p>
                         <ol style="text-align: left; margin: 20px 0;">
                             <li>Accede a <strong>Mi Tec > MiVidaTec</strong></li>
