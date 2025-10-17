@@ -732,11 +732,26 @@
                 // Deseleccionar
                 selectedDimensions = selectedDimensions.filter(d => d !== dimension);
                 card.classList.remove('selected', 'priority-1', 'priority-2', 'priority-3');
+                
+                // Remover badge de prioridad
+                const existingBadge = card.querySelector('.priority-badge');
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
+                
+                // Reorganizar prioridades de las dimensiones restantes
+                reorganizePriorities();
             } else if (selectedDimensions.length < 3) {
                 // Seleccionar
                 selectedDimensions.push(dimension);
                 const priority = selectedDimensions.length;
                 card.classList.add('selected', `priority-${priority}`);
+                
+                // Remover badge anterior si existe
+                const existingBadge = card.querySelector('.priority-badge');
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
                 
                 // Agregar badge de prioridad
                 const badge = document.createElement('div');
@@ -748,6 +763,22 @@
             // Actualizar botón de continuar
             const nextBtn = document.getElementById('nextBtn2');
             nextBtn.disabled = selectedDimensions.length !== 3;
+        }
+        
+        // Reorganizar prioridades cuando se deselecciona una dimensión
+        function reorganizePriorities() {
+            const cards = document.querySelectorAll('.dimension-card.selected');
+            cards.forEach((card, index) => {
+                // Remover clases de prioridad anteriores
+                card.classList.remove('priority-1', 'priority-2', 'priority-3');
+                card.classList.add(`priority-${index + 1}`);
+                
+                // Actualizar badge
+                const badge = card.querySelector('.priority-badge');
+                if (badge) {
+                    badge.textContent = `Prioridad ${index + 1}`;
+                }
+            });
         }
 
         // Navegar al siguiente paso
@@ -881,14 +912,85 @@
         // Ver alternativas
         function viewAlternatives(dimension) {
             const goals = GOALS_DATABASE[dimension] || [];
-            const alternatives = goals.slice(1, 4); // Mostrar 3 alternativas
+            const alternatives = goals.slice(1); // Mostrar todas las alternativas
             
-            let message = `Alternativas para ${dimension}:\n\n`;
+            // Crear modal para mostrar alternativas
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: 15px;
+                padding: 30px;
+                max-width: 600px;
+                max-height: 80vh;
+                overflow-y: auto;
+                margin: 20px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            `;
+            
+            let alternativesHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #333; margin: 0;">🎯 Alternativas para ${dimension}</h2>
+                    <button onclick="this.closest('.modal').remove()" style="background: #f44336; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 18px;">×</button>
+                </div>
+                <p style="color: #666; margin-bottom: 20px;">Elige una de estas alternativas para reemplazar la meta actual:</p>
+            `;
+            
             alternatives.forEach((goal, index) => {
-                message += `${index + 1}. ${goal.title}\n   ${goal.description}\n\n`;
+                alternativesHTML += `
+                    <div style="border: 2px solid #e1e5e9; border-radius: 10px; padding: 20px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s ease;" 
+                         onmouseover="this.style.borderColor='#4285f4'; this.style.transform='translateY(-2px)'"
+                         onmouseout="this.style.borderColor='#e1e5e9'; this.style.transform='translateY(0)'"
+                         onclick="selectAlternative('${goal.id}', '${dimension}')">
+                        <h3 style="color: #333; margin: 0 0 10px 0; font-size: 1.1em;">${goal.title}</h3>
+                        <p style="color: #666; margin: 0 0 15px 0; line-height: 1.4;">${goal.description}</p>
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 0.9em;">
+                            <strong>Pasos de acción:</strong><br>
+                            ${goal.steps}
+                        </div>
+                        <button style="background: #4285f4; color: white; border: none; padding: 8px 16px; border-radius: 5px; margin-top: 10px; cursor: pointer;">
+                            Seleccionar esta meta
+                        </button>
+                    </div>
+                `;
             });
             
-            alert(message);
+            modalContent.innerHTML = alternativesHTML;
+            modal.appendChild(modalContent);
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+            
+            // Cerrar modal al hacer clic fuera
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+        
+        // Seleccionar alternativa
+        function selectAlternative(goalId, dimension) {
+            // Aquí se actualizaría la recomendación actual
+            alert(`Meta ${goalId} seleccionada para ${dimension}. Esta funcionalidad se integrará con el sistema principal.`);
+            
+            // Cerrar modal
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
         }
 
         // Guardar resultados
@@ -896,7 +998,8 @@
             const results = {
                 student: studentData,
                 dimensions: selectedDimensions,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                recommendations: generateRecommendationsData()
             };
             
             // Mostrar loading
@@ -909,21 +1012,118 @@
             `;
             document.querySelector('.content').appendChild(loadingDiv);
             
-            // Simular envío a Apps Script
-            setTimeout(() => {
-                // Aquí se integraría con Google Apps Script para guardar en Sheets
-                console.log('Resultados a guardar:', results);
-                
-                // Remover loading
+            // Enviar a Apps Script
+            try {
+                // Llamar a la función de Apps Script
+                google.script.run
+                    .withSuccessHandler(onSaveSuccess)
+                    .withFailureHandler(onSaveError)
+                    .processDimensionSelection(results);
+            } catch (error) {
+                console.error('Error al conectar con Apps Script:', error);
+                // Fallback: mostrar resumen local
+                setTimeout(() => {
+                    loadingDiv.remove();
+                    showLocalSummary(results);
+                }, 2000);
+            }
+        }
+        
+        // Generar datos de recomendaciones
+        function generateRecommendationsData() {
+            const recommendations = [];
+            selectedDimensions.forEach((dimension, index) => {
+                const goals = GOALS_DATABASE[dimension] || [];
+                const priorityGoal = goals[0];
+                if (priorityGoal) {
+                    recommendations.push({
+                        dimension: dimension,
+                        priority: index + 1,
+                        goal: priorityGoal
+                    });
+                }
+            });
+            return recommendations;
+        }
+        
+        // Callback de éxito al guardar
+        function onSaveSuccess(response) {
+            const loadingDiv = document.querySelector('.loading');
+            if (loadingDiv) {
                 loadingDiv.remove();
-                
-                // Mostrar mensaje de éxito
-                showSuccessMessage();
-            }, 3000);
+            }
+            showSuccessMessage();
+        }
+        
+        // Callback de error al guardar
+        function onSaveError(error) {
+            console.error('Error al guardar:', error);
+            const loadingDiv = document.querySelector('.loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+            showLocalSummary({
+                student: studentData,
+                dimensions: selectedDimensions,
+                recommendations: generateRecommendationsData()
+            });
+        }
+        
+        // Mostrar resumen local cuando no se puede conectar con Apps Script
+        function showLocalSummary(results) {
+            const summaryDiv = document.createElement('div');
+            summaryDiv.innerHTML = `
+                <div class="success-message">
+                    <div class="success-icon">⚠️</div>
+                    <h2>Resultados generados localmente</h2>
+                    <p>No se pudo conectar con el servidor, pero aquí tienes tu resumen:</p>
+                    
+                    <div class="next-steps">
+                        <h3>📋 Tus 3 Metas Personalizadas:</h3>
+                        ${results.recommendations.map((rec, index) => `
+                            <div style="background: white; border: 2px solid #e1e5e9; border-radius: 10px; padding: 20px; margin: 15px 0;">
+                                <h4 style="color: #333; margin: 0 0 10px 0;">${rec.goal.title}</h4>
+                                <p style="color: #666; margin: 0 0 15px 0;">${rec.goal.description}</p>
+                                <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 0.9em;">
+                                    <strong>Pasos de acción:</strong><br>
+                                    ${rec.goal.steps}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="email-help">
+                        <h4>📧 Instrucciones para guardar en Mi Tec:</h4>
+                        <ol style="text-align: left; margin: 20px 0;">
+                            <li>Accede a <strong>Mi Tec > MiVidaTec</strong></li>
+                            <li>Ve a la sección de <strong>Metas</strong></li>
+                            <li>Agrega cada una de las 3 metas mostradas arriba</li>
+                            <li>Personaliza los pasos según tus necesidades</li>
+                            <li>Establece fechas de seguimiento</li>
+                        </ol>
+                        <p><strong>Tutorial completo:</strong> <a href="https://drive.google.com/file/d/18kojUabG2z00cgmQXGU_6zLGmAL3weE9/view" target="_blank" style="color: #4285f4;">Ver tutorial de Mi Tec</a></p>
+                    </div>
+                    
+                    <div class="email-help">
+                        <h4>📧 ¿Necesitas el correo con las recomendaciones?</h4>
+                        <p>Si no recibiste el correo automático, puedes solicitarlo:</p>
+                        <div class="resend-section">
+                            <input type="text" id="resendMatricula" placeholder="Tu matrícula" value="${results.student.matricula}">
+                            <button class="btn btn-outline" onclick="resendEmail()">Solicitar Correo</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Reemplazar contenido del paso 3
+            document.getElementById('step3').innerHTML = '';
+            document.getElementById('step3').appendChild(summaryDiv);
         }
         
         // Mostrar mensaje de éxito con información del correo
         function showSuccessMessage() {
+            const recommendations = generateRecommendationsData();
+            
             const successDiv = document.createElement('div');
             successDiv.innerHTML = `
                 <div class="success-message">
@@ -933,6 +1133,25 @@
                     <p class="email-address"><strong>${studentData.matricula}@tec.mx</strong></p>
                     
                     <div class="next-steps">
+                        <h3>📋 Resumen de tus 3 Metas Personalizadas:</h3>
+                        ${recommendations.map((rec, index) => `
+                            <div style="background: white; border: 2px solid #e1e5e9; border-radius: 10px; padding: 20px; margin: 15px 0;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <h4 style="color: #333; margin: 0;">${rec.goal.title}</h4>
+                                    <span style="background: ${index === 0 ? '#ea4335' : index === 1 ? '#fbbc04' : '#34a853'}; color: white; padding: 4px 8px; border-radius: 15px; font-size: 0.8em; font-weight: 600;">
+                                        ${index === 0 ? 'Prioritaria' : index === 1 ? 'Complementaria' : 'Longitudinal'}
+                                    </span>
+                                </div>
+                                <p style="color: #666; margin: 0 0 15px 0;">${rec.goal.description}</p>
+                                <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 0.9em;">
+                                    <strong>Pasos de acción:</strong><br>
+                                    ${rec.goal.steps}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="next-steps">
                         <h3>📧 Próximos pasos:</h3>
                         <ul>
                             <li>Revisa tu correo electrónico (incluyendo spam)</li>
@@ -940,6 +1159,19 @@
                             <li>Sigue el tutorial para guardarlas en Mi Tec</li>
                             <li>¡Comienza a trabajar en ellas!</li>
                         </ul>
+                    </div>
+                    
+                    <div class="email-help">
+                        <h4>📖 Tutorial para guardar en Mi Tec:</h4>
+                        <p>Guía paso a paso para subir tus metas:</p>
+                        <ol style="text-align: left; margin: 20px 0;">
+                            <li>Accede a <strong>Mi Tec > MiVidaTec</strong></li>
+                            <li>Ve a la sección de <strong>Metas</strong></li>
+                            <li>Agrega cada una de las 3 metas mostradas arriba</li>
+                            <li>Personaliza los pasos según tus necesidades</li>
+                            <li>Establece fechas de seguimiento</li>
+                        </ol>
+                        <p><strong>Tutorial completo:</strong> <a href="https://drive.google.com/file/d/18kojUabG2z00cgmQXGU_6zLGmAL3weE9/view" target="_blank" style="color: #4285f4;">Ver tutorial de Mi Tec</a></p>
                     </div>
                     
                     <div class="email-help">
@@ -973,17 +1205,45 @@
             button.textContent = 'Enviando...';
             button.disabled = true;
             
-            // Simular reenvío
-            setTimeout(() => {
-                button.textContent = '¡Reenviado!';
-                button.style.background = '#4caf50';
-                
+            // Enviar a Apps Script
+            try {
+                google.script.run
+                    .withSuccessHandler((response) => {
+                        button.textContent = '¡Reenviado!';
+                        button.style.background = '#4caf50';
+                        
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                            button.disabled = false;
+                            button.style.background = '';
+                        }, 2000);
+                    })
+                    .withFailureHandler((error) => {
+                        console.error('Error al reenviar correo:', error);
+                        button.textContent = 'Error al enviar';
+                        button.style.background = '#f44336';
+                        
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                            button.disabled = false;
+                            button.style.background = '';
+                        }, 2000);
+                    })
+                    .resendRecommendationsEmail(matricula);
+            } catch (error) {
+                console.error('Error al conectar con Apps Script:', error);
+                // Fallback: simular reenvío
                 setTimeout(() => {
-                    button.textContent = originalText;
-                    button.disabled = false;
-                    button.style.background = '';
+                    button.textContent = '¡Reenviado!';
+                    button.style.background = '#4caf50';
+                    
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.disabled = false;
+                        button.style.background = '';
+                    }, 2000);
                 }, 2000);
-            }, 2000);
+            }
         }
 
         // Inicializar cuando se carga la página
