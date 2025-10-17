@@ -1,0 +1,135 @@
+# 📊 FÓRMULAS PARA DASHBOARD DE GOOGLE SHEETS
+
+## 📋 CONFIGURACIÓN INICIAL DEL DASHBOARD
+
+### **Hoja: "Dashboard Resultados"**
+
+#### **Sección 1: Estadísticas Generales**
+```
+A1: 📊 DASHBOARD - SELECCIÓN DE METAS IBI
+A3: Total de Estudiantes:
+B3: =COUNTA(UNIQUE('Análisis por Dimensiones'!B:B))-1
+A4: Respuestas con Duplicados:
+B4: =COUNTIF('Análisis por Dimensiones'!F:F,"SÍ")
+A5: Fecha de última actualización:
+B5: =MAX('Análisis por Dimensiones'!A:A)
+```
+
+#### **Sección 2: Ranking de Dimensiones**
+```
+A7: 🏆 RANKING DE DIMENSIONES
+A8: Dimensión
+B8: Total Selecciones
+C8: Porcentaje
+D8: Prioridad Alta
+E8: Prioridad Media
+F8: Prioridad Baja
+
+A9: =INDEX(UNIQUE('Análisis por Dimensiones'!D:D),1)
+B9: =COUNTIF('Análisis por Dimensiones'!D:D,A9)
+C9: =B9/(B3*3)*100&"%"
+D9: =COUNTIFS('Análisis por Dimensiones'!D:D,A9,'Análisis por Dimensiones'!E:E,"Alta")
+E9: =COUNTIFS('Análisis por Dimensiones'!D:D,A9,'Análisis por Dimensiones'!E:E,"Media")
+F9: =COUNTIFS('Análisis por Dimensiones'!D:D,A9,'Análisis por Dimensiones'!E:E,"Baja")
+
+[Repetir para A10:F14 con las otras dimensiones]
+```
+
+#### **Sección 3: Análisis por Prioridades**
+```
+A16: 📈 ANÁLISIS POR PRIORIDADES
+A17: Prioridad
+B17: Total
+C17: Porcentaje
+
+A18: Alta
+B18: =COUNTIF('Análisis por Dimensiones'!E:E,"Alta")
+C18: =B18/(B3*3)*100&"%"
+
+A19: Media
+B19: =COUNTIF('Análisis por Dimensiones'!E:E,"Media")
+C19: =B19/(B3*3)*100&"%"
+
+A20: Baja
+B20: =COUNTIF('Análisis por Dimensiones'!E:E,"Baja")
+C20: =B20/(B3*3)*100&"%"
+```
+
+#### **Sección 4: Lista de Estudiantes**
+```
+A22: 👥 LISTA DE ESTUDIANTES
+A23: Matrícula
+B23: Nombre
+C23: Dimensión 1 (Alta)
+D23: Dimensión 2 (Media)
+E23: Dimensión 3 (Baja)
+F23: Tiene Duplicados
+
+A24: =INDEX('Análisis por Dimensiones'!B:B,ROW()-23)
+B24: =INDEX('Análisis por Dimensiones'!C:C,ROW()-23)
+C24: =INDEX('Análisis por Dimensiones'!D:D,ROW()-23)
+D24: =INDEX('Análisis por Dimensiones'!D:D,ROW()-22)
+E24: =INDEX('Análisis por Dimensiones'!D:D,ROW()-21)
+F24: =INDEX('Análisis por Dimensiones'!F:F,ROW()-23)
+
+[Extender filas según sea necesario]
+```
+
+## 📊 FÓRMULAS PARA GRÁFICOS
+
+### **Gráfico 1: Distribución por Dimensiones**
+- **Tipo:** Gráfico de barras
+- **Datos:** A8:C14
+- **Título:** "Dimensiones Más Seleccionadas"
+
+### **Gráfico 2: Análisis por Prioridades**
+- **Tipo:** Gráfico circular
+- **Datos:** A18:C20
+- **Título:** "Distribución de Prioridades"
+
+### **Gráfico 3: Tendencias Temporales**
+- **Tipo:** Gráfico de líneas
+- **Datos:** Fecha vs Total de respuestas
+- **Título:** "Respuestas por Día"
+
+## 🎨 FORMATO CONDICIONAL
+
+### **Colores por Dimensión:**
+```
+Intelectual: #4285f4 (Azul)
+Ocupacional: #34a853 (Verde)
+Emocional: #ea4335 (Rojo)
+Social: #fbbc04 (Amarillo)
+Física: #ff6d01 (Naranja)
+Espiritual: #9c27b0 (Morado)
+```
+
+### **Reglas de Formato:**
+1. **Duplicados:** Fondo rojo claro si F:F = "SÍ"
+2. **Prioridad Alta:** Texto en negrita
+3. **Headers:** Fondo gris, texto blanco, negrita
+4. **Números:** Formato de porcentaje donde corresponda
+
+## 📈 FÓRMULAS AVANZADAS
+
+### **Top 3 Dimensiones Más Populares:**
+```
+=INDEX(SORT(UNIQUE('Análisis por Dimensiones'!D:D),1,0),1)
+=INDEX(SORT(UNIQUE('Análisis por Dimensiones'!D:D),1,0),2)
+=INDEX(SORT(UNIQUE('Análisis por Dimensiones'!D:D),1,0),3)
+```
+
+### **Dimensión Menos Seleccionada:**
+```
+=INDEX(SORT(UNIQUE('Análisis por Dimensiones'!D:D),1,1),1)
+```
+
+### **Promedio de Selecciones por Estudiante:**
+```
+=AVERAGE(COUNTIF('Análisis por Dimensiones'!B:B,UNIQUE('Análisis por Dimensiones'!B:B)))
+```
+
+### **Estudiantes con Patrones Únicos:**
+```
+=COUNTIF('Análisis por Dimensiones'!F:F,"NO")/B3*100&"%"
+```
