@@ -365,6 +365,85 @@
             margin: 20px 0;
         }
 
+        .success-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .success-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .success-message h2 {
+            color: #2e7d32;
+            margin-bottom: 20px;
+        }
+        
+        .email-address {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .next-steps {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .next-steps h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        
+        .next-steps ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .next-steps li {
+            margin-bottom: 8px;
+        }
+        
+        .email-help {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .email-help h4 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+        
+        .resend-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            align-items: center;
+        }
+        
+        .resend-section input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .resend-section input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -381,6 +460,14 @@
             
             .recommendations {
                 grid-template-columns: 1fr;
+            }
+            
+            .resend-section {
+                flex-direction: column;
+            }
+            
+            .resend-section input {
+                width: 100%;
             }
         }
     </style>
@@ -812,10 +899,91 @@
                 timestamp: new Date().toISOString()
             };
             
-            // Aquí se integraría con Google Apps Script para guardar en Sheets
-            console.log('Resultados a guardar:', results);
+            // Mostrar loading
+            const loadingDiv = document.createElement('div');
+            loadingDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Guardando resultados y enviando correo...</p>
+                </div>
+            `;
+            document.querySelector('.content').appendChild(loadingDiv);
             
-            alert('¡Resultados guardados exitosamente! Tus recomendaciones han sido registradas en el sistema.');
+            // Simular envío a Apps Script
+            setTimeout(() => {
+                // Aquí se integraría con Google Apps Script para guardar en Sheets
+                console.log('Resultados a guardar:', results);
+                
+                // Remover loading
+                loadingDiv.remove();
+                
+                // Mostrar mensaje de éxito
+                showSuccessMessage();
+            }, 3000);
+        }
+        
+        // Mostrar mensaje de éxito con información del correo
+        function showSuccessMessage() {
+            const successDiv = document.createElement('div');
+            successDiv.innerHTML = `
+                <div class="success-message">
+                    <div class="success-icon">✅</div>
+                    <h2>¡Resultados guardados exitosamente!</h2>
+                    <p>Tu correo con las recomendaciones personalizadas ha sido enviado a:</p>
+                    <p class="email-address"><strong>${studentData.matricula}@tec.mx</strong></p>
+                    
+                    <div class="next-steps">
+                        <h3>📧 Próximos pasos:</h3>
+                        <ul>
+                            <li>Revisa tu correo electrónico (incluyendo spam)</li>
+                            <li>Lee tus 3 metas personalizadas</li>
+                            <li>Sigue el tutorial para guardarlas en Mi Tec</li>
+                            <li>¡Comienza a trabajar en ellas!</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="email-help">
+                        <h4>¿No recibiste el correo?</h4>
+                        <p>Verifica tu matrícula y solicita el reenvío:</p>
+                        <div class="resend-section">
+                            <input type="text" id="resendMatricula" placeholder="Tu matrícula" value="${studentData.matricula}">
+                            <button class="btn btn-outline" onclick="resendEmail()">Reenviar Correo</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Reemplazar contenido del paso 3
+            document.getElementById('step3').innerHTML = '';
+            document.getElementById('step3').appendChild(successDiv);
+        }
+        
+        // Reenviar correo
+        function resendEmail() {
+            const matricula = document.getElementById('resendMatricula').value.trim();
+            
+            if (!matricula) {
+                alert('Por favor ingresa tu matrícula');
+                return;
+            }
+            
+            // Mostrar loading
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Enviando...';
+            button.disabled = true;
+            
+            // Simular reenvío
+            setTimeout(() => {
+                button.textContent = '¡Reenviado!';
+                button.style.background = '#4caf50';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                    button.style.background = '';
+                }, 2000);
+            }, 2000);
         }
 
         // Inicializar cuando se carga la página
