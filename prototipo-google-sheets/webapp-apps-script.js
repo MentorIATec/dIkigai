@@ -370,6 +370,26 @@ function createSheetsIfNeeded() {
       'Recomendaciones JSON'
     ]]);
     responsesSheet.getRange('A1:G1').setFontWeight('bold');
+    responsesSheet.getRange('A1:G1').setBackground('#4285f4');
+    responsesSheet.getRange('A1:G1').setFontColor('white');
+  }
+  
+  // Crear hoja de análisis por dimensiones
+  if (!spreadsheet.getSheetByName(ANALYSIS_SHEET)) {
+    const analysisSheet = spreadsheet.insertSheet(ANALYSIS_SHEET);
+    analysisSheet.getRange('A1:G1').setValues([[
+      'Timestamp',
+      'Matrícula', 
+      'Nombre',
+      'Dimensión',
+      'Prioridad',
+      'Tiene Duplicados',
+      'Comentarios'
+    ]]);
+    analysisSheet.getRange('A1:G1').setFontWeight('bold');
+    analysisSheet.getRange('A1:G1').setBackground('#4285f4');
+    analysisSheet.getRange('A1:G1').setFontColor('white');
+    analysisSheet.autoResizeColumns(1, 7);
   }
   
   // Crear hoja de base de datos de metas
@@ -384,10 +404,14 @@ function createSheetsIfNeeded() {
       'Prioridad'
     ]]);
     goalsSheet.getRange('A1:F1').setFontWeight('bold');
+    goalsSheet.getRange('A1:F1').setBackground('#4285f4');
+    goalsSheet.getRange('A1:F1').setFontColor('white');
     
     // Poblar con datos de metas
     populateGoalsDatabase(goalsSheet);
   }
+  
+  console.log('✅ Todas las hojas han sido creadas/verificadas exitosamente');
 }
 
 /**
@@ -589,4 +613,33 @@ function cleanTestData() {
   
   // Actualizar dashboard
   updateDashboard();
+}
+
+/**
+ * Función de utilidad para verificar que todas las hojas estén creadas
+ */
+function verifySheetsSetup() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const requiredSheets = [FORM_RESPONSES_SHEET, ANALYSIS_SHEET, GOALS_SHEET, DASHBOARD_SHEET];
+  const existingSheets = spreadsheet.getSheets().map(sheet => sheet.getName());
+  
+  console.log('📋 Verificando configuración de hojas...');
+  console.log('Hojas requeridas:', requiredSheets);
+  console.log('Hojas existentes:', existingSheets);
+  
+  const missingSheets = requiredSheets.filter(sheetName => !existingSheets.includes(sheetName));
+  
+  if (missingSheets.length > 0) {
+    console.log('❌ Hojas faltantes:', missingSheets);
+    console.log('🔧 Ejecutando createSheetsIfNeeded()...');
+    createSheetsIfNeeded();
+  } else {
+    console.log('✅ Todas las hojas están configuradas correctamente');
+  }
+  
+  return {
+    success: missingSheets.length === 0,
+    missingSheets: missingSheets,
+    existingSheets: existingSheets
+  };
 }

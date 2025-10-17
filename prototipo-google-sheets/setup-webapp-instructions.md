@@ -75,7 +75,8 @@ Esta versión avanzada incluye una interfaz web completa que no solo recopila la
      - Hoja "Análisis por Dimensiones"
      - Hoja "Base de Datos Metas"
 
-2. **Verificar datos:**
+2. **Verificar configuración:**
+   - Ejecutar `verifySheetsSetup()` para confirmar que todas las hojas estén creadas
    - Revisar que la hoja "Base de Datos Metas" tenga las 21 metas
    - Confirmar que estén organizadas por dimensiones
 
@@ -277,6 +278,11 @@ Equipo dIkigai
 - Verificar base de datos de metas
 - Revisar función `generateRecommendations()`
 - Confirmar que las dimensiones sean válidas
+
+### **Error: "Hoja 'Análisis por Dimensiones' no existe"**
+- Ejecutar `verifySheetsSetup()` para diagnosticar hojas faltantes
+- Ejecutar `createSheetsIfNeeded()` para crear todas las hojas
+- Verificar que los nombres de las hojas coincidan exactamente
 
 ---
 
