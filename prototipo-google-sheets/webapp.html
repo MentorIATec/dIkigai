@@ -356,6 +356,16 @@
             100% { transform: rotate(360deg); }
         }
 
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
         .error {
             background: #fff5f5;
             border: 1px solid #fed7d7;
@@ -912,7 +922,7 @@
         // Ver alternativas
         function viewAlternatives(dimension) {
             const goals = GOALS_DATABASE[dimension] || [];
-            const alternatives = goals.slice(1); // Mostrar todas las alternativas
+            const alternatives = goals; // Mostrar TODAS las metas disponibles
             
             // Crear modal para mostrar alternativas
             const modal = document.createElement('div');
@@ -934,8 +944,8 @@
                 background: white;
                 border-radius: 15px;
                 padding: 30px;
-                max-width: 600px;
-                max-height: 80vh;
+                max-width: 700px;
+                max-height: 85vh;
                 overflow-y: auto;
                 margin: 20px;
                 box-shadow: 0 20px 40px rgba(0,0,0,0.3);
@@ -943,26 +953,30 @@
             
             let alternativesHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 style="color: #333; margin: 0;">🎯 Alternativas para ${dimension}</h2>
+                    <h2 style="color: #333; margin: 0;">🎯 Todas las Metas para ${dimension}</h2>
                     <button onclick="this.closest('.modal').remove()" style="background: #f44336; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 18px;">×</button>
                 </div>
-                <p style="color: #666; margin-bottom: 20px;">Elige una de estas alternativas para reemplazar la meta actual:</p>
+                <p style="color: #666; margin-bottom: 20px;">Elige una de estas metas para reemplazar la recomendación actual:</p>
             `;
             
             alternatives.forEach((goal, index) => {
+                const isCurrent = index === 0; // La primera meta es la actual
                 alternativesHTML += `
-                    <div style="border: 2px solid #e1e5e9; border-radius: 10px; padding: 20px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s ease;" 
+                    <div style="border: 2px solid ${isCurrent ? '#34a853' : '#e1e5e9'}; border-radius: 10px; padding: 20px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s ease; background: ${isCurrent ? '#f0fff4' : 'white'};" 
                          onmouseover="this.style.borderColor='#4285f4'; this.style.transform='translateY(-2px)'"
-                         onmouseout="this.style.borderColor='#e1e5e9'; this.style.transform='translateY(0)'"
-                         onclick="selectAlternative('${goal.id}', '${dimension}')">
-                        <h3 style="color: #333; margin: 0 0 10px 0; font-size: 1.1em;">${goal.title}</h3>
+                         onmouseout="this.style.borderColor='${isCurrent ? '#34a853' : '#e1e5e9'}'; this.style.transform='translateY(0)'"
+                         onclick="selectAlternative('${goal.id}', '${dimension}', ${index})">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 style="color: #333; margin: 0; font-size: 1.1em;">${goal.title}</h3>
+                            ${isCurrent ? '<span style="background: #34a853; color: white; padding: 4px 8px; border-radius: 15px; font-size: 0.8em; font-weight: 600;">Actual</span>' : ''}
+                        </div>
                         <p style="color: #666; margin: 0 0 15px 0; line-height: 1.4;">${goal.description}</p>
                         <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 0.9em;">
                             <strong>Pasos de acción:</strong><br>
                             ${goal.steps}
                         </div>
-                        <button style="background: #4285f4; color: white; border: none; padding: 8px 16px; border-radius: 5px; margin-top: 10px; cursor: pointer;">
-                            Seleccionar esta meta
+                        <button style="background: ${isCurrent ? '#34a853' : '#4285f4'}; color: white; border: none; padding: 8px 16px; border-radius: 5px; margin-top: 10px; cursor: pointer;">
+                            ${isCurrent ? '✓ Meta Actual' : 'Seleccionar esta meta'}
                         </button>
                     </div>
                 `;
@@ -982,15 +996,84 @@
         }
         
         // Seleccionar alternativa
-        function selectAlternative(goalId, dimension) {
-            // Aquí se actualizaría la recomendación actual
-            alert(`Meta ${goalId} seleccionada para ${dimension}. Esta funcionalidad se integrará con el sistema principal.`);
+        function selectAlternative(goalId, dimension, goalIndex) {
+            // Encontrar la meta seleccionada
+            const goals = GOALS_DATABASE[dimension] || [];
+            const selectedGoal = goals[goalIndex];
+            
+            if (!selectedGoal) {
+                alert('Error: No se pudo encontrar la meta seleccionada');
+                return;
+            }
+            
+            // Actualizar la recomendación en la interfaz
+            updateRecommendationCard(dimension, selectedGoal);
             
             // Cerrar modal
             const modal = document.querySelector('.modal');
             if (modal) {
                 modal.remove();
             }
+            
+            // Mostrar confirmación
+            showNotification(`✅ Meta actualizada: "${selectedGoal.title}" para ${dimension}`, 'success');
+        }
+        
+        // Actualizar tarjeta de recomendación
+        function updateRecommendationCard(dimension, newGoal) {
+            const recommendationsContainer = document.getElementById('recommendations');
+            const cards = recommendationsContainer.querySelectorAll('.recommendation-card');
+            
+            // Encontrar la tarjeta correspondiente a la dimensión
+            cards.forEach(card => {
+                const dimensionBadge = card.querySelector('.recommendation-badge:last-child');
+                if (dimensionBadge && dimensionBadge.textContent === dimension) {
+                    // Actualizar el contenido de la tarjeta
+                    const titleElement = card.querySelector('.recommendation-title');
+                    const descriptionElement = card.querySelector('.recommendation-description');
+                    
+                    if (titleElement) titleElement.textContent = newGoal.title;
+                    if (descriptionElement) descriptionElement.textContent = newGoal.description;
+                    
+                    // Actualizar el botón de alternativas para que apunte a la nueva meta
+                    const alternativesBtn = card.querySelector('button[onclick*="viewAlternatives"]');
+                    if (alternativesBtn) {
+                        alternativesBtn.onclick = () => viewAlternatives(dimension);
+                    }
+                }
+            });
+        }
+        
+        // Mostrar notificación
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 1001;
+                font-weight: 600;
+                max-width: 300px;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
         }
 
         // Guardar resultados
@@ -1033,17 +1116,47 @@
         function generateRecommendationsData() {
             const recommendations = [];
             selectedDimensions.forEach((dimension, index) => {
-                const goals = GOALS_DATABASE[dimension] || [];
-                const priorityGoal = goals[0];
-                if (priorityGoal) {
+                // Buscar la meta actualmente mostrada en la interfaz
+                const currentGoal = getCurrentGoalForDimension(dimension);
+                if (currentGoal) {
                     recommendations.push({
                         dimension: dimension,
                         priority: index + 1,
-                        goal: priorityGoal
+                        goal: currentGoal
                     });
                 }
             });
             return recommendations;
+        }
+        
+        // Obtener la meta actual para una dimensión específica
+        function getCurrentGoalForDimension(dimension) {
+            const recommendationsContainer = document.getElementById('recommendations');
+            if (!recommendationsContainer) {
+                // Si no existe el contenedor, usar la meta predeterminada
+                const goals = GOALS_DATABASE[dimension] || [];
+                return goals[0];
+            }
+            
+            const cards = recommendationsContainer.querySelectorAll('.recommendation-card');
+            for (let card of cards) {
+                const dimensionBadge = card.querySelector('.recommendation-badge:last-child');
+                if (dimensionBadge && dimensionBadge.textContent === dimension) {
+                    const titleElement = card.querySelector('.recommendation-title');
+                    const descriptionElement = card.querySelector('.recommendation-description');
+                    
+                    if (titleElement && descriptionElement) {
+                        // Buscar la meta que coincida con el título actual
+                        const goals = GOALS_DATABASE[dimension] || [];
+                        const currentGoal = goals.find(goal => goal.title === titleElement.textContent);
+                        return currentGoal || goals[0]; // Fallback a la primera meta
+                    }
+                }
+            }
+            
+            // Fallback: usar la primera meta de la dimensión
+            const goals = GOALS_DATABASE[dimension] || [];
+            return goals[0];
         }
         
         // Callback de éxito al guardar
@@ -1052,7 +1165,14 @@
             if (loadingDiv) {
                 loadingDiv.remove();
             }
-            showSuccessMessage();
+            
+            // Mostrar notificación de éxito
+            showNotification('✅ Resultados guardados y correo enviado exitosamente', 'success');
+            
+            // Mostrar mensaje de éxito después de un breve delay
+            setTimeout(() => {
+                showSuccessMessage();
+            }, 1000);
         }
         
         // Callback de error al guardar
@@ -1062,11 +1182,18 @@
             if (loadingDiv) {
                 loadingDiv.remove();
             }
-            showLocalSummary({
-                student: studentData,
-                dimensions: selectedDimensions,
-                recommendations: generateRecommendationsData()
-            });
+            
+            // Mostrar notificación de error
+            showNotification('⚠️ Error al conectar con el servidor. Mostrando resumen local.', 'error');
+            
+            // Mostrar resumen local después de un breve delay
+            setTimeout(() => {
+                showLocalSummary({
+                    student: studentData,
+                    dimensions: selectedDimensions,
+                    recommendations: generateRecommendationsData()
+                });
+            }, 1000);
         }
         
         // Mostrar resumen local cuando no se puede conectar con Apps Script
