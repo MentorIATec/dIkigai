@@ -25,8 +25,7 @@ prototipo-google-sheets/
 
 ## 🚀 IMPLEMENTACIÓN RÁPIDA
 
-### **Tiempo total estimado: 2-4 horas**
-
+### **Opción 1: Formulario Google (Básico) - 2-4 horas**
 1. **Crear formulario Google** (15 min)
 2. **Configurar Google Sheets** (10 min)  
 3. **Instalar Apps Script** (20 min)
@@ -34,26 +33,36 @@ prototipo-google-sheets/
 5. **Probar sistema** (10 min)
 6. **Distribuir a estudiantes** (5 min)
 
+### **Opción 2: Web App Avanzada (Recomendado) - 1-2 horas**
+1. **Crear Google Sheets** (5 min)
+2. **Configurar Apps Script** (15 min)
+3. **Desplegar Web App** (10 min)
+4. **Configurar Base de Datos** (5 min)
+5. **Personalizar y Probar** (10 min)
+6. **Distribuir URL** (5 min)
+
 ## 📊 FUNCIONALIDADES
 
-### **Formulario Inteligente:**
+### **Versión 1: Formulario Google (Básico)**
 - ✅ Validación de dimensiones únicas
 - ✅ Interfaz intuitiva con emojis
 - ✅ Campos obligatorios y opcionales
 - ✅ Descripción clara de cada dimensión
-
-### **Procesamiento Automático:**
 - ✅ Detección de respuestas duplicadas
 - ✅ Organización por prioridades
 - ✅ Análisis en tiempo real
 - ✅ Exportación a CSV
 
-### **Dashboard Interactivo:**
-- ✅ Estadísticas generales
-- ✅ Ranking de dimensiones
-- ✅ Análisis por prioridades
-- ✅ Gráficos automáticos
-- ✅ Lista de estudiantes
+### **Versión 2: Web App Avanzada (Recomendado)**
+- ✅ **Interfaz moderna y responsiva**
+- ✅ **Motor de recomendaciones personalizadas**
+- ✅ **Base de datos integrada de 21 metas**
+- ✅ **Selección interactiva con validación**
+- ✅ **Recomendaciones por prioridad**
+- ✅ **Alternativas disponibles por dimensión**
+- ✅ **Guardado automático en Google Sheets**
+- ✅ **Dashboard en tiempo real**
+- ✅ **Exportación de datos completa**
 
 ## 🎨 DIMENSIONES DEL BIENESTAR
 

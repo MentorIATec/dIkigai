@@ -76,6 +76,12 @@
 
 ## 📁 ARCHIVOS DEL PROTOTIPO
 
+### **Versión 1: Formulario Google (Básico)**
 - `apps-script.js` - Código de procesamiento automático
 - `dashboard-formulas.txt` - Fórmulas para análisis
 - `setup-instructions.md` - Instrucciones detalladas
+
+### **Versión 2: Web App Avanzada (Recomendado)**
+- `webapp.html` - Interfaz web completa con recomendaciones
+- `webapp-apps-script.js` - Motor de recomendaciones y procesamiento
+- `setup-webapp-instructions.md` - Guía de configuración de web app
