@@ -25,6 +25,7 @@
 - 👥 **Social** - Relaciones interpersonales y vida social
 - 💪 **Física** - Salud física y bienestar corporal
 - 🙏 **Espiritual** - Propósito de vida y valores personales
+- 💰 **Financiera** - Gestión de recursos económicos y planificación financiera
 
 ---
 

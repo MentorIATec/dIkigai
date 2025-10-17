@@ -102,6 +102,7 @@ Emocional: #ea4335 (Rojo)
 Social: #fbbc04 (Amarillo)
 Física: #ff6d01 (Naranja)
 Espiritual: #9c27b0 (Morado)
+Financiera: #00bcd4 (Cian)
 ```
 
 ### **Reglas de Formato:**
