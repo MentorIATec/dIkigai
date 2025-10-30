@@ -36,6 +36,7 @@ import {
   FilePlus2,
   BookMarked,
   User,
+  Compass,
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { StudentAvatar } from '@/components/student-avatar';
@@ -225,6 +226,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/goals/new">
                     <FilePlus2 />
                     <span>Nueva Meta</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/purpose-discovery')}
+                  tooltip="Descubrimiento del Propósito"
+                >
+                  <Link href="/purpose-discovery">
+                    <Compass />
+                    <span>Mi Propósito</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

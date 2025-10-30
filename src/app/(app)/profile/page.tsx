@@ -24,10 +24,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { careers } from '@/lib/constants/careers';
 import { computeStage } from '@/lib/profile/mapping';
 import type { StudentProfile } from '@/lib/types';
+import { Compass, Target, Lightbulb } from 'lucide-react';
+import Link from 'next/link';
 
 const profileSchema = z.object({
   semesterNumber: z.union([z.number().min(1).max(8), z.literal('8+')]),
@@ -41,6 +44,7 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
+  const [purposeProfile, setPurposeProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
@@ -58,9 +62,14 @@ export default function ProfilePage() {
   useEffect(() => {
     async function loadProfile() {
       try {
-        const response = await fetch('/api/profile');
-        if (response.ok) {
-          const data = await response.json();
+        const [profileResponse, purposeResponse] = await Promise.all([
+          fetch('/api/profile'),
+          fetch('/api/purpose-discovery')
+        ]);
+        
+        // Cargar perfil académico
+        if (profileResponse.ok) {
+          const data = await profileResponse.json();
           if (data.profile) {
             setProfile(data.profile);
             form.reset({
@@ -69,7 +78,7 @@ export default function ProfilePage() {
               matricula: '', // No cargar matrícula por seguridad
             });
           }
-        } else if (response.status === 401) {
+        } else if (profileResponse.status === 401) {
           // Usuario no autenticado - redirigir al login
           toast({
             title: 'Sesión expirada',
@@ -81,12 +90,20 @@ export default function ProfilePage() {
           }, 2000);
           return;
         } else {
-          const error = await response.json();
+          const error = await profileResponse.json();
           toast({
             title: 'Error',
             description: error.error || 'No se pudo cargar el perfil',
             variant: 'destructive',
           });
+        }
+
+        // Cargar perfil de propósito
+        if (purposeResponse.ok) {
+          const purposeData = await purposeResponse.json();
+          if (purposeData.profile) {
+            setPurposeProfile(purposeData.profile);
+          }
         }
       } catch (error) {
         console.error('Error loading profile:', error);
@@ -320,6 +337,122 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         )}
+
+        {/* Sección de Propósito de Vida */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Compass className="h-5 w-5 mr-2 text-primary" />
+              Mi Propósito de Vida
+            </CardTitle>
+            <CardDescription>
+              Descubre y define tu propósito personal a través de la reflexión guiada
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {purposeProfile && purposeProfile.answers.length > 0 ? (
+              <div className="space-y-4">
+                {/* Progreso */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Progreso del Descubrimiento</span>
+                    <Badge variant="outline">{purposeProfile.completionProgress}%</Badge>
+                  </div>
+                  <Progress value={purposeProfile.completionProgress} className="h-2" />
+                </div>
+
+                {/* Etapa actual */}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Etapa Actual:</span>
+                  <Badge variant="secondary" className="capitalize">
+                    {purposeProfile.currentStage.replace('_', ' ')}
+                  </Badge>
+                </div>
+
+                {/* Declaración de propósito */}
+                {purposeProfile.purposeStatement ? (
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <div className="flex items-start space-x-2">
+                      <Target className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-blue-900 mb-1">Mi Propósito:</p>
+                        <p className="text-blue-800 leading-relaxed italic">
+                          "{purposeProfile.purposeStatement}"
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-muted/30 p-4 rounded-lg text-center">
+                    <Lightbulb className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Aún no has definido tu declaración de propósito
+                    </p>
+                  </div>
+                )}
+
+                {/* Estadísticas */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-muted/30 rounded-lg">
+                    <div className="text-lg font-bold text-primary">{purposeProfile.answers.length}</div>
+                    <div className="text-xs text-muted-foreground">Respuestas</div>
+                  </div>
+                  <div className="text-center p-3 bg-muted/30 rounded-lg">
+                    <div className="text-lg font-bold text-primary">{purposeProfile.keyThemes.length}</div>
+                    <div className="text-xs text-muted-foreground">Temas Clave</div>
+                  </div>
+                </div>
+
+                {/* Acciones */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button asChild className="flex-1">
+                    <Link href="/purpose-discovery">
+                      <Compass className="h-4 w-4 mr-2" />
+                      Ver Mis Resultados
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="flex-1">
+                    <Link href="/purpose-discovery">
+                      <Lightbulb className="h-4 w-4 mr-2" />
+                      Continuar Explorando
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center space-y-4">
+                <div className="flex justify-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
+                    <Compass className="h-8 w-8 text-primary" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="font-semibold">Comienza tu Viaje de Autoconocimiento</h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                    Descubre tu propósito de vida a través de preguntas reflexivas diseñadas para 
+                    ayudarte a conocerte mejor y definir lo que realmente te motiva.
+                  </p>
+                </div>
+                <Button asChild className="w-full">
+                  <Link href="/purpose-discovery">
+                    <Compass className="h-4 w-4 mr-2" />
+                    Iniciar Descubrimiento del Propósito
+                  </Link>
+                </Button>
+                <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground">
+                  <div className="flex items-center space-x-1">
+                    <Target className="h-3 w-3" />
+                    <span>15-20 min</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Lightbulb className="h-3 w-3" />
+                    <span>Insights personalizados</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
