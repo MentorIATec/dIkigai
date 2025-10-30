@@ -1,0 +1,69 @@
+## v0.1.0 – 2025-10-29
+
+### Cambios
+- feat(purpose): menú Ikigai final
+- docs: Actualizar documentación completa del prototipo IBI
+- feat: Prototipo IBI Google Sheets completo y funcional
+- fix: Corregir problemas críticos del modal de alternativas y flujo de feedback
+- fix: Solucionar problemas críticos de UX en webapp
+- feat: Implementar sistema completo de metas y correos automáticos
+- fix: Corregir función createSheetsIfNeeded() para crear hoja 'Análisis por Dimensiones'
+- feat: Agregar web app avanzada con motor de recomendaciones
+- feat: Agregar dimensión financiera al prototipo IBI
+- feat: Agregar prototipo Google Sheets para selección de metas IBI
+- feat: simplificar y mejorar pantalla de inicio purpose-discovery
+- feat: Sistema completo de descubrimiento de propósito con selección progresiva
+- feat: Implementar funcionalidad completa de descubrimiento del propósito
+- feat: Mejoras significativas en el sistema de recomendaciones inteligentes
+- feat: Implementar Opción B + Mejoras para recomendaciones inteligentes
+- ✅ FEAT: Sistema de recomendaciones completamente funcional
+- feat: completar correcciones funcionales críticas
+- fix: corregir import de Firestore y completar testing
+- feat: romper paradigma de columnas con Single-Column Focus + Fullscreen Overlays
+- fix: convertir goal-bank page a Client Component
+- feat: implementar Progressive Disclosure para catálogo de metas
+- fix: corregir icono Dove por Bird en inspiration-modal
+- feat: implementar modal/overlay system para UX experimental
+- fix: agregar import faltante de Button component
+- feat: optimizar UX del Asistente de Metas
+- fix: corregir error interno del servidor en perfil de usuario
+- debug: Agregar logging detallado al API de perfil para diagnosticar error 500
+- fix: Corregir error 401 en página de perfil
+- fix: Corregir autenticación y agregar matrícula de prueba autorizada
+-  Please enter the commit message for your changes. Lines starting  with '#' will be ignored, and an empty message aborts the commit. 	modified:   "src/components/br\303\272jula-test.tsx" 	modified:   src/components/compact-recommendations.tsx 	modified:   src/components/filtered-catalog.tsx 	modified:   src/components/first-semester-mini.tsx
+- fix: Corregir errores en Asistente de Metas
+- feat: Agregar configuración de Firebase y guía para Vercel
+- fix: Hacer Firebase Admin SDK más tolerante a variables de entorno faltantes
+- fix: Corregir errores de deployment y build
+- Merge pull request #4 from MentorIATec/qa/profile-diagnostics
+-  On branch qa/profile-diagnostics  Your branch is up to date with 'origin/qa/profile-diagnostics'.  Changes to be committed: 	modified:   .github/workflows/preview-screens.yml 	new file:   docs/playwright-setup.md 	modified:   package-lock.json 	modified:   package.json 	new file:   scripts/install-playwright.sh 	new file:   scripts/test-playwright-setup.sh
+- Changes to be committed: modified:   src/app/(app)/goal-bank/page.tsx
+- Merge branch 'main' into qa/profile-diagnostics
+- feat(profile+diagnostics): student profile UI, persisted diagnostic answers and score-based recommendations
+- Merge pull request #2 from MentorIATec/codex/add-classified-goals-bank-by-semester
+- Merge branch 'main' into codex/add-classified-goals-bank-by-semester
+- Merge pull request #3 from MentorIATec/codex/add-classified-goals-bank-by-semester-8554c6
+- Merge branch 'main' into codex/add-classified-goals-bank-by-semester-8554c6
+- feat(admin): add audit logs and key rotation for matriculas
+- fix(login): pass redirect param from server page
+- fix(auth): wrap login page search params in suspense
+- feat(auth): add dev auth middleware and login flow
+- fix(preview): harden screenshot workflow for missing browsers
+- fix: wrap client routes in suspense
+- fix(admin): wrap templates page in suspense
+- fix(admin): wrap dashboard query handling in suspense
+- feat(goal-bank): add preview mode + automated screenshots with Playwright/MSW
+- Merge pull request #1 from MentorIATec/codex/add-classified-goals-bank-by-semester
+- Add curated goal bank organized by semester stage
+- Initial prototype
+- Initialized workspace with Firebase Studio
+
+### Checklist de calidad
+- [ ] Corre en http://localhost:9002/purpose-discovery sin errores
+- [ ] Diagrama interactivo y tooltips correctos
+- [ ] Exportación TXT completa
+- [ ] Compartir copia al portapapeles si no hay Web Share API
+- [ ] Etapas: Exploración, Claridad, Alineación, Vivir el Propósito
+- [ ] Acentos correctos (Pasión, Misión, Vocación, Profesión)
+- [ ] Sin side-effects en otras vistas
+
