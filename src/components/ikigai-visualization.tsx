@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -79,6 +79,9 @@ const CATEGORY_CONFIG = {
 };
 
 export function IkigaiVisualization({ answers, className = '' }: IkigaiVisualizationProps) {
+  const [hoveredArea, setHoveredArea] = useState<string | null>(null);
+  const [selectedIntersection, setSelectedIntersection] = useState<string | null>(null);
+
   // Analizar respuestas por categoría
   const analyzeCategory = (category: string) => {
     const categoryAnswers = answers.filter(a => a.category === category);
@@ -133,6 +136,14 @@ export function IkigaiVisualization({ answers, className = '' }: IkigaiVisualiza
     profession: analyzeCategory('profesion')
   };
 
+  // Calcular tamaños dinámicos de círculos basados en porcentajes
+  const getCircleRadius = (score: number) => {
+    const baseRadius = 80;
+    const maxRadius = 100;
+    const minRadius = 60;
+    return Math.max(minRadius, Math.min(maxRadius, baseRadius + (score - 50) * 0.4));
+  };
+
   // Calcular intersecciones (áreas de superposición)
   const calculateIntersections = () => {
     const intersections = {
@@ -179,51 +190,66 @@ export function IkigaiVisualization({ answers, className = '' }: IkigaiVisualiza
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <p className="text-center text-sm text-muted-foreground mb-4">
+            Pasa el cursor o toca las áreas del diagrama para explorar tus insights
+          </p>
           <div className="relative w-full max-w-2xl mx-auto">
-            {/* Diagrama de Venn SVG */}
+            {/* Diagrama de Venn SVG Interactivo */}
             <svg viewBox="0 0 400 400" className="w-full h-auto">
               {/* Círculo de Pasión */}
               <circle
                 cx="150"
                 cy="150"
-                r="80"
-                fill="rgba(239, 68, 68, 0.2)"
+                r={getCircleRadius(ikigaiData.passion.score)}
+                fill={hoveredArea === 'passion' ? "rgba(239, 68, 68, 0.4)" : "rgba(239, 68, 68, 0.2)"}
                 stroke="rgb(239, 68, 68)"
-                strokeWidth="2"
-                className="transition-all duration-300"
+                strokeWidth={hoveredArea === 'passion' ? "3" : "2"}
+                className="transition-all duration-500 cursor-pointer"
+                onMouseEnter={() => setHoveredArea('passion')}
+                onMouseLeave={() => setHoveredArea(null)}
+                onClick={() => setSelectedIntersection(selectedIntersection === 'passion' ? null : 'passion')}
               />
               
               {/* Círculo de Misión */}
               <circle
                 cx="250"
                 cy="150"
-                r="80"
-                fill="rgba(34, 197, 94, 0.2)"
+                r={getCircleRadius(ikigaiData.mission.score)}
+                fill={hoveredArea === 'mission' ? "rgba(34, 197, 94, 0.4)" : "rgba(34, 197, 94, 0.2)"}
                 stroke="rgb(34, 197, 94)"
-                strokeWidth="2"
-                className="transition-all duration-300"
+                strokeWidth={hoveredArea === 'mission' ? "3" : "2"}
+                className="transition-all duration-500 cursor-pointer"
+                onMouseEnter={() => setHoveredArea('mission')}
+                onMouseLeave={() => setHoveredArea(null)}
+                onClick={() => setSelectedIntersection(selectedIntersection === 'mission' ? null : 'mission')}
               />
               
               {/* Círculo de Vocación */}
               <circle
                 cx="150"
                 cy="250"
-                r="80"
-                fill="rgba(59, 130, 246, 0.2)"
+                r={getCircleRadius(ikigaiData.vocation.score)}
+                fill={hoveredArea === 'vocation' ? "rgba(59, 130, 246, 0.4)" : "rgba(59, 130, 246, 0.2)"}
                 stroke="rgb(59, 130, 246)"
-                strokeWidth="2"
-                className="transition-all duration-300"
+                strokeWidth={hoveredArea === 'vocation' ? "3" : "2"}
+                className="transition-all duration-500 cursor-pointer"
+                onMouseEnter={() => setHoveredArea('vocation')}
+                onMouseLeave={() => setHoveredArea(null)}
+                onClick={() => setSelectedIntersection(selectedIntersection === 'vocation' ? null : 'vocation')}
               />
               
               {/* Círculo de Profesión */}
               <circle
                 cx="250"
                 cy="250"
-                r="80"
-                fill="rgba(147, 51, 234, 0.2)"
+                r={getCircleRadius(ikigaiData.profession.score)}
+                fill={hoveredArea === 'profession' ? "rgba(147, 51, 234, 0.4)" : "rgba(147, 51, 234, 0.2)"}
                 stroke="rgb(147, 51, 234)"
-                strokeWidth="2"
-                className="transition-all duration-300"
+                strokeWidth={hoveredArea === 'profession' ? "3" : "2"}
+                className="transition-all duration-500 cursor-pointer"
+                onMouseEnter={() => setHoveredArea('profession')}
+                onMouseLeave={() => setHoveredArea(null)}
+                onClick={() => setSelectedIntersection(selectedIntersection === 'profession' ? null : 'profession')}
               />
               
               {/* Centro del Ikigai */}
@@ -234,7 +260,10 @@ export function IkigaiVisualization({ answers, className = '' }: IkigaiVisualiza
                 fill="rgba(251, 191, 36, 0.8)"
                 stroke="rgb(251, 191, 36)"
                 strokeWidth="3"
-                className="transition-all duration-300"
+                className="transition-all duration-300 cursor-pointer"
+                onMouseEnter={() => setHoveredArea('center')}
+                onMouseLeave={() => setHoveredArea(null)}
+                onClick={() => setSelectedIntersection(selectedIntersection === 'center' ? null : 'center')}
               />
               
               {/* Etiquetas */}
@@ -256,6 +285,145 @@ export function IkigaiVisualization({ answers, className = '' }: IkigaiVisualiza
                 IKIGAI
               </text>
             </svg>
+
+            {/* Tooltip de información */}
+            {hoveredArea && (
+              <div className="absolute top-4 right-4 bg-white border border-gray-200 rounded-lg p-3 shadow-lg max-w-xs z-10">
+                {hoveredArea === 'passion' && (
+                  <div>
+                    <h4 className="font-semibold text-red-600 mb-2">🔥 Pasión</h4>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {ikigaiData.passion.score}% desarrollado
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {ikigaiData.passion.themes.length > 0 
+                        ? `Temas: ${ikigaiData.passion.themes.join(', ')}`
+                        : 'Explora más esta área'
+                      }
+                    </p>
+                  </div>
+                )}
+                {hoveredArea === 'mission' && (
+                  <div>
+                    <h4 className="font-semibold text-green-600 mb-2">🌍 Misión</h4>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {ikigaiData.mission.score}% desarrollado
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {ikigaiData.mission.themes.length > 0 
+                        ? `Temas: ${ikigaiData.mission.themes.join(', ')}`
+                        : 'Explora más esta área'
+                      }
+                    </p>
+                  </div>
+                )}
+                {hoveredArea === 'vocation' && (
+                  <div>
+                    <h4 className="font-semibold text-blue-600 mb-2">💼 Vocación</h4>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {ikigaiData.vocation.score}% desarrollado
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {ikigaiData.vocation.themes.length > 0 
+                        ? `Temas: ${ikigaiData.vocation.themes.join(', ')}`
+                        : 'Explora más esta área'
+                      }
+                    </p>
+                  </div>
+                )}
+                {hoveredArea === 'profession' && (
+                  <div>
+                    <h4 className="font-semibold text-purple-600 mb-2">⭐ Profesión</h4>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {ikigaiData.profession.score}% desarrollado
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {ikigaiData.profession.themes.length > 0 
+                        ? `Temas: ${ikigaiData.profession.themes.join(', ')}`
+                        : 'Explora más esta área'
+                      }
+                    </p>
+                  </div>
+                )}
+                {hoveredArea === 'center' && (
+                  <div>
+                    <h4 className="font-semibold text-yellow-600 mb-2">🎯 Tu Ikigai</h4>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {Math.round(intersections.center)}% integrado
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {intersections.center > 50 
+                        ? '¡Excelente integración!'
+                        : intersections.center > 25
+                        ? 'Buen progreso'
+                        : 'En desarrollo'
+                      }
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Panel de información expandida */}
+            {selectedIntersection && (
+              <div className="mt-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
+                {selectedIntersection === 'passion' && (
+                  <div>
+                    <h4 className="font-semibold text-red-600 mb-2">🔥 Análisis de tu Pasión</h4>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Basado en tus respuestas, tu pasión se centra en: <strong>{ikigaiData.passion.themes.join(', ')}</strong>
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Nivel de desarrollo: {ikigaiData.passion.strength === 'high' ? 'Alto' : ikigaiData.passion.strength === 'medium' ? 'Medio' : 'En desarrollo'}
+                    </p>
+                  </div>
+                )}
+                {selectedIntersection === 'mission' && (
+                  <div>
+                    <h4 className="font-semibold text-green-600 mb-2">🌍 Análisis de tu Misión</h4>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Basado en tus respuestas, tu misión se centra en: <strong>{ikigaiData.mission.themes.join(', ')}</strong>
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Nivel de desarrollo: {ikigaiData.mission.strength === 'high' ? 'Alto' : ikigaiData.mission.strength === 'medium' ? 'Medio' : 'En desarrollo'}
+                    </p>
+                  </div>
+                )}
+                {selectedIntersection === 'vocation' && (
+                  <div>
+                    <h4 className="font-semibold text-blue-600 mb-2">💼 Análisis de tu Vocación</h4>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Basado en tus respuestas, tu vocación se centra en: <strong>{ikigaiData.vocation.themes.join(', ')}</strong>
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Nivel de desarrollo: {ikigaiData.vocation.strength === 'high' ? 'Alto' : ikigaiData.vocation.strength === 'medium' ? 'Medio' : 'En desarrollo'}
+                    </p>
+                  </div>
+                )}
+                {selectedIntersection === 'profession' && (
+                  <div>
+                    <h4 className="font-semibold text-purple-600 mb-2">⭐ Análisis de tu Profesión</h4>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Basado en tus respuestas, tu profesión se centra en: <strong>{ikigaiData.profession.themes.join(', ')}</strong>
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Nivel de desarrollo: {ikigaiData.profession.strength === 'high' ? 'Alto' : ikigaiData.profession.strength === 'medium' ? 'Medio' : 'En desarrollo'}
+                    </p>
+                  </div>
+                )}
+                {selectedIntersection === 'center' && (
+                  <div>
+                    <h4 className="font-semibold text-yellow-600 mb-2">🎯 Análisis de tu Ikigai</h4>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Tu Ikigai está {intersections.center > 50 ? 'bien integrado' : intersections.center > 25 ? 'tomando forma' : 'en desarrollo inicial'}.
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Área más desarrollada: <strong>{strongestArea.name}</strong> ({strongestArea.score}%)
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -263,7 +431,12 @@ export function IkigaiVisualization({ answers, className = '' }: IkigaiVisualiza
       {/* Análisis por Categorías */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         {Object.entries(CATEGORY_CONFIG).map(([key, config]) => {
-          const data = ikigaiData[key as keyof IkigaiData];
+          // Mapear las claves del CATEGORY_CONFIG a las claves del IkigaiData
+          const dataKey = key === 'pasion' ? 'passion' : 
+                         key === 'mision' ? 'mission' : 
+                         key === 'vocacion' ? 'vocation' : 
+                         key === 'profesion' ? 'profession' : key;
+          const data = ikigaiData[dataKey as keyof IkigaiData];
           const Icon = config.icon;
           
           return (
@@ -313,57 +486,6 @@ export function IkigaiVisualization({ answers, className = '' }: IkigaiVisualiza
         })}
       </div>
 
-      {/* Insights del Diagrama */}
-      <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <TrendingUp className="h-5 w-5 mr-2" />
-            Insights de tu Ikigai
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <h4 className="font-semibold text-sm">Área más desarrollada:</h4>
-              <div className="flex items-center space-x-2">
-                <Badge variant="secondary" className="text-sm">
-                  {strongestArea.name}
-                </Badge>
-                <span className="text-sm text-muted-foreground">
-                  {strongestArea.score}% de desarrollo
-                </span>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <h4 className="font-semibold text-sm">Nivel de integración:</h4>
-              <div className="flex items-center space-x-2">
-                <Badge 
-                  variant={intersections.center > 50 ? 'default' : intersections.center > 25 ? 'secondary' : 'outline'}
-                  className="text-sm"
-                >
-                  {intersections.center > 50 ? 'Alto' : intersections.center > 25 ? 'Medio' : 'En desarrollo'}
-                </Badge>
-                <span className="text-sm text-muted-foreground">
-                  {Math.round(intersections.center)}% integrado
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white/60 p-4 rounded-lg">
-            <h4 className="font-semibold text-sm mb-2">Recomendación:</h4>
-            <p className="text-sm text-muted-foreground">
-              {intersections.center > 50 
-                ? "¡Excelente! Tu Ikigai está bien integrado. Continúa desarrollando todas las dimensiones por igual."
-                : intersections.center > 25
-                ? "Tu Ikigai está tomando forma. Enfócate en fortalecer las áreas más débiles para mayor integración."
-                : "Tu Ikigai está en desarrollo inicial. Explora más profundamente cada dimensión para encontrar conexiones."
-              }
-            </p>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

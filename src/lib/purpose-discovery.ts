@@ -309,7 +309,7 @@ export const PURPOSE_QUESTIONS: PurposeQuestion[] = [
     examples: [
       'Ser líder de proyectos que combinen mi pasión por la tecnología con mi misión de mejorar la educación',
       'Crear mi propia empresa que solucione problemas sociales usando mis habilidades técnicas',
-      'Convertirme en experte reconocide en mi campo mientras mentor a otras personas',
+      'Convertirme en experto reconocido en mi campo mientras mentor a otras personas',
       'Desarrollar soluciones innovadoras que transformen mi industria hacia la sostenibilidad'
     ]
   }
